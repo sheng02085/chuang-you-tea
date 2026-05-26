@@ -13,9 +13,9 @@
                 extend: {
                     colors: {
                         brand: {
-                            darkgreen: '#1F3C2B', // 竹山竹林深綠
-                            lightgreen: '#EAF1EC', // 佛手茶湯嫩綠
-                            accent: '#CBB28A', // 莊友手感沙金
+                            darkgreen: '#1F3C2B', 
+                            lightgreen: '#EAF1EC', 
+                            accent: '#CBB28A', 
                             charcoal: '#333734',
                             cream: '#FCFAF7'
                         }
@@ -48,9 +48,24 @@
         /* 區塊捲動滑順登場動畫 */
         .scroll-animate {
             opacity: 0; transform: translateY(30px);
-            transition: opacity 0.8s cubic-bezier(0.215, 0.610, 0.355, 1), transform 0.8s cubic-bezier(0.215, 0.610, 0.355, 1);
+            transition: opacity 0.8s cubic-bezier(0.165, 0.84, 0.44, 1), transform 0.8s cubic-bezier(0.165, 0.84, 0.44, 1);
         }
         .scroll-animated { opacity: 1; transform: translateY(0); }
+
+        /* ─── ✨ 新增：AI 對話視窗彈出與縮小動畫 ─── */
+        #ai-chat-window {
+            transform-origin: bottom right; /* 以右下角按鈕為動畫中心點 */
+            opacity: 0;
+            transform: translateY(20px) scale(0.85);
+            visibility: hidden;
+            transition: opacity 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), visibility 0.4s;
+        }
+        /* 當啟用時引入此 Class，產生順滑的物理彈跳放大效果 */
+        #ai-chat-window.ai-chat-open {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            visibility: visible;
+        }
     </style>
 </head>
 <body>
@@ -217,14 +232,14 @@
                 </div>
                 <div class="bg-brand-cream/40 border border-brand-lightgreen p-6 sm:p-8 rounded-2xl space-y-4">
                     <h4 class="font-bold text-brand-darkgreen text-lg flex items-center gap-2"><i class="fa-solid fa-snowflake text-sky-500"></i>低溫冰鎮慢萃：無澀超甘甜</h4>
-                    <p class="text-xs text-brand-charcoal/70 leading-relaxed">將 1 至 2 包茶包放入 600ml 的常溫礦泉水瓶中。放入 4°C 冰箱冷藏靜置 6 至 8 小時（建議睡前冰，早起即飲），冰涼甘甜、完全不苦澀。</p>
+                    <p class="text-xs text-brand-charcoal/70 leading-relaxed">將 1 至 2 包茶包放入 600ml 的常溫水中。放入 4°C 冰箱冷藏靜置 6 至 8 小時（建議睡前冰，早起即飲），冰涼甘甜、完全不苦澀。</p>
                 </div>
             </div>
         </div>
     </section>
 
     <footer class="bg-brand-darkgreen text-brand-cream/80 text-xs py-10 text-center border-t border-brand-lightgreen/10 space-y-2">
-        <p class="font-bold text-brand-cream text-sm">莊友佛手茶 × 亞洲大學運算思維</p>
+        <p class="font-bold text-brand-cream text-sm">莊友佛手茶 × 亞洲大學專案實踐</p>
         <p>© 2026 南投竹山照鏡山老字號直營團隊. 本網頁專為期末發表設計展示.</p>
     </footer>
 
@@ -247,7 +262,7 @@
 
     <div class="fixed bottom-6 right-6 z-50 flex flex-col items-end">
         
-        <div id="ai-chat-window" class="hidden w-80 sm:w-96 h-[450px] bg-white rounded-2xl shadow-2xl border border-brand-lightgreen flex flex-col justify-between overflow-hidden mb-4">
+        <div id="ai-chat-window" class="w-80 sm:w-96 h-[450px] bg-white rounded-2xl shadow-2xl border border-brand-lightgreen flex flex-col justify-between overflow-hidden mb-4">
             <div class="bg-brand-darkgreen p-4 text-brand-cream flex justify-between items-center">
                 <div class="flex items-center gap-2">
                     <div class="w-7 h-7 bg-brand-accent rounded-full flex items-center justify-center text-brand-darkgreen text-xs font-bold"><i class="fa-solid fa-robot"></i></div>
@@ -303,15 +318,17 @@
             document.querySelectorAll(".scroll-animate").forEach(section => animationObserver.observe(section));
         });
 
-        // 開關 AI 客服視窗
+        // ─── ✨ 修正：控制 AI 客服視窗的物理縮放彈跳動畫 ───
         function toggleAiChat() {
             const win = document.getElementById('ai-chat-window');
             const icon = document.getElementById('ai-btn-icon');
-            if (win.classList.contains('hidden')) {
-                win.classList.remove('hidden');
+            
+            // 透過切換 Class 來觸發帶有貝氏曲線的流暢動畫
+            if (!win.classList.contains('ai-chat-open')) {
+                win.classList.add('ai-chat-open');
                 icon.className = "fa-solid fa-xmark text-xl";
             } else {
-                win.classList.add('hidden');
+                win.classList.remove('ai-chat-open');
                 icon.className = "fa-solid fa-comments text-xl";
             }
         }
@@ -320,7 +337,7 @@
             if (e.key === 'Enter') sendUserMessage();
         }
 
-        // AI 客服問答與打字機特效演算法
+        // AI 客服問答與打字機特效
         function sendUserMessage() {
             const inputEl = document.getElementById('ai-user-msg');
             const msgText = inputEl.value.trim();
@@ -371,9 +388,9 @@
                 } else if (lowerMsg.includes('code') || lowerMsg.includes('累') || lowerMsg.includes('熬夜') || lowerMsg.includes('昏') || lowerMsg.includes('讀書') || lowerMsg.includes('考試') || lowerMsg.includes('壓力')) {
                     replyText = "寫 code 讀書辛苦了！熬夜思考容易大腦昏沉。非常推薦您試試我們的【莊友經典佛手青茶包】。它特有的香櫞品種雪梨清香能舒緩大腦疲勞，且富含豐富的天然兒茶素，能以最溫和、不傷胃的方式幫您激活思緒，重回高效專注的心流狀態！";
                 } else if (lowerMsg.includes('油') || lowerMsg.includes('飽') || lowerMsg.includes('脹') || lowerMsg.includes('大餐') || lowerMsg.includes('肉') || lowerMsg.includes('宵夜')) {
-                    replyText = "剛吃飽或吃完宵夜烤肉嗎？推薦您立刻泡一杯【莊友陳年炭焙佛手黑茶包】。這款茶經過老手藝深層炭焙，茶湯溫厚，富含豐富的茶紅素，能迅速瓦解胃部的油膩感，舒緩飽脹不適，是非常棒的天然去油好幫手！";
+                    replyText = "剛吃飽或吃完宵夜烤肉嗎？推薦您立刻泡一杯【莊友陳年炭焙佛手黑茶包】。這款茶經過老手藝深層炭焙，茶湯溫厚，富含豐富的茶紅素，能迅速瓦解胃部的油膩感，舒緩飽脹不適，是非常厲害的天然去油好幫手！";
                 } else {
-                    replyText = "您好！莊友 AI 侍茶師很高興為您服務。如果您在挑選茶包上有疑問，推薦您品嚐看看最經典的「佛手青茶包」，體驗我們竹山照鏡山特有的雪梨蘭花果香。全館滿 $499 即可享免運直送到家，有任何關於冷熱泡法或風味的問題都歡迎直接問我哦！";
+                    replyText = "您好！莊友 AI 侍茶師很高興為您服務。如果您在挑選茶包上有疑問，推薦您品嚐看看最經典的「佛手青茶包」，體驗我們竹山照鏡山特有的雪梨蘭花果香。全館滿 $499 即可享免運直送到家，有環境沖泡或風味問題都歡迎直接問我哦！";
                 }
 
                 // 渲染 AI 對話泡泡並執行打字機串流效果

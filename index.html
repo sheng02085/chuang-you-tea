@@ -25,6 +25,10 @@
         }
     </script>
     <style>
+        /* 啟用全網頁平滑滾動動畫 */
+        html {
+            scroll-behavior: smooth;
+        }
         body {
             font-family: 'Noto Sans TC', sans-serif;
             background-color: #FCFAF7;
@@ -33,7 +37,7 @@
         /* 點擊水波紋效果 */
         .ripple-effect {
             position: absolute;
-            background: rgba(203, 178, 138, 0.3);
+            background: rgba(203, 178, 138, 0.4);
             border-radius: 50%;
             transform: scale(0);
             animation: ripple-animation 0.5s linear;
@@ -66,6 +70,18 @@
         }
         .nav-underline:hover::after {
             width: 100%;
+        }
+
+        /* ─── 新增：區塊跳轉登場動畫 ─── */
+        .scroll-animate {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 0.8s cubic-bezier(0.215, 0.610, 0.355, 1), transform 0.8s cubic-bezier(0.215, 0.610, 0.355, 1);
+        }
+        /* 當滑動到該區塊時，由 JS 注入此 Class 觸發動畫 */
+        .scroll-animated {
+            opacity: 1;
+            transform: translateY(0);
         }
     </style>
 </head>
@@ -146,7 +162,34 @@
         </div>
     </header>
 
-    <section id="matchmaker" class="py-16 bg-brand-cream border-t border-brand-lightgreen">
+    <section id="about" class="py-20 bg-white border-t border-brand-lightgreen/50 scroll-animate">
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="text-center space-y-3 mb-12">
+                <span class="text-brand-accent font-bold text-xs tracking-widest uppercase">TERROIR OF ZHAOJINGSHAN</span>
+                <h2 class="text-3xl font-bold text-brand-darkgreen font-serif">照鏡山特有風土物產</h2>
+                <p class="text-brand-charcoal/70 text-sm max-w-md mx-auto">南投竹山照鏡山具備得天獨厚的微氣候，日夜溫差大、晨霧繚繞，正是培育大葉香櫞種佛手茶的黃金聖地。</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+                <div class="p-6 bg-brand-cream/30 border border-brand-lightgreen/40 rounded-2xl shadow-sm">
+                    <div class="text-brand-accent text-2xl mb-2"><i class="fa-solid fa-cloud-sun-rain"></i></div>
+                    <h4 class="font-bold text-brand-darkgreen mb-1">晨昏雲霧慢焙</h4>
+                    <p class="text-xs text-brand-charcoal/60">有機質豐富的紅壤與終年不散的照鏡山晨霧，鎖住茶葉清甜單寧。</p>
+                </div>
+                <div class="p-6 bg-brand-cream/30 border border-brand-lightgreen/40 rounded-2xl shadow-sm">
+                    <div class="text-brand-accent text-2xl mb-2"><i class="fa-solid fa-handholding-heart"></i></div>
+                    <h4 class="font-bold text-brand-darkgreen mb-1">民國76年傳承手藝</h4>
+                    <p class="text-xs text-brand-charcoal/60">莊友茶行老字號製茶師親自監督，嚴格控管每一道萎凋與浪菁工序。</p>
+                </div>
+                <div class="p-6 bg-brand-cream/30 border border-brand-lightgreen/40 rounded-2xl shadow-sm">
+                    <div class="text-brand-accent text-2xl mb-2"><i class="fa-solid fa-shield-cat"></i></div>
+                    <h4 class="font-bold text-brand-darkgreen mb-1">全無毒立體茶包</h4>
+                    <p class="text-xs text-brand-charcoal/60">採用環保PLA玉米澱粉材質，100%原葉不添加茶碎，安全健康。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="matchmaker" class="py-20 bg-brand-cream border-t border-brand-lightgreen scroll-animate">
         <div class="max-w-3xl mx-auto px-4">
             <div class="text-center space-y-3 mb-10">
                 <span class="text-brand-accent font-bold text-xs tracking-widest uppercase">運算思維・分類決策樹</span>
@@ -213,7 +256,7 @@
         </div>
     </section>
 
-    <section id="products" class="py-16 bg-white">
+    <section id="products" class="py-20 bg-white scroll-animate">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <h2 class="text-2xl font-bold text-brand-darkgreen mb-8 font-serif text-center sm:text-left">莊友正宗佛手茶包專區</h2>
             
@@ -332,6 +375,29 @@
     <script>
         let cart = [];
         let answers = { q1: '' };
+
+        // ─── 新增：交叉觀察器自動化動畫演算法 (Intersection Observer) ───
+        document.addEventListener("DOMContentLoaded", function() {
+            const observerOptions = {
+                root: null, // 預設以全螢幕為視窗
+                rootMargin: "0px",
+                threshold: 0.15 // 當該區塊露出 15% 時即啟動動畫
+            };
+
+            const animationObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add("scroll-animated");
+                        // 觸發後即解除觀察，確保動畫流暢且不重複消耗系統效能
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, observerOptions);
+
+            // 將所有需要滾動登場動畫的區塊加入監聽
+            const targetSections = document.querySelectorAll(".scroll-animate");
+            targetSections.forEach(section => animationObserver.observe(section));
+        });
 
         // 點擊水波紋特效 (微交互回饋)
         function attachRipple(e) {

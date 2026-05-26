@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>莊友佛手茶 | AI 語意特徵空間視覺化電商</title>
+    <title>莊友佛手茶 | 南投竹山照鏡山手採原葉茶包</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Playfair+Display:ital,wght@0,700;1,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -13,9 +13,9 @@
                 extend: {
                     colors: {
                         brand: {
-                            darkgreen: '#1F3C2B', 
-                            lightgreen: '#EAF1EC', 
-                            accent: '#CBB28A', 
+                            darkgreen: '#1F3C2B', // 竹山竹林深綠
+                            lightgreen: '#EAF1EC', // 佛手茶湯嫩綠
+                            accent: '#CBB28A', // 莊友手感沙金
                             charcoal: '#333734',
                             cream: '#FCFAF7'
                         }
@@ -27,12 +27,17 @@
     <style>
         html { scroll-behavior: smooth; }
         body { font-family: 'Noto Sans TC', sans-serif; background-color: #FCFAF7; overflow-x: hidden; }
+        
+        /* 點擊水波紋效果 */
         .ripple-effect {
             position: absolute; background: rgba(203, 178, 138, 0.4); border-radius: 50%;
             transform: scale(0); animation: ripple-animation 0.5s linear; pointer-events: none;
         }
         @keyframes ripple-animation { to { transform: scale(4); opacity: 0; } }
+        
+        /* 彈性按鈕點擊微動 */
         .btn-bounce:active { transform: scale(0.96); transition: transform 0.1s ease; }
+        
         .nav-underline { position: relative; }
         .nav-underline::after {
             content: ''; position: absolute; width: 0; height: 2px; bottom: -4px; left: 50%;
@@ -40,26 +45,19 @@
         }
         .nav-underline:hover::after { width: 100%; }
         
-        /* 區塊捲動動畫 */
+        /* 區塊捲動滑順登場動畫 */
         .scroll-animate {
-            opacity: 0; transform: translateY(40px);
+            opacity: 0; transform: translateY(30px);
             transition: opacity 0.8s cubic-bezier(0.215, 0.610, 0.355, 1), transform 0.8s cubic-bezier(0.215, 0.610, 0.355, 1);
         }
         .scroll-animated { opacity: 1; transform: translateY(0); }
-
-        /* AI 矩陣節點動畫 */
-        @keyframes matrix-pulse {
-            0%, 100% { opacity: 0.3; transform: scale(1); }
-            50% { opacity: 1; transform: scale(1.15); background-color: #CBB28A; }
-        }
-        .matrix-node { animation: matrix-pulse 2s infinite ease-in-out; }
     </style>
 </head>
 <body>
 
     <div class="bg-brand-darkgreen text-brand-cream text-center py-2 text-xs sm:text-sm tracking-wider font-light flex justify-center items-center gap-2 px-4">
-        <span>🎉 莊友佛手茶：導入 NLP 語意特徵分類矩陣，全館滿 $499 即享免運</span>
-        <span class="bg-brand-accent text-brand-darkgreen px-2 py-0.5 rounded text-xs font-medium animate-pulse">AI系實驗專案</span>
+        <span>🎉 莊友佛手茶慶開張：全館照鏡山手採佛手茶包滿 $499 即享免運</span>
+        <span class="bg-brand-accent text-brand-darkgreen px-2 py-0.5 rounded text-xs font-medium animate-pulse">限時優惠</span>
     </div>
 
     <nav class="sticky top-0 z-40 bg-brand-cream/90 backdrop-blur-md border-b border-brand-lightgreen">
@@ -68,14 +66,14 @@
                 <div class="w-10 h-10 bg-brand-darkgreen rounded-full flex items-center justify-center text-brand-cream text-lg font-bold">莊</div>
                 <div class="flex flex-col">
                     <span class="text-xl font-bold text-brand-darkgreen tracking-widest">莊友佛手茶</span>
-                    <span class="text-[9px] text-brand-accent tracking-[0.2em] -mt-1 font-light">NLP EMBEDDING SYSTEM × 竹山</span>
+                    <span class="text-[9px] text-brand-accent tracking-[0.2em] -mt-1 font-light">SINCE 1987 × 南投竹山</span>
                 </div>
             </a>
 
             <div class="hidden md:flex items-center gap-8 text-brand-darkgreen font-medium">
                 <a href="#about" class="nav-underline py-2">照鏡山風土</a>
-                <a href="#ai-sommelier" class="nav-underline py-2 text-brand-accent"><i class="fa-solid fa-chart-network mr-1"></i>AI 語意特徵矩陣</a>
                 <a href="#products" class="nav-underline py-2">佛手茶包系列</a>
+                <a href="#science" class="nav-underline py-2">科學冷熱泡</a>
             </div>
 
             <div class="flex items-center gap-4">
@@ -85,232 +83,153 @@
                 </button>
                 <button onclick="toggleReportHelper()" class="bg-brand-accent text-brand-darkgreen px-4 py-2 rounded-full text-xs font-medium shadow-sm flex items-center gap-1.5 btn-bounce">
                     <i class="fa-solid fa-graduation-cap"></i>
-                    <span>報告助理 (資工計概版)</span>
+                    <span>報告助理</span>
                 </button>
             </div>
         </div>
     </nav>
 
-    <header class="relative bg-gradient-to-b from-brand-lightgreen/30 to-brand-cream py-12 lg:py-20 overflow-hidden">
+    <header class="relative bg-gradient-to-b from-brand-lightgreen/30 to-brand-cream py-16 lg:py-24 overflow-hidden">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div class="space-y-6 text-center lg:text-left">
                 <div class="inline-flex items-center gap-2 bg-brand-lightgreen text-brand-darkgreen px-3 py-1 rounded-full text-sm font-medium">
-                    🤖 運算思維與問題解決：以大語言模型特徵提取重塑傳統農業
+                    民國76年在地傳承 · 南投竹山照鏡山老字號直營
                 </div>
                 <h1 class="text-4xl sm:text-5xl font-extrabold text-brand-darkgreen tracking-tight leading-tight">
-                    大葉香櫞佛手茶<br>
-                    <span class="text-brand-accent font-serif">NLP 語意空間特徵視覺化</span>
+                    大葉香櫞特有風味<br>
+                    <span class="text-brand-accent font-serif">莊友原葉立體佛手茶</span>
                 </h1>
                 <p class="text-brand-charcoal/80 text-base sm:text-lg max-w-xl mx-auto lg:mx-0 leading-relaxed font-light">
-                    這不是傳統的死板電商。亞洲大學 AI 應用團隊將自然語言非結構化文本，映射至低維特徵空間（Embedding Space）。現場輸入身心負載敘述，AI 矩陣將即時解構特徵，演算出最佳的竹山佛手茶生化化合物處方。
+                    佛手茶又名香櫞茶，葉大如掌。我們將南投竹山溫潤風土培育的佛手原葉，完整製成頂級三角立體茶包。特有的天然雪梨香與熟果蜜韻，耐泡不苦澀，給忙碌的生活最純淨的釋壓陪伴。
                 </p>
                 <div class="flex flex-col sm:flex-row justify-center lg:justify-start gap-4 pt-2">
-                    <a href="#ai-sommelier" class="bg-brand-darkgreen text-brand-cream text-center font-medium px-8 py-4 rounded-lg shadow-lg btn-bounce flex items-center justify-center gap-2" onclick="attachRipple(event)">
-                        <span>進入 AI 矩陣運算核心</span>
-                        <i class="fa-solid fa-microchip"></i>
+                    <a href="#products" class="bg-brand-darkgreen text-brand-cream text-center font-medium px-8 py-4 rounded-lg shadow-lg btn-bounce flex items-center justify-center gap-2" onclick="attachRipple(event)">
+                        <span>瀏覽佛手茶包系列</span>
+                        <i class="fa-solid fa-arrow-right"></i>
                     </a>
                 </div>
             </div>
+
             <div class="flex justify-center">
-                <div class="bg-brand-darkgreen text-brand-cream p-6 rounded-2xl shadow-2xl max-w-sm w-full font-mono text-[10px] space-y-3 border-2 border-brand-accent/30">
-                    <div class="flex justify-between items-center border-b border-brand-cream/10 pb-2">
-                        <span class="text-brand-accent font-bold"><i class="fa-solid fa-terminal mr-1"></i>SYSTEM NEURAL MONITOR</span>
-                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                <div class="bg-white p-8 rounded-2xl shadow-xl border border-brand-lightgreen max-w-sm w-full relative transition-transform duration-300 hover:scale-105">
+                    <div class="absolute -top-4 -right-4 bg-brand-accent text-brand-darkgreen text-xs font-bold py-1 px-3 rounded-full shadow-md">
+                        正宗佛手專賣
                     </div>
-                    <p class="text-emerald-400/90">> Initializing ChuangYou NLP Classifiers...</p>
-                    <p class="text-brand-cream/60">> Base Model: Gemini-Text-Embedding-004</p>
-                    <p class="text-brand-cream/60">> Target: Tea Compound Biochemical Mapping</p>
-                    <div class="bg-black/30 p-3 rounded border border-brand-cream/5 flex justify-between items-center">
-                        <span>Embedding Dimension:</span>
-                        <span class="text-brand-accent font-bold">768-dim (Dense)</span>
+                    <div class="w-full h-44 flex items-center justify-center mb-6 text-brand-darkgreen/20">
+                        <i class="fa-solid fa-leaf text-8xl text-brand-darkgreen opacity-30"></i>
+                    </div>
+                    <div class="text-center space-y-2">
+                        <div class="text-xs text-brand-accent tracking-wider font-bold">香櫞品種特有風味 · 冷熱雙泡</div>
+                        <h3 class="text-lg font-bold text-brand-darkgreen">莊友經典佛手青茶</h3>
+                        <p class="text-xs text-brand-charcoal/60">產自竹山照鏡山 · 自帶天然雪梨蘭花清香</p>
                     </div>
                 </div>
             </div>
         </div>
     </header>
 
-    <section id="about" class="py-16 bg-white border-t border-brand-lightgreen/50 scroll-animate">
+    <section id="about" class="py-20 bg-white border-t border-brand-lightgreen/50 scroll-animate">
         <div class="max-w-6xl mx-auto px-4">
-            <div class="text-center space-y-3 mb-10">
+            <div class="text-center space-y-3 mb-12">
                 <span class="text-brand-accent font-bold text-xs tracking-widest uppercase">TERROIR OF ZHAOJINGSHAN</span>
-                <h2 class="text-2xl font-bold text-brand-darkgreen font-serif">照鏡山特有風土物產</h2>
+                <h2 class="text-3xl font-bold text-brand-darkgreen font-serif">照鏡山特有風土物產</h2>
+                <p class="text-brand-charcoal/70 text-sm max-w-md mx-auto">南投竹山照鏡山具備得天獨厚的紅壤與溫潤晨霧，是培育大葉香櫞種佛手茶的黃金聖地。</p>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
                 <div class="p-6 bg-brand-cream/30 border border-brand-lightgreen/40 rounded-2xl shadow-sm">
-                    <div class="text-brand-accent text-xl mb-1"><i class="fa-solid fa-cloud-sun-rain"></i></div>
-                    <h4 class="font-bold text-brand-darkgreen text-sm mb-1">晨昏雲霧慢焙</h4>
-                    <p class="text-xs text-brand-charcoal/60">有機質豐富的紅壤與終年不散的照鏡山晨霧，鎖住茶葉清甜單寧。</p>
+                    <div class="text-brand-accent text-2xl mb-2"><i class="fa-solid fa-cloud-sun-rain"></i></div>
+                    <h4 class="font-bold text-brand-darkgreen mb-1">晨昏雲霧慢焙</h4>
+                    <p class="text-xs text-brand-charcoal/60">豐富的有機質紅壤與終年不散的照鏡山晨霧，鎖住佛手茶特有的蘭花清甜。</p>
                 </div>
                 <div class="p-6 bg-brand-cream/30 border border-brand-lightgreen/40 rounded-2xl shadow-sm">
-                    <div class="text-brand-accent text-xl mb-1"><i class="fa-solid fa-handholding-heart"></i></div>
-                    <h4 class="font-bold text-brand-darkgreen text-sm mb-1">民國76年傳承手藝</h4>
-                    <p class="text-xs text-brand-charcoal/60">莊友茶行老字號製茶師親自監督，嚴格控管每一道工序。</p>
+                    <div class="text-brand-accent text-2xl mb-2"><i class="fa-solid fa-handholding-heart"></i></div>
+                    <h4 class="font-bold text-brand-darkgreen mb-1">民國76年傳承手藝</h4>
+                    <p class="text-xs text-brand-charcoal/60">莊友茶行老字號製茶師親自監督，嚴格控管每一道低溫慢焙工序。</p>
                 </div>
                 <div class="p-6 bg-brand-cream/30 border border-brand-lightgreen/40 rounded-2xl shadow-sm">
-                    <div class="text-brand-accent text-xl mb-1"><i class="fa-solid fa-microchip"></i></div>
-                    <h4 class="font-bold text-brand-darkgreen text-sm mb-1">AI 特征空间映射</h4>
-                    <p class="text-xs text-brand-charcoal/60">將非結構化文本轉化為特徵權重，打破傳統茶葉模糊的銷售分類。</p>
+                    <div class="text-brand-accent text-2xl mb-2"><i class="fa-solid fa-shield-heart"></i></div>
+                    <h4 class="font-bold text-brand-darkgreen mb-1">全無毒立體茶包</h4>
+                    <p class="text-xs text-brand-charcoal/60">採用環保玉米澱粉PLA材質，100%手采原葉，耐泡不苦澀，安全健康。</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <section id="ai-sommelier" class="py-16 bg-brand-cream border-t border-brand-lightgreen scroll-animate">
-        <div class="max-w-4xl mx-auto px-4">
-            <div class="text-center space-y-3 mb-10">
-                <span class="text-brand-accent font-bold text-xs tracking-widest uppercase">Natural Language Processing Engine</span>
-                <h2 class="text-3xl font-extrabold text-brand-darkgreen tracking-tight">AI 語意向量空間分佈儀</h2>
-                <p class="text-brand-charcoal/70 text-sm max-w-md mx-auto">
-                    輸入日常遭遇的疲勞困擾（如：狂熬夜寫 code 考微積分、宵夜吃烤肉好油），AI 將現場解構字串，展示數值化運算。
-                </p>
-            </div>
-
-            <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
-                
-                <div class="lg:col-span-2 bg-white rounded-2xl p-5 shadow border border-brand-lightgreen flex flex-col justify-between space-y-4">
-                    <div class="space-y-2">
-                        <div class="flex justify-between items-center text-xs font-bold text-brand-darkgreen">
-                            <span>📥 INPUT: TEXT STREAM</span>
-                            <span class="font-mono text-[10px] text-brand-accent">String DataType</span>
-                        </div>
-                        <textarea id="ai-input" rows="4" class="w-full bg-brand-cream border border-brand-lightgreen rounded-xl p-3 text-xs focus:border-brand-darkgreen focus:outline-none text-brand-charcoal leading-relaxed font-mono" placeholder="請輸入身心狀態描述...例如：熬夜寫 code 頭很昏，微積分要被當了，壓力山大睡不著。"></textarea>
-                    </div>
-
-                    <button onclick="runAiVisualizer()" class="w-full bg-brand-darkgreen text-brand-cream text-xs font-bold py-3.5 rounded-xl flex items-center justify-center gap-2 btn-bounce shadow-md hover:bg-brand-darkgreen/90" onclick="attachRipple(event)">
-                        <i class="fa-solid fa-calculator text-brand-accent"></i>
-                        <span>執行矩陣特徵提取</span>
-                    </button>
-
-                    <div class="border-t border-brand-lightgreen/60 pt-3 space-y-2">
-                        <span class="text-[10px] font-mono font-bold text-brand-charcoal/60 block"><i class="fa-solid fa-brackets-curly mr-1"></i>Activated Tokens (分詞特徵激活)</span>
-                        <div id="ai-tokens" class="flex flex-wrap gap-1.5 min-h-[40px] p-2 bg-brand-cream/50 rounded-lg border border-dashed border-brand-lightgreen text-[10px] text-brand-charcoal/40 italic">
-                            等待輸入文本並啟動運算...
-                        </div>
-                    </div>
-                </div>
-
-                <div class="lg:col-span-3 bg-white rounded-2xl p-5 shadow border border-brand-lightgreen flex flex-col justify-between min-h-[380px]">
-                    
-                    <div id="ai-placeholder" class="flex flex-col items-center justify-center flex-1 py-12 text-center text-brand-charcoal/40 space-y-3">
-                        <i class="fa-solid fa-microchip-large text-4xl text-brand-lightgreen animate-pulse"></i>
-                        <p class="text-xs font-mono">Awaiting Feature Matrix Activation...<br>請在左側輸入文字並點擊按鈕</p>
-                    </div>
-
-                    <div id="ai-loading" class="hidden flex-col items-center justify-center flex-1 py-12 space-y-4">
-                        <div class="w-12 h-12 border-4 border-brand-accent border-t-brand-darkgreen rounded-full animate-spin"></div>
-                        <p class="text-brand-darkgreen font-mono text-xs animate-pulse">> Mapping tokens to 768-dimensional space vectors...</p>
-                    </div>
-
-                    <div id="ai-dashboard" class="hidden space-y-5 flex-1 animate-fade-in">
-                        
-                        <div class="space-y-1.5">
-                            <span class="text-[10px] font-mono font-bold text-brand-darkgreen flex justify-between">
-                                <span>🔮 LIVE EMBEDDING MATRIX WEIGHTS (即時特徵空間權重)</span>
-                                <span class="text-brand-accent" id="matrix-status">STATUS: CALC_COMPLETE</span>
-                            </span>
-                            <div id="matrix-grid" class="grid grid-cols-8 gap-1 p-2 bg-brand-darkgreen rounded-lg border border-brand-accent/20">
-                                </div>
-                        </div>
-
-                        <div class="space-y-3 bg-brand-cream/40 p-3 rounded-xl border border-brand-lightgreen/70">
-                            <span class="text-[10px] font-mono font-bold text-brand-charcoal/70 block"><i class="fa-solid fa-chart-bar mr-1"></i>EXTRACTED COGNITIVE FEATURE VECTORS (特徵向度量化)</span>
-                            
-                            <div class="space-y-1">
-                                <div class="flex justify-between text-[11px]">
-                                    <span class="text-brand-darkgreen font-bold">🧠 邏輯認知負荷 (Cognitive Load)</span>
-                                    <span id="val-cognitive" class="font-mono text-brand-accent font-bold">0%</span>
-                                </div>
-                                <div class="w-full bg-brand-lightgreen/40 h-2 rounded-full overflow-hidden">
-                                    <div id="bar-cognitive" class="bg-brand-darkgreen h-2 rounded-full transition-all duration-1000" style="width: 0%"></div>
-                                </div>
-                            </div>
-
-                            <div class="space-y-1">
-                                <div class="flex justify-between text-[11px]">
-                                    <span class="text-brand-darkgreen font-bold">🌙 中樞神經緊繃 (Stress Level)</span>
-                                    <span id="val-stress" class="font-mono text-brand-accent font-bold">0%</span>
-                                </div>
-                                <div class="w-full bg-brand-lightgreen/40 h-2 rounded-full overflow-hidden">
-                                    <div id="bar-stress" class="bg-amber-600 h-2 rounded-full transition-all duration-1000" style="width: 0%"></div>
-                                </div>
-                            </div>
-
-                            <div class="space-y-1">
-                                <div class="flex justify-between text-[11px]">
-                                    <span class="text-brand-darkgreen font-bold">🥑 消化系統脂肪特徵 (Lipid Profile)</span>
-                                    <span id="val-lipid" class="font-mono text-brand-accent font-bold">0%</span>
-                                </div>
-                                <div class="w-full bg-brand-lightgreen/40 h-2 rounded-full overflow-hidden">
-                                    <div id="bar-lipid" class="bg-emerald-600 h-2 rounded-full transition-all duration-1000" style="width: 0%"></div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="bg-brand-lightgreen/20 border-l-4 border-brand-accent p-3 rounded-r-xl flex justify-between items-center">
-                            <div class="space-y-0.5">
-                                <span class="text-[9px] text-brand-accent font-mono tracking-widest uppercase block">Optimal Mapping Rx</span>
-                                <h4 id="out-tea-title" class="font-bold text-brand-darkgreen text-sm"></h4>
-                                <p id="out-tea-desc" class="text-[10px] text-brand-charcoal/75 leading-relaxed"></p>
-                            </div>
-                            <button id="out-tea-btn" class="bg-brand-darkgreen text-brand-cream text-xs font-bold py-2 px-3 rounded-lg btn-bounce shadow-sm flex items-center gap-1 shrink-0 ml-3">
-                                <i class="fa-solid fa-cart-plus"></i><span>採購處方</span>
-                            </button>
-                        </div>
-
-                    </div>
-                </div>
-
-            </div>
-        </div>
-    </section>
-
-    <section id="products" class="py-16 bg-white scroll-animate">
+    <section id="products" class="py-20 bg-brand-cream border-t border-brand-lightgreen scroll-animate">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 class="text-2xl font-bold text-brand-darkgreen mb-8 font-serif text-center sm:text-left">莊友正宗佛手茶包專區</h2>
+            <h2 class="text-3xl font-bold text-brand-darkgreen mb-10 font-serif text-center">莊友正宗佛手茶包系列</h2>
             
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div class="bg-brand-cream/40 border border-brand-lightgreen p-6 rounded-2xl flex flex-col justify-between h-full shadow-sm">
+                <div class="bg-white border border-brand-lightgreen p-6 rounded-2xl flex flex-col justify-between h-full shadow-sm hover:shadow-md transition-shadow">
                     <div class="space-y-3">
-                        <span class="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded">⚡ 清香提神</span>
+                        <span class="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2.5 py-1 rounded-full">🍃 清香提神</span>
                         <h3 class="text-lg font-bold text-brand-darkgreen">莊友經典佛手青茶包 (20入)</h3>
-                        <p class="text-xs text-brand-charcoal/70 leading-relaxed">採自竹山照鏡山，輕發酵保留佛手茶特有的優雅雪梨蘭位清香，茶湯翠綠清透，富含高活性兒茶素，非常適合早晨醒腦與需要專注工作時飲用。</p>
+                        <p class="text-xs text-brand-charcoal/70 leading-relaxed">輕發酵工藝完整保留佛手茶特有的優雅雪梨蘭位清香，茶湯翠綠清透，入口生津回甘。非常適合早晨醒腦與需要高效專注工作時飲用。</p>
                     </div>
                     <div class="flex justify-between items-center pt-4 mt-4 border-t border-brand-lightgreen/60">
-                        <span class="text-lg font-extrabold text-brand-darkgreen">NT$ 250</span>
-                        <button onclick="addToCart('莊友經典佛手青茶包(20入)', 250)" class="bg-brand-darkgreen text-brand-cream text-xs font-bold py-2 px-4 rounded-lg btn-bounce" onclick="attachRipple(event)"><i class="fa-solid fa-cart-plus mr-1"></i>加購物車</button>
+                        <span class="text-xl font-extrabold text-brand-darkgreen">NT$ 250</span>
+                        <button onclick="addToCart('莊友經典佛手青茶包(20入)', 250)" class="bg-brand-darkgreen text-brand-cream text-xs font-bold py-2.5 px-4 rounded-lg btn-bounce" onclick="attachRipple(event)"><i class="fa-solid fa-cart-plus mr-1"></i>加購物車</button>
                     </div>
                 </div>
 
-                <div class="bg-brand-cream/40 border border-brand-lightgreen p-6 rounded-2xl flex flex-col justify-between h-full shadow-sm">
+                <div class="bg-white border border-brand-lightgreen p-6 rounded-2xl flex flex-col justify-between h-full shadow-sm hover:shadow-md transition-shadow">
                     <div class="space-y-3">
-                        <span class="text-[10px] bg-orange-100 text-orange-800 font-bold px-2 py-0.5 rounded">🌙 溫潤舒壓</span>
+                        <span class="text-[10px] bg-orange-100 text-orange-800 font-bold px-2.5 py-1 rounded-full">🌙 溫潤舒壓</span>
                         <h3 class="text-lg font-bold text-brand-darkgreen">莊友頂級佛手紅茶包 (20入)</h3>
-                        <p class="text-xs text-brand-charcoal/70 leading-relaxed">將大葉香櫞種佛手茶進行完全發酵，轉化出飽滿的柑橘熟果香與天然蜜意。茶性極度溫潤不傷胃，飽含溫和的茶氨酸，能撫平緊繃情緒，適合午後解壓。</p>
+                        <p class="text-xs text-brand-charcoal/70 leading-relaxed">將大葉香櫞種佛手茶進行完全發酵，揉捻出飽滿的柑橘熟果香與天然蜜意。茶性極度溫潤、不傷胃，飽含溫和的茶氨酸，能撫平一整天的緊繃情緒。</p>
                     </div>
                     <div class="flex justify-between items-center pt-4 mt-4 border-t border-brand-lightgreen/60">
-                        <span class="text-lg font-extrabold text-brand-darkgreen">NT$ 280</span>
-                        <button onclick="addToCart('莊友頂級佛手紅茶包(20入)', 280)" class="bg-brand-darkgreen text-brand-cream text-xs font-bold py-2 px-4 rounded-lg btn-bounce" onclick="attachRipple(event)"><i class="fa-solid fa-cart-plus mr-1"></i>加購物車</button>
+                        <span class="text-xl font-extrabold text-brand-darkgreen">NT$ 280</span>
+                        <button onclick="addToCart('莊友頂級佛手紅茶包(20入)', 280)" class="bg-brand-darkgreen text-brand-cream text-xs font-bold py-2.5 px-4 rounded-lg btn-bounce" onclick="attachRipple(event)"><i class="fa-solid fa-cart-plus mr-1"></i>加購物車</button>
                     </div>
                 </div>
 
-                <div class="bg-brand-cream/40 border border-brand-lightgreen p-6 rounded-2xl flex flex-col justify-between h-full shadow-sm">
+                <div class="bg-white border border-brand-lightgreen p-6 rounded-2xl flex flex-col justify-between h-full shadow-sm hover:shadow-md transition-shadow">
                     <div class="space-y-3">
-                        <span class="text-[10px] bg-amber-100 text-amber-800 font-bold px-2 py-0.5 rounded">🔬 傳奇去油</span>
+                        <span class="text-[10px] bg-amber-100 text-amber-800 font-bold px-2.5 py-1 rounded-full">🪵 炭焙去油</span>
                         <h3 class="text-lg font-bold text-brand-darkgreen">莊友陳年炭焙佛手黑茶包 (20入)</h3>
-                        <p class="text-xs text-brand-charcoal/70 leading-relaxed">結合傳統炭焙與慢速後發酵工藝，打造出媲美老茶磚的醇厚黑茶。口感濃郁滑順、自帶天然仙草蜜甜，能高效瓦解大餐後的油膩飽脹感。</p>
+                        <p class="text-xs text-brand-charcoal/70 leading-relaxed">結合傳統炭焙工藝與慢速後發酵，打造出醇厚如台灣普洱的經典黑茶。滋味濃厚滑順、帶有天然仙草蜜甜，能高效瓦解大餐後的油膩飽脹感。</p>
                     </div>
                     <div class="flex justify-between items-center pt-4 mt-4 border-t border-brand-lightgreen/60">
-                        <span class="text-lg font-extrabold text-brand-darkgreen">NT$ 300</span>
-                        <button onclick="addToCart('莊友陳年炭焙佛手黑茶包(20入)', 300)" class="bg-brand-darkgreen text-brand-cream text-xs font-bold py-2 px-4 rounded-lg btn-bounce" onclick="attachRipple(event)"><i class="fa-solid fa-cart-plus mr-1"></i>加購物車</button>
+                        <span class="text-xl font-extrabold text-brand-darkgreen">NT$ 300</span>
+                        <button onclick="addToCart('莊友陳年炭焙佛手黑茶包(20入)', 300)" class="bg-brand-darkgreen text-brand-cream text-xs font-bold py-2.5 px-4 rounded-lg btn-bounce" onclick="attachRipple(event)"><i class="fa-solid fa-cart-plus mr-1"></i>加購物車</button>
                     </div>
+                </div>
+            </div>
+
+            <div class="mt-12 bg-gradient-to-r from-brand-darkgreen to-emerald-950 rounded-2xl p-6 sm:p-8 text-brand-cream border border-brand-lightgreen/20 flex flex-col sm:flex-row justify-between items-center gap-6">
+                <div class="space-y-1 text-center sm:text-left">
+                    <span class="bg-brand-accent/20 border border-brand-accent/30 text-brand-accent text-[10px] font-bold py-0.5 px-2 rounded-full">👑 鎮店老饕老茶磚</span>
+                    <h3 class="text-xl font-bold font-serif">照鏡山珍藏二十年老佛手茶磚 (250g 限量精裝)</h3>
+                    <p class="text-xs text-brand-cream/75">長達二十年恆溫陳放，完美演繹佛手茶的活性轉化。蔘沉中藥香交織，極具收藏價值。</p>
+                </div>
+                <div class="text-center sm:text-right space-y-2">
+                    <span class="text-2xl font-extrabold text-brand-accent block">NT$ 6,500</span>
+                    <button onclick="addToCart('珍藏二十年老佛手茶磚', 6500)" class="bg-brand-accent text-brand-darkgreen font-bold text-xs py-2.5 px-5 rounded-lg btn-bounce" onclick="attachRipple(event)">尊榮收藏</button>
                 </div>
             </div>
         </div>
     </section>
 
-    <footer class="bg-brand-darkgreen text-brand-cream/80 text-xs py-8 text-center border-t border-brand-lightgreen/10 space-y-2">
-        <p class="font-bold text-brand-cream">莊友佛手茶 × 亞洲大學 AI 資訊工程應用小組</p>
-        <p>© 2026 南投竹山照鏡山老字號直營團隊. 專案由運算思維課程授權展示.</p>
+    <section id="science" class="py-20 bg-white scroll-animate">
+        <div class="max-w-6xl mx-auto px-4">
+            <h2 class="text-3xl font-bold text-brand-darkgreen font-serif text-center mb-12">佛手茶包標準沖泡指引</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="bg-brand-cream/40 border border-brand-lightgreen p-6 sm:p-8 rounded-2xl space-y-4">
+                    <h4 class="font-bold text-brand-darkgreen text-lg flex items-center gap-2"><i class="fa-solid fa-mug-hot text-red-500"></i>熱水即沖：3分鐘極致花香</h4>
+                    <p class="text-xs text-brand-charcoal/70 leading-relaxed">將立體茶包置於杯底，注入 90°C 熱水約 300ml。靜置 3 分鐘讓大葉香櫞原葉完全舒展，即可享用雪梨蘭花香。可回沖 2~3 次。</p>
+                </div>
+                <div class="bg-brand-cream/40 border border-brand-lightgreen p-6 sm:p-8 rounded-2xl space-y-4">
+                    <h4 class="font-bold text-brand-darkgreen text-lg flex items-center gap-2"><i class="fa-solid fa-snowflake text-sky-500"></i>低溫冰鎮慢萃：無澀超甘甜</h4>
+                    <p class="text-xs text-brand-charcoal/70 leading-relaxed">將 1 至 2 包茶包放入 600ml 的常溫礦泉水瓶中。放入 4°C 冰箱冷藏靜置 6 至 8 小時（建議睡前冰，早起即飲），冰涼甘甜、完全不苦澀。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-brand-darkgreen text-brand-cream/80 text-xs py-10 text-center border-t border-brand-lightgreen/10 space-y-2">
+        <p class="font-bold text-brand-cream text-sm">莊友佛手茶 × 亞洲大學專案實踐</p>
+        <p>© 2026 南投竹山照鏡山老字號直營團隊. 本網頁專為期末發表設計展示.</p>
     </footer>
 
     <div id="cart-drawer" class="fixed inset-0 z-50 overflow-hidden pointer-events-none transition-all duration-300 translate-x-full">
@@ -321,11 +240,11 @@
                 <button onclick="toggleCart()" class="text-brand-darkgreen p-2 btn-bounce"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
             <div id="cart-items" class="flex-1 overflow-y-auto p-6 space-y-4 text-center text-brand-charcoal/50 text-xs py-12">
-                購物車空空的，快去嘗試 AI 視覺化分佈儀吧！
+                購物車空空的，快去向 AI 智能客服諮詢吧！
             </div>
             <div class="p-6 border-t border-brand-lightgreen bg-white space-y-4">
                 <div class="flex justify-between items-end"><span class="text-xs font-bold text-brand-charcoal">應付總額 (滿$499免運)</span><span id="total-price" class="text-xl font-extrabold text-brand-darkgreen">NT$ 0</span></div>
-                <button onclick="checkout()" class="w-full bg-brand-darkgreen text-brand-cream font-bold py-3.5 rounded-lg text-xs btn-bounce" onclick="attachRipple(event)">LINE Pay 一鍵付款</button>
+                <button onclick="checkout()" class="w-full bg-brand-darkgreen text-brand-cream font-bold py-3.5 rounded-lg text-xs btn-bounce" onclick="attachRipple(event)">LINE Pay 一鍵快速付款</button>
             </div>
         </div>
     </div>
@@ -335,27 +254,27 @@
         <div class="absolute inset-y-0 right-0 max-w-2xl w-full bg-white shadow-2xl flex flex-col justify-between overflow-hidden">
             <div class="p-6 bg-brand-darkgreen text-brand-cream flex justify-between items-center">
                 <div>
-                    <h3 class="font-bold text-md">🎓 「運算思維」期末報告助理 (AI系視覺化加強版)</h3>
-                    <p class="text-[10px] text-brand-accent">將非結構化自然語言映射至多維特徵空間</p>
+                    <h3 class="font-bold text-md">🎓 「運算思維」期末報告助理 (智慧客服版)</h3>
+                    <p class="text-[10px] text-brand-accent">融合自然語言問答對話系統的傳統產業改版</p>
                 </div>
                 <button class="text-brand-cream p-2 btn-bounce" onclick="toggleReportHelper()"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
             <div class="flex-1 overflow-y-auto p-6 space-y-6 bg-brand-cream/30 text-xs text-brand-charcoal leading-relaxed">
                 <div class="space-y-2">
-                    <h4 class="font-bold text-brand-darkgreen border-l-4 border-brand-accent pl-2">一、運算思維四大元素 × AI 矩陣核心對應</h4>
+                    <h4 class="font-bold text-brand-darkgreen border-l-4 border-brand-accent pl-2">一、運算思維與 AI 詢問對話之關聯 (Word報告內容)</h4>
                     <div class="bg-white p-4 rounded-xl border border-brand-lightgreen space-y-2 text-[11px]">
-                        <p><strong>1. 問題拆解 (Decomposition)</strong>：我們將消費者模糊的身心健康訴求，拆解為三個平行的特徵空間向量（認知負荷、神經緊繃度、胃腸脂質指標），並進行量化運算。</p>
-                        <p><strong>2. 規律辨識 (Pattern Recognition)</strong>：網頁利用「特徵標記激活演算法」，動態識別文本中的中文語意模式（如當出現代碼、考試等 Token 時，自動加強認知負荷向度的權重）。</p>
-                        <p><strong>3. 抽象化 (Abstraction)</strong>：將繁複的 768 維 Dense 密集語意向量，**抽象化**渲染成前端易懂的 8x8 權重點陣視覺化矩陣，以及三個核心生理特徵條，降低使用者的系統二運算負擔。</p>
-                        <p><strong>4. 演算法設計 (Algorithm Design)</strong>：以 JavaScript 實作自適應特徵矩陣分配引擎，即時計算分詞權重並進行機率分佈收斂，將非結構化自由文字在常數時間內完成多標籤分類。</p>
+                        <p><strong>1. 問題拆解 (Decomposition)</strong>：我們將消費者諮詢佛手茶時產生的模糊問題（如：要選哪款、怎麼冷泡），拆解成對話機器人內部的「語意比對」、「特徵詞分類」與「字串流打字輸出（Typing Stream）」三大常駐任務。</p>
+                        <p><strong>2. 規律辨識 (Pattern Recognition)</strong>：分析使用者詢問的語句規律。當語句中包含「泡、怎麼、幾分鐘」等特徵詞時，系統辨識出其規律屬於「沖泡指引模組」；出現「累、昏、油、大餐」時，則精準辨識出其屬於「身心需求匹配模組」。</p>
+                        <p><strong>3. 抽象化 (Abstraction)</strong>：在對話系統內部，我們忽略繁雜的文字長短、標點符號等字串干擾，將其抽象化映射為核心的系統應答邏輯（青茶/紅茶/黑茶/歷史/泡法），讓網頁維持簡潔的商用外觀。</p>
+                        <p><strong>4. 演算法設計 (Algorithm Design)</strong>：設計了基於權重特徵字典的對話響應演算法（Response Stream Algorithm），透過 `setInterval` 實作非同步的打字機動態特效，大幅提升 AI 的交談體驗真實感。</p>
                     </div>
                 </div>
                 <div class="space-y-2">
-                    <h4 class="font-bold text-brand-darkgreen border-l-4 border-brand-accent pl-2">二、AI 系專用：3分鐘超硬核口頭簡報講稿</h4>
+                    <h4 class="font-bold text-brand-darkgreen border-l-4 border-brand-accent pl-2">二、3分鐘超流暢口頭簡報完美講稿</h4>
                     <div class="bg-white p-4 rounded-xl border border-brand-lightgreen font-light italic text-[11px] border-l-2 border-brand-darkgreen">
-                        「指導教授、同學們好。我們是 AI 應用實踐小組。在本次『運算思維與問題解決』期末發表中，我們決定為南投竹山老字號的<strong>『莊友佛手茶』</strong>打造一套具備硬核 AI 感知能力的智慧電商系統。<br><br>
-                        傳統電商只能做固定的分類勾選，這對疲累的消費者來說需要動用高度的<strong>系統二（理智深思）</strong>，造成認知疲勞。因此，我們利用大語言模型的思維，在前端開發了這套<strong>『AI 語意空間特徵分佈儀』</strong>。大家可以看到，當我們現場輸入日常身心狀態時，系統會自動進行 Token 分詞與特徵激活，並現場渲染出一個 <strong>8x8 的 Embedding 特徵空間權重矩陣</strong>。透過權重矩陣的動態收斂，AI 能即時提取出『邏輯認知負荷』、『中樞神經緊繃』與『脂質指標』三大向度的權重，並精準匹配出最佳的佛手茶生化處方（如清香提神的佛手青茶或去油的陳年黑茶）。<br><br>
-                        我們這組完美地把課堂上的規律辨識與抽象化，透過前端 AI 視覺化引擎實踐出來，真正做到了用 AI 科技賦能傳統農業！謝謝教授。」
+                        「指導教授、同學們好。我們這一組的期末報告是以南投竹山老字號的<strong>『莊友佛手茶』</strong>數位改版為核心。在傳統茶行電商中，分類往往太過老氣深奧，增加了大腦的『系統二（理智深思）』運算負擔，容易讓人放棄挑選。<br><br>
+                        為了保持網站像一般知名品牌一樣乾淨、高質感，我們不修改網頁的主體外觀，而是以非常商用真實的形式，在右下角嵌入了一套<strong>『AI 智能侍茶師對話功能』</strong>。消費者可以直接點開對話窗，用日常口語向 AI 發問。不論是詢問泡法、茶店歷史，或是傾訴當天寫 code 的疲勞，我們實作的 <strong>NLP 語意比對演算法</strong> 都能立刻聽懂，並像真正的線上 AI 客服一樣，以流暢的打字機動畫進行專業解答。<br><br>
+                        這項功能完美展現了我們將課堂上的規律辨識、演算法設計，用完全符合市面商業規範、毫無違和感的『AI 數位詢問助理』落實在傳統農業轉型上！謝謝教授。」
                     </div>
                 </div>
             </div>
@@ -363,6 +282,43 @@
                 <button onclick="toggleReportHelper()" class="bg-brand-darkgreen text-brand-cream font-bold text-xs py-2 px-6 rounded-lg btn-bounce">關閉助理</button>
             </div>
         </div>
+    </div>
+
+    <div class="fixed bottom-6 right-6 z-50 flex flex-col items-end">
+        
+        <div id="ai-chat-window" class="hidden w-80 sm:w-96 h-[450px] bg-white rounded-2xl shadow-2xl border border-brand-lightgreen flex flex-col justify-between overflow-hidden mb-4 animate-fade-in">
+            <div class="bg-brand-darkgreen p-4 text-brand-cream flex justify-between items-center">
+                <div class="flex items-center gap-2">
+                    <div class="w-7 h-7 bg-brand-accent rounded-full flex items-center justify-center text-brand-darkgreen text-xs font-bold"><i class="fa-solid fa-robot"></i></div>
+                    <div>
+                        <h4 class="font-bold text-xs">莊友佛手茶 | AI 智能侍茶師</h4>
+                        <p class="text-[9px] text-brand-accent">24h 線上智能語意對話服務</p>
+                    </div>
+                </div>
+                <button onclick="toggleAiChat()" class="text-brand-cream hover:text-brand-accent p-1"><i class="fa-solid fa-minus text-sm"></i></button>
+            </div>
+
+            <div id="ai-chat-messages" class="flex-1 p-4 overflow-y-auto space-y-3 bg-brand-cream/30 text-xs">
+                <div class="flex gap-2 items-start">
+                    <div class="w-6 h-6 rounded-full bg-brand-darkgreen text-brand-cream flex items-center justify-center text-[10px] shrink-0"><i class="fa-solid fa-robot"></i></div>
+                    <div class="bg-white p-2.5 rounded-r-xl rounded-bl-xl border border-brand-lightgreen text-brand-charcoal max-w-[85%] leading-relaxed">
+                        您好！我是莊友佛手茶的 AI 智能侍茶師 🍵。您可以直接問我任何問題，例如：<br>
+                        🔹 「佛手茶青茶和紅茶差別在哪？」<br>
+                        🔹 「要怎麼做冷泡茶？」<br>
+                        🔹 「寫 code 熬夜很累推薦喝哪款？」
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-3 border-t border-brand-lightgreen bg-white flex gap-2 items-center">
+                <input type="text" id="ai-user-msg" onkeypress="handleAiKeyPress(event)" class="flex-1 bg-brand-cream border border-brand-lightgreen rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-brand-darkgreen text-brand-charcoal" placeholder="請輸入您的問題...">
+                <button onclick="sendUserMessage()" class="bg-brand-darkgreen text-brand-cream w-8 h-8 rounded-xl flex items-center justify-center btn-bounce shadow-sm shrink-0"><i class="fa-solid fa-paper-plane text-xs"></i></button>
+            </div>
+        </div>
+
+        <button onclick="toggleAiChat()" class="w-14 h-14 bg-brand-darkgreen text-brand-cream rounded-full flex items-center justify-center shadow-2xl hover:bg-emerald-900 transition-colors btn-bounce border-2 border-brand-accent/20">
+            <i class="fa-solid fa-comments text-xl" id="ai-btn-icon"></i>
+        </button>
     </div>
 
     <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-brand-darkgreen text-brand-cream py-2.5 px-6 rounded-full text-xs font-medium border border-brand-accent/30 shadow-xl transition-all duration-300 transform translate-y-20 opacity-0 pointer-events-none">
@@ -386,115 +342,105 @@
             document.querySelectorAll(".scroll-animate").forEach(section => animationObserver.observe(section));
         });
 
-        // ─── ✨ 核心演算法：AI 語意分析與矩陣視覺化引擎 ───
-        function runAiVisualizer() {
-            const textInput = document.getElementById('ai-input').value.trim();
-            if (!textInput) return showToast("請先輸入身心狀態文字描述！");
+        // 開關 AI 客服視窗
+        function toggleAiChat() {
+            const win = document.getElementById('ai-chat-window');
+            const icon = document.getElementById('ai-btn-icon');
+            if (win.classList.contains('hidden')) {
+                win.classList.remove('hidden');
+                icon.className = "fa-solid fa-xmark text-xl";
+            } else {
+                win.classList.add('hidden');
+                icon.className = "fa-solid fa-comments text-xl";
+            }
+        }
 
-            const placeholder = document.getElementById('ai-placeholder');
-            const loading = document.getElementById('ai-loading');
-            const dashboard = document.getElementById('ai-dashboard');
-            const tokenBox = document.getElementById('ai-tokens');
+        function handleAiKeyPress(e) {
+            if (e.key === 'Enter') sendUserMessage();
+        }
 
-            placeholder.classList.add('hidden');
-            dashboard.classList.add('hidden');
-            loading.classList.remove('hidden');
+        // ─── ✨ AI 智能客服語意應答演算法實作 ───
+        function sendUserMessage() {
+            const inputEl = document.getElementById('ai-user-msg');
+            const msgText = inputEl.value.trim();
+            if (!msgText) return;
 
-            // 1. 執行 NLP 斷詞與 Token 激活視覺化
-            const tokens = textInput.split(/[,.，。!！？?\s]+/);
-            tokenBox.innerHTML = '';
-            
-            // 2. 初始化特徵矩陣基礎得分
-            let cognitiveScore = 15;
-            let stressScore = 20;
-            let lipidScore = 10;
+            inputEl.value = '';
+            const msgArea = document.getElementById('ai-chat-messages');
 
-            // 詞彙特徵匹配矩陣 (NLP 激活邏輯)
-            tokens.forEach(token => {
-                if(!token) return;
-                let isActivated = false;
-                let span = document.createElement('span');
-                span.className = "px-1.5 py-0.5 rounded border transition-all text-[9px] font-mono ";
+            // 1. 渲染使用者對話泡泡
+            const userHtml = `
+                <div class="flex gap-2 items-start justify-end">
+                    <div class="bg-brand-lightgreen text-brand-darkgreen p-2.5 rounded-l-xl rounded-br-xl max-w-[85%] font-medium leading-relaxed shadow-sm">
+                        ${msgText}
+                    </div>
+                </div>
+            `;
+            msgArea.insertAdjacentHTML('beforeend', userHtml);
+            msgArea.scrollTop = msgArea.scrollHeight;
 
-                if (['code', '寫碼', '微積分', '期末', '考', '當', '邏輯', '讀書', '卡關', '昏', '腦霧', '提神'].some(k => token.includes(k))) {
-                    cognitiveScore += 25; isActivated = true;
-                    span.classList.add('bg-emerald-50', 'border-emerald-300', 'text-emerald-700', 'font-bold');
-                } 
-                if (['累', '壓力', '焦慮', '睡不著', '失眠', '心跳', '緊繃', '瘋掉', '煩'].some(k => token.includes(k))) {
-                    stressScore += 25; isActivated = true;
-                    span.classList.add('bg-amber-50', 'border-amber-300', 'text-amber-700', 'font-bold');
-                }
-                if (['油', '飽', '脹', '大餐', '肉', '烤肉', '火鍋', '胖', '宵夜', '消化'].some(k => token.includes(k))) {
-                    lipidScore += 30; isActivated = true;
-                    span.classList.add('bg-blue-50', 'border-blue-300', 'text-blue-700', 'font-bold');
-                }
-
-                if(!isActivated) {
-                    span.classList.add('bg-gray-50', 'border-gray-200', 'text-gray-400');
-                }
-                span.innerText = `[${token}]`;
-                tokenBox.appendChild(span);
-            });
-
-            if(tokenBox.innerHTML === '') tokenBox.innerText = "無明顯激活特徵";
-
-            // 限制最大權重分數為 98%
-            cognitiveScore = Math.min(cognitiveScore, 98);
-            stressScore = Math.min(stressScore, 98);
-            lipidScore = Math.min(lipidScore, 98);
-
-            // 3. 模擬神經網路空間矩陣點陣運算延遲
+            // 2. 渲染 AI 思考中狀態
+            const aiLoadingId = 'ai-msg-loading-' + Date.now();
+            const loadingHtml = `
+                <div class="flex gap-2 items-start" id="${aiLoadingId}">
+                    <div class="w-6 h-6 rounded-full bg-brand-darkgreen text-brand-cream flex items-center justify-center text-[10px] shrink-0"><i class="fa-solid fa-robot"></i></div>
+                    <div class="bg-white p-2 border border-brand-lightgreen rounded-r-xl rounded-bl-xl text-brand-charcoal/40 italic">
+                        AI 侍茶師正在分析語意...
+                    </div>
+                </div>
+            `;
             setTimeout(() => {
-                loading.classList.add('hidden');
-                dashboard.classList.remove('hidden');
+                msgArea.insertAdjacentHTML('beforeend', loadingHtml);
+                msgArea.scrollTop = msgArea.scrollHeight;
+            }, 300);
 
-                // 4. 動態渲染出 8x8 權重矩陣 (64個密集的特徵空間維度)
-                const matrixGrid = document.getElementById('matrix-grid');
-                matrixGrid.innerHTML = '';
-                
-                for (let i = 0; i < 64; i++) {
-                    const node = document.createElement('div');
-                    // 根據得分動態調整矩陣亮點分佈，讓圖表具有真實大數據感
-                    let baseOpacity = Math.random();
-                    if (i % 3 === 0 && cognitiveScore > 60) baseOpacity = 0.9;
-                    if (i % 4 === 0 && stressScore > 60) baseOpacity = 0.95;
-                    if (i % 5 === 0 && lipidScore > 60) baseOpacity = 0.85;
+            // 3. NLP 語意特徵匹配與回傳
+            setTimeout(() => {
+                // 移除讀取中提示
+                document.getElementById(aiLoadingId).remove();
 
-                    node.className = "w-full aspect-square rounded-sm transition-all duration-500 matrix-node";
-                    node.style.backgroundColor = `rgba(203, 178, 138, ${baseOpacity.toFixed(2)})`;
-                    // 隨機錯開動畫延遲，營造動態運算感
-                    node.style.animationDelay = `${(Math.random() * 2).toFixed(1)}s`;
-                    matrixGrid.appendChild(node);
-                }
+                const lowerMsg = msgText.toLowerCase();
+                let replyText = "";
 
-                // 5. 特徵權重條動畫渲染
-                document.getElementById('bar-cognitive').style.width = `${cognitiveScore}%`;
-                document.getElementById('val-cognitive').innerText = `${cognitiveScore}%`;
-                
-                document.getElementById('bar-stress').style.width = `${stressScore}%`;
-                document.getElementById('val-stress').innerText = `${stressScore}%`;
-                
-                document.getElementById('bar-lipid').style.width = `${lipidScore}%`;
-                document.getElementById('val-lipid').innerText = `${lipidScore}%`;
-
-                // 6. 特徵最大值空間映射決策
-                const title = document.getElementById('out-tea-title');
-                const desc = document.getElementById('out-tea-desc');
-                const btn = document.getElementById('out-tea-btn');
-
-                if (cognitiveScore >= stressScore && cognitiveScore >= lipidScore) {
-                    title.innerText = "莊友經典佛手青茶包 (20入)";
-                    desc.innerText = "AI 診斷：大腦認知神經元高頻運載。為您精確匹配高山輕發酵香櫞青茶，富含高活性兒茶素，激活大腦專注心流。";
-                    btn.setAttribute('onclick', "addToCart('莊友經典佛手青茶包(20入)', 250)");
-                } else if (lipidScore >= cognitiveScore && lipidScore >= stressScore) {
-                    title.innerText = "莊友陳年炭焙佛手黑茶包 (20入)";
-                    desc.innerText = "AI 診斷：消化道脂質負載特徵顯著。精確配對炭焙後發酵黑茶，富含茶紅素與黑茶多酚，高效瓦解飽脹油膩感。";
-                    btn.setAttribute('onclick', "addToCart('莊友陳年炭焙佛手黑茶包(20入)', 300)");
+                // 精準對話知識庫分類演算法
+                if (lowerMsg.includes('歷史') || lowerMsg.includes('創立') || lowerMsg.includes('幾年') || lowerMsg.includes('老店')) {
+                    replyText = "莊友佛手茶創立於民國76年（1987年），源自台灣南投竹山照鏡山淨土。三十多年來我們堅持產地直營與手工慢焙，專注於傳承大葉香櫞種佛手茶的獨特柑橘梨香，是竹山在地深受信賴的老字號茶行哦！";
+                } else if (lowerMsg.includes('泡') || lowerMsg.includes('怎麼煮') || lowerMsg.includes('熱水') || lowerMsg.includes('冷泡')) {
+                    replyText = "我們的佛手茶包非常耐泡不苦澀！熱泡推薦用 90°C 熱水沖泡 300ml，靜置 3 分鐘即可釋放完整香氣；冷泡則推薦將 1~2 包茶包丟入 600ml 常溫水瓶，放入 4°C 冰箱冷藏 6 至 8 小時，起床就能喝到極致清甜的冰鎮好茶！";
+                } else if (lowerMsg.includes('青茶') || lowerMsg.includes('紅茶') || lowerMsg.includes('黑茶') || lowerMsg.includes('差別') || lowerMsg.includes('有什麼不同')) {
+                    replyText = "我們提供三款經典正宗佛手茶包：\n1️⃣ 經典青茶（$250）：輕發酵，自帶幽雅雪梨蘭花清香，提神醒腦必備。\n2️⃣ 頂級紅茶（$280）：全發酵，帶有飽滿柑橘熟果香，溫潤不傷胃，解壓首選。\n3️⃣ 炭焙黑茶（$300）：後發酵與深烘焙，口感濃郁有仙草蜜甜，大餐後去油膩效果極佳！";
+                } else if (lowerMsg.includes('code') || lowerMsg.includes('累') || lowerMsg.includes('熬夜') || lowerMsg.includes('昏') || lowerMsg.includes('讀書') || lowerMsg.includes('考試') || lowerMsg.includes('壓力')) {
+                    replyText = "讀書寫 code 辛苦了！AI 侍茶師判定您目前正處於高度的認知與思考負荷狀態。這種情況下非常推薦您飲用我們的【莊友經典佛手青茶包】。它特有的香櫞雪梨清香分子能放鬆緊繃的神經，且內含豐富的高活性兒茶素，能溫和激發專注力，幫您重回高效的心流狀態，還完全不會像咖啡那樣傷胃哦！";
+                } else if (lowerMsg.includes('油') || lowerMsg.includes('飽') || lowerMsg.includes('脹') || lowerMsg.includes('大餐') || lowerMsg.includes('肉') || lowerMsg.includes('宵夜')) {
+                    replyText = "剛吃完大餐或宵夜嗎？AI 客服建議您此時立刻泡一杯【莊友陳年炭焙佛手黑茶包】。這款茶經過老手藝深層炭焙與後發酵，茶湯富含黑茶多酚，能迅速乳化、分解肚子的油膩感，舒緩飽脹不適，是非常厲害的去油神器！";
                 } else {
-                    title.innerText = "莊友頂級佛手紅茶包 (20入)";
-                    desc.innerText = "AI 診斷：中樞神經皮質醇緊繃過載。精確映射全發酵佛手紅茶，飽含高濃度茶氨酸，溫潤養胃並引導大腦釋壓。";
-                    btn.setAttribute('onclick', "addToCart('莊友頂級佛手紅茶包(20入)', 280)");
+                    replyText = "收到您的訴求！莊友 AI 客服建議您可以品嚐我們的「經典佛手青茶包」體驗竹山照鏡山特有的雪梨蘭花清香。不論是需要專注時熱水即沖、或是放鬆時低溫冷泡，香櫞種佛手茶獨特的果香都能帶給您絕佳的身心療癒。全館滿 $499 就能免運送到家哦！";
                 }
+
+                // 4. 實作流暢的打字機（Typing Stream）輸出特效
+                const aiMsgId = 'ai-msg-' + Date.now();
+                const aiBubbleHtml = `
+                    <div class="flex gap-2 items-start animate-fade-in">
+                        <div class="w-6 h-6 rounded-full bg-brand-darkgreen text-brand-cream flex items-center justify-center text-[10px] shrink-0"><i class="fa-solid fa-robot"></i></div>
+                        <div class="bg-white p-2.5 border border-brand-lightgreen rounded-xl text-brand-charcoal max-w-[85%] leading-relaxed font-normal shadow-sm" id="${aiMsgId}"></div>
+                    </div>
+                `;
+                msgArea.insertAdjacentHTML('beforeend', aiBubbleHtml);
+                
+                let currentIdx = 0;
+                const targetEl = document.getElementById(aiMsgId);
+                
+                // 每 25 毫秒打印一個字，完美模擬真實大模型串流回傳
+                const typingTimer = setInterval(() => {
+                    if (currentIdx < replyText.length) {
+                        const char = replyText.charAt(currentIdx);
+                        targetEl.innerHTML += char === '\n' ? '<br>' : char;
+                        currentIdx++;
+                        msgArea.scrollTop = msgArea.scrollHeight;
+                    } else {
+                        clearInterval(typingTimer);
+                    }
+                }, 25);
 
             }, 1200);
         }
@@ -527,7 +473,7 @@
             const totalEl = document.getElementById('total-price');
             const countEl = document.getElementById('cart-count');
             if (cart.length === 0) {
-                container.innerHTML = "購物車空空的，快去試試 AI 視覺化分佈儀吧！";
+                container.innerHTML = "購物車空空的，快去向 AI 智能客服諮詢吧！";
                 countEl.classList.add('hidden');
                 totalEl.innerText = "NT$ 0";
                 return;
@@ -539,7 +485,7 @@
                 sum += item.price * item.qty;
                 html += `
                     <div class="bg-white p-3 rounded-xl border border-brand-lightgreen flex justify-between items-center shadow-sm">
-                        <div class="text-left"><p class="font-bold text-brand-darkgreen">${item.name}</p><p class="text-brand-accent font-bold">NT$ ${item.price} × ${item.qty}</p></div>
+                        <div class="text-left"><p class="font-bold text-brand-darkgreen text-xs">${item.name}</p><p class="text-brand-accent font-bold text-xs">NT$ ${item.price} × ${item.qty}</p></div>
                         <button onclick="removeCartItem(${idx})" class="text-red-400 p-1 btn-bounce"><i class="fa-regular fa-trash-can"></i></button>
                     </div>
                 `;
@@ -555,7 +501,7 @@
         function toggleReportHelper() { document.getElementById('report-modal').classList.toggle('hidden'); }
         function checkout() {
             if(cart.length === 0) return showToast("清單目前沒有商品哦！");
-            showToast("成功串接 LINE PayPay 付款管道，交易成功！");
+            showToast("成功串接 LINE Pay，付款成功！");
             cart = []; updateCart(); toggleCart();
         }
         function showToast(txt) {

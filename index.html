@@ -26,6 +26,7 @@
         }
     </script>
     <style>
+        /* 佛手茶底色：動態流體漸層背景 */
         body, html {
             margin: 0; padding: 0; min-height: 100vh;
             font-family: 'Noto Sans TC', sans-serif;
@@ -42,7 +43,7 @@
             100% { background-position: 0% 50%; }
         }
 
-        /* iOS 26 Liquid Glass 特效 */
+        /* 🍎 iOS 26 Liquid Glass */
         .liquid-glass {
             background: rgba(255, 255, 255, 0.08);
             backdrop-filter: blur(24px) saturate(150%);
@@ -91,16 +92,13 @@
 
         .btn-bounce:active { transform: scale(0.94); transition: transform 0.1s ease; }
         
-        /* 結帳成功畫面 */
         #checkout-modal {
-            display: none;
-            position: fixed;
-            inset: 0;
-            z-index: 100;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
+            display: none; position: fixed; inset: 0; z-index: 100; align-items: center; justify-content: center; padding: 20px;
         }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius: 10px; }
     </style>
 </head>
 <body class="antialiased min-h-screen flex flex-col relative">
@@ -114,10 +112,6 @@
             </div>
         </div>
         <div class="flex items-center gap-4">
-            <div class="hidden sm:flex text-[10px] font-mono text-white/80 liquid-glass-dark px-3 py-1.5 rounded-full items-center gap-2 border border-white/10">
-                <span id="engine-status-dot" class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_#34d399]"></span>
-                <span id="engine-status-text">運算思維引擎：待命中 (READY)</span>
-            </div>
             <button onclick="toggleCart()" class="relative p-2 text-white hover:text-tea-gold transition-colors btn-bounce">
                 <i class="fa-solid fa-bag-shopping text-xl drop-shadow-md"></i>
                 <span id="cart-count" class="absolute top-0 right-0 bg-red-500 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center shadow-lg hidden">0</span>
@@ -195,7 +189,13 @@
             </div>
         </div>
 
-        <div id="pipeline-container" class="w-full mt-2 flex flex-col items-center pb-32"></div>
+        <div id="pipeline-container" class="w-full mt-2 flex flex-col items-center pb-8"></div>
+
+        <div id="reset-container" class="hidden w-full flex justify-center pb-32 mt-6 relative z-20">
+            <button onclick="resetPipeline()" class="bg-white/10 border border-white/30 text-white font-bold text-sm px-8 py-4 rounded-full hover:bg-white/20 active:scale-95 transition-all shadow-[0_0_20px_rgba(255,255,255,0.1)] flex items-center gap-2 backdrop-blur-md">
+                <i class="fa-solid fa-rotate-left"></i> 重新開始新運算
+            </button>
+        </div>
 
     </main>
 
@@ -222,10 +222,43 @@
             </div>
 
             <button onclick="closeCheckout()" class="w-full bg-white text-tea-dark font-bold py-4 rounded-2xl hover:bg-tea-light transition-all active:scale-95 shadow-lg">
-                回傳首頁重新採樣
+                返回控制台
             </button>
-            <p class="mt-4 text-[10px] text-white/30 font-mono italic">※ 本系統為學術實驗性質，無需真實付款</p>
+            <p class="mt-4 text-[10px] text-white/30 font-mono italic">※ 本系統為專案演示，無需真實付款</p>
         </div>
+    </div>
+
+    <div id="cart-drawer" class="fixed inset-0 z-50 overflow-hidden pointer-events-none transition-all duration-400 translate-x-full">
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm opacity-0 transition-opacity duration-300" onclick="toggleCart()" id="cart-overlay"></div>
+        <div class="absolute inset-y-0 right-0 max-w-sm w-full liquid-glass shadow-2xl flex flex-col justify-between pointer-events-auto border-l border-white/20">
+            <div class="p-6 border-b border-white/10 flex justify-between items-center liquid-glass-dark">
+                <h3 class="text-md font-bold text-tea-gold flex items-center gap-2">
+                    <i class="fa-solid fa-bag-shopping"></i><span>採購物資庫</span>
+                </h3>
+                <button onclick="toggleCart()" class="text-white/60 hover:text-white transition-colors active:scale-90">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+            <div id="cart-items" class="flex-1 overflow-y-auto p-6 space-y-3">
+                <div class="text-center py-12 text-white/40 text-xs">
+                    目前沒有處方解法。請先執行運算思維管線！
+                </div>
+            </div>
+            <div class="p-6 border-t border-white/10 liquid-glass-dark space-y-4">
+                <div class="flex justify-between items-end">
+                    <span class="text-xs font-bold text-white/60">應付總額</span>
+                    <span id="total-price" class="text-xl font-mono font-extrabold text-tea-gold">NT$ 0</span>
+                </div>
+                <button onclick="checkout()" class="w-full bg-tea-gold text-tea-dark hover:bg-yellow-400 font-bold py-3.5 rounded-xl shadow-[0_0_15px_rgba(212,175,55,0.3)] transition-transform active:scale-95 text-sm flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-credit-card"></i> 部署解法 (結帳)
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 liquid-glass border border-white/20 text-white py-3 px-6 rounded-full text-xs font-medium shadow-2xl transition-all duration-300 transform translate-y-20 opacity-0 pointer-events-none flex items-center gap-2">
+        <i class="fa-solid fa-circle-check text-tea-gold"></i>
+        <span id="toast-msg">加入成功！</span>
     </div>
 
     <script>
@@ -250,18 +283,21 @@
             const valLipid = parseInt(document.getElementById('slider-lipid').value);
 
             if (!inputTxt) {
-                alert("【運算思維警告】請先輸入文字描述，系統才能擷取抱怨模式！");
-                document.getElementById('complaint-input').focus();
+                alert("【系統提示】請先輸入文字描述您的抱怨，系統才能進行語意特徵擷取！");
+                const inputBox = document.getElementById('complaint-input');
+                inputBox.classList.add('ring-2', 'ring-red-500');
+                setTimeout(() => inputBox.classList.remove('ring-2', 'ring-red-500'), 1500);
+                inputBox.focus();
                 return;
             }
-
-            // 更新頂部狀態標籤 (意義所在)
-            document.getElementById('engine-status-text').innerText = "運算思維引擎：分析運作中 (PROCESSING)";
-            document.getElementById('engine-status-dot').className = "w-1.5 h-1.5 rounded-full bg-yellow-400 animate-spin shadow-[0_0_8px_#fbbf24]";
 
             const container = document.getElementById('pipeline-container');
             container.innerHTML = '';
             
+            // 隱藏重置按鈕，直到管線跑完才顯示
+            document.getElementById('reset-container').classList.add('hidden');
+            document.getElementById('reset-container').classList.remove('node-reveal');
+
             const startBtn = document.getElementById('btn-start');
             startBtn.disabled = true;
             startBtn.classList.add('opacity-50');
@@ -295,10 +331,10 @@
             }
 
             const nodes = [
-                { step: "STEP 1: DECOMPOSITION (拆解)", icon: "fa-solid fa-layer-group text-blue-400", title: "量化身心抱怨矩陣", content: `<div class="liquid-glass-dark font-mono text-[11px] p-3 rounded-xl border border-blue-400/30 mt-3 text-white/80 shadow-inner">量化變數向量：<br><span class="text-blue-300 font-bold">${decompKw}</span></div>` },
-                { step: "STEP 2: PATTERN RECOGNITION (模式識別)", icon: "fa-solid fa-fingerprint text-purple-400", title: "比對真實佛手茶生化庫", content: `<div class="liquid-glass-dark font-mono text-[11px] p-3 rounded-xl border border-purple-400/30 mt-3 text-white/80 shadow-inner"><span class="text-purple-300 font-bold">${patMatch}</span></div>` },
-                { step: "STEP 3: ABSTRACTION (抽象化)", icon: "fa-solid fa-filter text-orange-400", title: "排除環境干擾雜訊", content: `<div class="liquid-glass-dark font-mono text-[11px] p-3 rounded-xl border border-orange-400/30 mt-3 text-white/80 shadow-inner"><span class="text-orange-300 font-bold">${absFilter}</span></div>` },
-                { step: "STEP 4: ALGORITHM (演算法導出)", icon: "fa-solid fa-check-double text-emerald-400", title: "最佳解法導出完畢", content: `
+                { step: "STEP 1: DECOMPOSITION", icon: "fa-solid fa-layer-group text-blue-400", title: "量化身心抱怨矩陣", content: `<div class="liquid-glass-dark font-mono text-[11px] p-3 rounded-xl border border-blue-400/30 mt-3 text-white/80 shadow-inner">量化變數向量：<br><span class="text-blue-300 font-bold">${decompKw}</span></div>` },
+                { step: "STEP 2: PATTERN RECOGNITION", icon: "fa-solid fa-fingerprint text-purple-400", title: "比對真實佛手茶生化庫", content: `<div class="liquid-glass-dark font-mono text-[11px] p-3 rounded-xl border border-purple-400/30 mt-3 text-white/80 shadow-inner"><span class="text-purple-300 font-bold">${patMatch}</span></div>` },
+                { step: "STEP 3: ABSTRACTION", icon: "fa-solid fa-filter text-orange-400", title: "排除環境干擾雜訊", content: `<div class="liquid-glass-dark font-mono text-[11px] p-3 rounded-xl border border-orange-400/30 mt-3 text-white/80 shadow-inner"><span class="text-orange-300 font-bold">${absFilter}</span></div>` },
+                { step: "STEP 4: ALGORITHM", icon: "fa-solid fa-check-double text-emerald-400", title: "最佳解法導出完畢", content: `
                     <div class="mt-5 liquid-glass-dark rounded-2xl shadow-2xl overflow-hidden text-left border border-white/20">
                         <div class="flex border-b border-white/10 bg-black/40 font-mono text-[11px]">
                             <button onclick="switchTab('result')" id="tab-result" class="flex-1 py-3 font-bold text-tea-gold border-b-2 border-tea-gold bg-white/5">處方結論</button>
@@ -310,7 +346,7 @@
                             <p class="text-xs text-white/70 mt-2">${algoDesc}</p>
                             <div class="mt-5 flex justify-between items-center border-t border-white/10 pt-4">
                                 <span class="font-mono font-bold text-lg text-tea-gold">NT$ ${price}</span>
-                                <button class="bg-white/10 border border-white/20 text-white text-xs font-bold px-5 py-2.5 rounded-xl hover:bg-white/20 active:scale-95 transition-all" onclick="addToCart('${algoTitle}', ${price})"><i class="fa-solid fa-cart-plus mr-1"></i> 加入採購清單</button>
+                                <button class="bg-white/10 border border-white/20 text-white text-xs font-bold px-5 py-2.5 rounded-xl hover:bg-white/20 active:scale-95 transition-all" onclick="addToCart('${algoTitle}', ${price})"><i class="fa-solid fa-cart-plus mr-1"></i> 加入採購庫</button>
                             </div>
                         </div>
                         <div id="content-sim" class="hidden p-6 bg-black/60 text-white font-mono text-[11px]">
@@ -327,11 +363,6 @@
                                 <h4 class="text-tea-gold font-bold mt-4">數位茶湯萃取成功</h4>
                             </div>
                         </div>
-                    </div>
-                    <div class="mt-8 pt-6 border-t border-white/10">
-                        <button onclick="resetPipeline()" class="bg-white text-tea-dark font-bold text-xs px-8 py-3 rounded-full hover:bg-tea-light active:scale-95 transition-all shadow-[0_0_20px_rgba(255,255,255,0.2)] flex items-center gap-2 mx-auto">
-                            <i class="fa-solid fa-rotate-left"></i> 重新開始新運算
-                        </button>
                     </div>`
                 }
             ];
@@ -345,23 +376,29 @@
                     const card = document.createElement('div'); card.className = "w-full max-w-xl liquid-glass rounded-[2rem] p-6 text-center node-reveal border-t border-l border-white/30 relative z-10";
                     card.innerHTML = `<div class="text-[10px] font-mono font-bold text-white/40 tracking-widest uppercase mb-1">${node.step}</div><div class="flex items-center justify-center gap-2 mb-2"><i class="${node.icon} text-lg"></i><h3 class="font-bold text-white text-base">${node.title}</h3></div>${node.content}`;
                     container.appendChild(card);
+                    
                     window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
 
+                    // 管線跑完第四步後，顯示獨立的「重新開始」按鈕
                     if (index === 3) {
-                        document.getElementById('engine-status-text').innerText = "運算思維引擎：演算法部署完畢 (DEPLOYED)";
-                        document.getElementById('engine-status-dot').className = "w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_#34d399]";
+                        document.getElementById('reset-container').classList.remove('hidden');
+                        document.getElementById('reset-container').classList.add('node-reveal');
                     }
                 }, index * 1000); 
             });
         }
 
-        // 重新啟動
+        // 重置所有介面並回到頂部
         function resetPipeline() {
             document.getElementById('complaint-input').value = '';
             document.getElementById('pipeline-container').innerHTML = '';
+            
+            document.getElementById('reset-container').classList.add('hidden');
+            document.getElementById('reset-container').classList.remove('node-reveal');
+            
             document.getElementById('btn-start').disabled = false;
             document.getElementById('btn-start').classList.remove('opacity-50');
-            document.getElementById('engine-status-text').innerText = "運算思維引擎：待命中 (READY)";
+            
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
@@ -417,21 +454,17 @@
             container.innerHTML = h; totalEl.innerText = `NT$ ${s}`;
         }
 
-        // 🌟 特殊結帳表現 (全螢幕噴泉特效)
         function checkout() {
             if(cart.length === 0) return alert("採購庫目前沒有解法哦！");
             const sum = cart.reduce((a, b) => a + (b.price * b.qty), 0);
             document.getElementById('final-price-display').innerText = `NT$ ${sum}`;
             
-            // 彈出玻璃憑證畫面
             document.getElementById('checkout-modal').style.display = 'flex';
             
-            // 觸發茶葉噴泉特效 (Canvas Confetti)
+            // 噴泉特效
             const count = 200;
             const defaults = { origin: { y: 0.7 }, colors: ['#1C3A27', '#D4AF37', '#EAF3EC', '#664d14'] };
-            function fire(particleRatio, opts) {
-                confetti({ ...defaults, ...opts, particleCount: Math.floor(count * particleRatio) });
-            }
+            function fire(particleRatio, opts) { confetti({ ...defaults, ...opts, particleCount: Math.floor(count * particleRatio) }); }
             fire(0.25, { spread: 26, startVelocity: 55 });
             fire(0.2, { spread: 60 });
             fire(0.35, { spread: 100, decay: 0.91, scalar: 0.8 });

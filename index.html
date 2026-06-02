@@ -3,352 +3,238 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>莊友佛手茶 | 照鏡山身心抱怨中央解題引擎</title>
-    <!-- Tailwind CSS -->
+    <title>莊友佛手茶 | 運算思維視覺化管線</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Noto+Sans+TC:wght@300;400;500;700&family=Playfair+Display:ital,wght@0,700;1,400&display=swap" rel="stylesheet">
-    <!-- FontAwesome Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Noto+Sans+TC:wght@300;400;500;700&family=Noto+Serif+TC:wght@500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        brand: {
-                            darkgreen: '#0A140E', // 終極邃黑茶林綠
-                            lightgreen: '#E4EFE7', 
-                            accent: '#D4AF37', // 奢華金箔金
-                            charcoal: '#151A17',
-                            cream: '#FDFBF7'
+                        tea: {
+                            dark: '#1C3A27',
+                            light: '#EAF3EC',
+                            gold: '#D4AF37',
+                            card: 'rgba(255, 255, 255, 0.85)',
                         }
+                    },
+                    fontFamily: {
+                        sans: ['Noto Sans TC', 'sans-serif'],
+                        serif: ['Noto Serif TC', 'serif'],
+                        mono: ['Fira Code', 'monospace']
                     }
                 }
             }
         }
     </script>
     <style>
-        body, html {
-            margin: 0; padding: 0; width: 100%; height: 100%;
-            background-color: #0A140E; font-family: 'Noto Sans TC', sans-serif;
-            overflow: hidden; /* 徹底打破滾動網頁框架，鎖定單一螢幕中樞 */
+        body {
+            background-color: #F8FAFC;
+            /* 網點畫布背景，營造思考工作區的感覺 */
+            background-image: radial-gradient(#CBD5E1 1px, transparent 1px);
+            background-size: 24px 24px;
+            overflow-x: hidden;
         }
-        
-        /* 點擊水波紋效果 */
-        .ripple-effect {
-            position: absolute; background: rgba(212, 175, 55, 0.4); border-radius: 50%;
-            transform: scale(0); animation: ripple-animation 0.5s linear; pointer-events: none;
-        }
-        @keyframes ripple-animation { to { transform: scale(4); opacity: 0; } }
-        
-        /* 彈性下壓手感 */
-        .btn-bounce:active { transform: scale(0.96); transition: transform 0.1s ease; }
 
-        /* 呼吸流光科技感外殼 */
-        @keyframes chamber-glow {
-            0%, 100% { border-color: rgba(212, 175, 55, 0.2); box-shadow: 0 0 30px rgba(212, 175, 55, 0.05); }
-            50% { border-color: rgba(212, 175, 55, 0.7); box-shadow: 0 0 50px rgba(212, 175, 55, 0.15); }
+        /* 玻璃擬物化 (Glassmorphism) 卡片 */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
         }
-        .main-chamber { animation: chamber-glow 4s infinite ease-in-out; }
 
-        /* 處方卡片浮現動畫 */
-        @keyframes rx-reveal {
-            0% { opacity: 0; transform: scale(0.9) translateY(20px); filter: blur(5px); }
-            100% { opacity: 1; transform: scale(1) translateY(0); filter: blur(0); }
+        /* 節點進場動畫 */
+        @keyframes popIn {
+            0% { opacity: 0; transform: translateY(20px) scale(0.95); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
         }
-        .rx-reveal-effect { animation: rx-reveal 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        .node-reveal {
+            animation: popIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        /* 節點間的動態連線軌跡 */
+        .wire-vertical {
+            width: 2px;
+            background: linear-gradient(to bottom, #1C3A27 0%, transparent 100%);
+            background-size: 100% 200%;
+            animation: flowDown 1.5s infinite linear;
+        }
+        @keyframes flowDown {
+            0% { background-position: 0% -100%; }
+            100% { background-position: 0% 100%; }
+        }
+
+        /* 隱藏捲軸但可滾動 */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 10px; }
     </style>
 </head>
-<body class="flex flex-col justify-between text-brand-cream select-none">
+<body class="text-slate-800 antialiased min-h-screen flex flex-col">
 
-    <!-- 頂部科技儀表邊框狀態列 -->
-    <header class="w-full px-6 py-3 font-mono text-[10px] sm:text-xs flex justify-between items-center border-b border-brand-accent/10 bg-black/40 backdrop-blur-md z-50">
-        <div class="flex items-center gap-4">
-            <span class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>CORE_STATUS: RUNNING</span>
-            <span class="text-brand-accent/40">|</span>
-            <span class="text-brand-accent">COMPUTATIONAL_THINKING_ENGINE</span>
+    <header class="fixed top-0 w-full z-50 glass-card border-b border-white/50 px-6 py-3 flex justify-between items-center">
+        <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-lg bg-tea-dark text-white flex items-center justify-center font-serif font-bold text-sm">莊</div>
+            <div>
+                <h1 class="font-bold text-tea-dark tracking-widest text-sm">莊友佛手茶</h1>
+                <p class="text-[9px] font-mono text-slate-500">Visual Problem-Solving Pipeline</p>
+            </div>
         </div>
-        <div class="font-serif font-bold tracking-[0.2em] text-brand-accent text-sm hidden sm:block">莊友佛手茶 (EST. 1987)</div>
-        <div class="text-brand-cream/60">SYS_LOC: ASIA_UNIV_AI_DEPT</div>
+        <div class="text-[10px] font-mono text-slate-500 bg-white/50 px-3 py-1.5 rounded-full border border-slate-200 flex items-center gap-2">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+            CT_ENGINE: ONLINE
+        </div>
     </header>
 
-    <!-- 🌌 打破框架：正中央巨型 3D 懸浮解題核心艙 -->
-    <main class="flex-1 flex items-center justify-center p-4 relative overflow-hidden">
-        <!-- 背景流動粒子裝飾 (科技感) -->
-        <div class="absolute w-96 h-96 bg-emerald-950/20 rounded-full filter blur-3xl opacity-50 -z-10 animate-pulse"></div>
+    <main class="flex-1 pt-24 pb-12 px-4 max-w-4xl mx-auto w-full relative z-10 flex flex-col items-center">
         
-        <!-- 中央控制艙主體 -->
-        <div class="main-chamber w-full max-w-3xl bg-black/40 backdrop-blur-xl border border-brand-accent/20 rounded-3xl p-6 sm:p-8 flex flex-col justify-between min-h-[480px] sm:h-[520px] shadow-2xl relative z-10 transition-all duration-500">
+        <div class="w-full glass-card rounded-3xl p-6 sm:p-8 relative z-20 text-center space-y-5">
+            <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-tea-light text-tea-dark mb-2">
+                <i class="fa-solid fa-seedling text-xl"></i>
+            </div>
+            <h2 class="font-serif text-2xl sm:text-3xl font-bold text-tea-dark">請輸入生活中的模糊問題</h2>
+            <p class="text-xs text-slate-500 font-light max-w-lg mx-auto">
+                無需自行挑選茶葉。請將您當下的疲勞、壓力、或飲食不適輸入畫布，系統將執行運算思維四大節點，為您推導出莊友佛手茶的最佳解法。
+            </p>
             
-            <!-- 艙頂品牌與課程目標宣告 -->
-            <div class="flex flex-col sm:flex-row justify-between items-center border-b border-white/10 pb-4 gap-2">
-                <div class="text-center sm:text-left">
-                    <h1 class="font-serif text-xl sm:text-2xl font-bold tracking-widest text-brand-accent">莊友佛手茶 · 中央解題器</h1>
-                    <p class="text-[9px] font-mono text-brand-cream/40 uppercase tracking-wider mt-0.5">From Complaint to Solution: Computational Thinking Framework</p>
-                </div>
-                <button onclick="toggleCart()" class="text-[11px] font-mono bg-brand-accent/10 border border-brand-accent/20 text-brand-accent py-1.5 px-3 rounded-full hover:bg-brand-accent/20 btn-bounce transition-colors flex items-center gap-1.5">
-                    <i class="fa-solid fa-bag-shopping"></i> 採購清單 (<span id="cart-count">0</span>)
+            <div class="relative max-w-2xl mx-auto mt-4">
+                <textarea id="complaint-input" rows="3" class="w-full bg-white/60 border-2 border-slate-200 rounded-2xl p-4 text-sm focus:border-tea-dark focus:ring-4 focus:ring-tea-light outline-none transition-all resize-none shadow-inner" placeholder="例如：期末考熬夜寫程式，大腦很卡快瘋了... / 宵夜不小心吃太多炸物，肚子好脹..."></textarea>
+                
+                <button onclick="startPipeline()" class="absolute bottom-3 right-3 bg-tea-dark hover:bg-emerald-900 text-white font-bold text-xs px-5 py-2.5 rounded-xl shadow-lg transition-transform active:scale-95 flex items-center gap-2">
+                    <i class="fa-solid fa-play"></i> 執行管線
                 </button>
             </div>
-
-            <!-- 核心內容變換艙 (由 JS 操控待機、運算、輸出狀態) -->
-            <div class="flex-1 my-6 flex flex-col justify-center">
-                
-                <!-- 狀態 A：待機輸入介面 -->
-                <div id="panel-input" class="space-y-4 animate-fade-in">
-                    <div class="text-center space-y-1">
-                        <h2 class="text-sm font-serif text-brand-lightgreen tracking-wider">人類，請在此處輸入你今天的生活模糊抱怨：</h2>
-                        <p class="text-[10px] text-brand-cream/40 font-mono">不用管茶葉種類或發酵度，直接寫下當下的身體不適或思考卡關。</p>
-                    </div>
-                    <div class="relative">
-                        <textarea id="engine-textarea" rows="4" class="w-full bg-brand-darkgreen/80 border border-brand-accent/20 rounded-2xl p-4 text-xs font-mono text-emerald-400 focus:border-brand-accent focus:outline-none leading-relaxed resize-none shadow-inner" placeholder="[系統待命] 例如：狂熬夜寫 AI 的 code 頭很昏，明天期末考壓力好大睡不著... / 剛宵夜吃完烤肉超油膩，肚子好脹卡住..."></textarea>
-                    </div>
-                    <button onclick="startSolvingEngine()" class="w-full bg-brand-accent text-brand-darkgreen font-mono font-bold text-xs py-4 rounded-xl flex items-center justify-center gap-2 btn-bounce shadow-lg shadow-brand-accent/10 hover:bg-brand-accent/90 transition-all tracking-widest" onclick="attachRipple(event)">
-                        <i class="fa-solid fa-arrows-spin animate-spin-slow"></i> 執行運算思維解題矩陣
-                    </button>
-                </div>
-
-                <!-- 狀態 B：硬核運算思維指示燈 (運算中) -->
-                <div id="panel-processing" class="hidden flex flex-col items-center justify-center space-y-5 font-mono text-xs py-6">
-                    <div class="relative w-14 h-14 flex items-center justify-center">
-                        <div class="absolute inset-0 border-4 border-brand-accent/20 border-t-brand-accent rounded-full animate-spin"></div>
-                        <i class="fa-solid fa-microchip text-lg text-brand-accent animate-pulse"></i>
-                    </div>
-                    <div class="w-full max-w-sm bg-black/60 p-4 rounded-xl border border-brand-accent/10 space-y-2 text-[10px] shadow-inner">
-                        <div id="light-decomp" class="flex items-center gap-2 opacity-20 transition-opacity"><i class="fa-solid fa-circle-notch animate-spin text-brand-accent"></i> DECOMPOSITION (問題拆解中)</div>
-                        <div id="light-pattern" class="flex items-center gap-2 opacity-20 transition-opacity"><i class="fa-solid fa-circle-notch animate-spin text-brand-accent"></i> PATTERN_RECOGNITION (模式識別中)</div>
-                        <div id="light-abstract" class="flex items-center gap-2 opacity-20 transition-opacity"><i class="fa-solid fa-circle-notch animate-spin text-brand-accent"></i> ABSTRACTION (排除物理雜訊中)</div>
-                        <div id="light-algo" class="flex items-center gap-2 opacity-20 transition-opacity"><i class="fa-solid fa-circle-notch animate-spin text-brand-accent"></i> ALGORITHM_EXPORT (最佳茶品解法導出)</div>
-                    </div>
-                </div>
-
-                <!-- 狀態 C：解題成功，凝聚輸出實體解法 -->
-                <div id="panel-output" class="hidden space-y-4">
-                    <!-- 運算思維鏈結軌跡 -->
-                    <div class="bg-brand-darkgreen/60 p-3.5 rounded-xl border border-brand-accent/10 font-mono text-[10px] sm:text-[11px] leading-relaxed space-y-1.5 text-brand-lightgreen/90 shadow-inner">
-                        <div class="text-brand-accent font-bold pb-1 border-b border-white/5 flex items-center gap-1.5"><i class="fa-solid fa-square-terminal"></i> COMPUTATIONAL LOGIC TRACE (解題路徑)</div>
-                        <p id="trace-decomp"></p>
-                        <p id="trace-pattern"></p>
-                        <p id="trace-abstract"></p>
-                    </div>
-
-                    <!-- 凝聚生成的精美商用佛手茶處方卡片 -->
-                    <div id="rx-card" class="bg-gradient-to-br from-brand-accent/10 to-brand-accent/5 p-5 rounded-2xl border-2 border-brand-accent/30 flex flex-col sm:flex-row justify-between items-center gap-4 relative overflow-hidden">
-                        <div class="space-y-1 text-center sm:text-left">
-                            <span class="text-[9px] bg-brand-accent text-brand-darkgreen font-mono font-bold px-2 py-0.5 rounded tracking-wider uppercase">Optimal Solution Rx</span>
-                            <h4 id="rx-title" class="font-serif font-bold text-base text-brand-accent sm:text-lg mt-1"></h4>
-                            <p id="rx-desc" class="text-xs text-brand-cream/80 leading-relaxed max-w-md font-light"></p>
-                        </div>
-                        <div class="text-center sm:text-right shrink-0 w-full sm:w-auto space-y-2">
-                            <span id="rx-price" class="text-lg font-mono font-extrabold text-brand-accent block"></span>
-                            <button id="rx-btn" class="w-full sm:w-auto bg-brand-accent text-brand-darkgreen font-bold text-xs py-2.5 px-5 rounded-xl btn-bounce shadow flex items-center justify-center gap-1.5" onclick="attachRipple(event)">
-                                <i class="fa-solid fa-cart-plus"></i><span>加入採購清單</span>
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- 返回鈕 -->
-                    <button onclick="resetEngine()" class="text-[10px] font-mono text-brand-accent/65 hover:text-brand-accent transition-colors block mx-auto pt-2 btn-bounce">
-                        <i class="fa-solid fa-rotate-left mr-1"></i> RESET_SYSTEM (重新輸入抱怨)
-                    </button>
-                </div>
-
-            </div>
-
-            <!-- 艙底備註庫 -->
-            <div class="border-t border-white/10 pt-3 flex justify-between text-[9px] font-mono text-brand-cream/30">
-                <span>Data Bank: ZHAOJINGSHAN_CHOSEN_TEA_LEAF</span>
-                <span>Response Stream: Async打字流</span>
-            </div>
-
         </div>
+
+        <div id="pipeline-container" class="w-full mt-2 flex flex-col items-center pb-20">
+            </div>
+
     </main>
 
-    <!-- 簡潔合規的底部商用標籤列 -->
-    <footer class="w-full px-6 py-3 font-mono text-[9px] sm:text-xs text-center border-t border-brand-accent/10 bg-black/20 text-brand-cream/40 flex flex-col sm:flex-row justify-between items-center gap-2 z-50">
-        <p>© 2026 南投竹山老字號直營團隊. 本解題引擎嚴格遵循亞洲大學期末專題規範實作.</p>
-        <p class="text-brand-accent/50 font-bold">雙重評量對應：解決問題能力 (60%) + 創意表現 (40%)</p>
-    </footer>
+    <button onclick="location.reload()" class="fixed bottom-6 right-6 w-12 h-12 bg-white rounded-full shadow-xl border border-slate-200 text-slate-400 hover:text-tea-dark flex items-center justify-center transition-all active:scale-90 z-50">
+        <i class="fa-solid fa-rotate-right"></i>
+    </button>
 
-    <!-- 購物車抽屜 -->
-    <div id="cart-drawer" class="fixed inset-0 z-50 overflow-hidden pointer-events-none transition-all duration-300 translate-x-full">
-        <div class="absolute inset-0 bg-black/60 opacity-0 transition-opacity duration-300" onclick="toggleCart()" id="cart-overlay"></div>
-        <div class="absolute inset-y-0 right-0 max-w-md w-full bg-brand-darkgreen shadow-2xl flex flex-col justify-between pointer-events-auto border-l border-brand-accent/20 font-mono text-xs text-brand-cream">
-            <div class="p-6 border-b border-brand-accent/10 flex justify-between items-center bg-black/20">
-                <h3 class="text-md font-bold text-brand-accent flex items-center gap-2"><i class="fa-solid fa-bag-shopping"></i><span>佛手茶採購清單</span></h3>
-                <button onclick="toggleCart()" class="text-brand-cream p-2 btn-bounce"><i class="fa-solid fa-xmark text-lg"></i></button>
-            </div>
-            <div id="cart-items" class="flex-1 overflow-y-auto p-6 space-y-4 text-center text-brand-cream/40 text-xs py-12">
-                清單空空的。快去向中央晶片寫下您的生活抱怨！
-            </div>
-            <div class="p-6 border-t border-brand-accent/10 bg-black/20 space-y-4">
-                <div class="flex justify-between items-end"><span class="text-xs font-bold text-brand-cream/70">應付總額 (滿$499免運)</span><span id="total-price" class="text-xl font-extrabold text-brand-accent">NT$ 0</span></div>
-                <button onclick="checkout()" class="w-full bg-brand-accent text-brand-darkgreen font-bold py-3.5 rounded-lg text-xs btn-bounce" onclick="attachRipple(event)">LINE Pay 極速完成結帳</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Toast 提示 -->
-    <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-brand-accent text-brand-darkgreen py-2.5 px-6 rounded-full text-xs font-bold shadow-xl transition-all duration-300 transform translate-y-20 opacity-0 pointer-events-none">
-        成功將解法加入清單！
-    </div>
-
-    <!-- JavaScript 核心解題代碼 -->
     <script>
-        let cart = [];
-
-        // 啟動 3D 浮空中央解題引擎
-        function startSolvingEngine() {
-            const input = document.getElementById('engine-textarea').value.trim();
-            if (!input) return showToast("請先輸入您當下的生活抱怨！");
-
-            const pInput = document.getElementById('panel-input');
-            const pProcessing = document.getElementById('panel-processing');
-            const pOutput = document.getElementById('panel-output');
-            const rxCard = document.getElementById('rx-card');
-
-            pInput.classList.add('hidden');
-            pOutput.classList.add('hidden');
-            rxCard.classList.remove('rx-reveal-effect');
-            pProcessing.classList.remove('hidden');
-
-            // 運算思維四大元素狀態監控燈流暢切換
-            const l1 = document.getElementById('light-decomp');
-            const l2 = document.getElementById('light-pattern');
-            const l3 = document.getElementById('light-abstract');
-            const l4 = document.getElementById('light-algo');
-
-            l1.style.opacity = "0.2"; l2.style.opacity = "0.2"; l3.style.opacity = "0.2"; l4.style.opacity = "0.2";
-
-            setTimeout(() => { l1.style.opacity = "1"; }, 250);
-            setTimeout(() => { l2.style.opacity = "1"; }, 550);
-            setTimeout(() => { l3.style.opacity = "1"; }, 850);
-            setTimeout(() => { l4.style.opacity = "1"; }, 1150);
-
-            // 執行自然語言語意收斂模型
-            setTimeout(() => {
-                pProcessing.classList.add('hidden');
-                pOutput.classList.remove('hidden');
-                rxCard.classList.add('rx-reveal-effect'); // 注入彈出放大動畫
-
-                const tDecomp = document.getElementById('trace-decomp');
-                const tPattern = document.getElementById('trace-pattern');
-                const tAbstract = document.getElementById('trace-abstract');
-
-                const rxTitle = document.getElementById('rx-title');
-                const rxDesc = document.getElementById('rx-desc');
-                const rxPrice = document.getElementById('rx-price');
-                const rxBtn = document.getElementById('rx-btn');
-
-                const lowerMsg = input.toLowerCase();
-
-                if (lowerMsg.includes('code') || lowerMsg.includes('累') || lowerMsg.includes('熬夜') || lowerMsg.includes('昏') || lowerMsg.includes('讀書') || lowerMsg.includes('考試') || lowerMsg.includes('當') || lowerMsg.includes('卡關')) {
-                    tDecomp.innerHTML = `<strong>[01_DECOMP]:</strong> 拆解模糊抱怨，鎖定核心痛點為『高強度編碼引發的神經元邏輯負荷與腦霧卡關』。`;
-                    tPattern.innerHTML = `<strong>[02_PATTERN]:</strong> 此狀態符合輕發酵大葉香櫞種『高活性兒茶素與天然雪梨精油分子』的提神激發模式。`;
-                    tAbstract.innerHTML = `<strong>[03_ABSTRACT]:</strong> 排除焙火小時與土壤酸鹼度等物理干擾，將抱怨高度收斂映射為【醒腦激活】。`;
-                    
-                    rxTitle.innerText = "莊友經典佛手青茶包 (20入)";
-                    rxDesc.innerText = "輕發酵製程完整鎖住南投竹山照鏡山特有的優雅雪梨蘭花清香，其豐富的活性兒茶素能以最溫和不傷胃的方式驅散思考霧氣，協助大腦迅速重回高效率碼代碼的專注心流！";
-                    rxPrice.innerText = "NT$ 250";
-                    rxBtn.setAttribute('onclick', "addToCart('莊友經典佛手青茶包(20入)', 250)");
-                } else if (lowerMsg.includes('油') || lowerMsg.includes('飽') || lowerMsg.includes('脹') || lowerMsg.includes('大餐') || lowerMsg.includes('肉') || lowerMsg.includes('宵夜') || lowerMsg.includes('烤肉') || lowerMsg.includes('火鍋')) {
-                    tDecomp.innerHTML = `<strong>[01_DECOMP]:</strong> 拆解模糊抱怨，鎖定核心痛點為『高脂高飽和度飲食造成消化系統中樞重度過載不適』。`;
-                    tPattern.innerHTML = `<strong>[02_PATTERN]:</strong> 此狀態高度契合莊友老字號深焙火與慢速後發酵所催化出的『茶紅素與黑茶多酚複合物』。`;
-                    tAbstract.innerHTML = `<strong>[03_ABSTRACT]:</strong> 排除食物類型等背景雜訊，將不適感高度收斂映射為【高效乳化去油】。`;
-
-                    rxTitle.innerText = "莊友陳年炭焙佛手黑茶包 (20入)";
-                    rxDesc.innerText = "結合民國76年老字號茶行手工深層炭焙工藝，茶湯溫厚飽滿、帶有自然仙草蜜甜。高濃度黑茶素能極速瓦解胃部的油膩飽脹感，是日常大餐後最完美的去油解題處方！";
-                    rxPrice.innerText = "NT$ 300";
-                    rxBtn.setAttribute('onclick', "addToCart('莊友陳年炭焙佛手黑茶包(20入)', 300)");
-                } else {
-                    tDecomp.innerHTML = `<strong>[01_DECOMP]:</strong> 拆解模糊抱怨，鎖定核心痛點為『高皮質醇緊繃引發的中樞神經高壓、情緒焦慮與好眠障礙』。`;
-                    tPattern.innerHTML = `<strong>[02_PATTERN]:</strong> 此狀態需要極大化天然『茶氨酸（L-Theanine）』多酚活性物，以誘導大腦皮質產生沉靜的 α 波。`;
-                    tAbstract.innerHTML = `<strong>[03_ABSTRACT]:</strong> 排除外界非必要干擾，將焦慮重壓高度收斂映射為【深層舒壓安定】。`;
-
-                    rxTitle.innerText = "莊友頂級佛手紅茶包 (20入)";
-                    rxDesc.innerText = "完全發酵製程轉化出飽滿優雅的柑橘熟果蜜香，茶性極度溫潤。所蘊含的大量溫和茶氨酸成分能迅速安撫、平復焦慮了一整天的緊繃神經，帶給身心最深度的安定與舒眠。";
-                    rxPrice.innerText = "NT$ 280";
-                    rxBtn.setAttribute('onclick', "addToCart('莊友頂級佛手紅茶包(20入)', 280)");
-                }
-
-            }, 1400); // 模擬精密解題演算法運算延遲
-        }
-
-        function resetEngine() {
-            document.getElementById('engine-textarea').value = '';
-            document.getElementById('panel-output').classList.add('hidden');
-            document.getElementById('panel-input').classList.remove('hidden');
-        }
-
-        // 購物車清單管理
-        function addToCart(name, price) {
-            const item = cart.find(i => i.name === name);
-            if (item) { item.qty += 1; } else { cart.push({ name, price, qty: 1 }); }
-            updateCart();
-            showToast(`成功將解法處方加入採購清單！`);
-        }
-
-        function updateCart() {
-            const container = document.getElementById('cart-items');
-            const totalEl = document.getElementById('total-price');
-            const countEl = document.getElementById('cart-count');
-            const countTxt = document.getElementById('cart-count-txt');
-
-            if (cart.length === 0) {
-                container.innerHTML = "清單空空的。快去向中央晶片寫下您的生活抱怨！";
-                countEl.innerText = "0";
-                totalEl.innerText = "NT$ 0";
+        // 運算思維：核心管線生成演算法
+        function startPipeline() {
+            const input = document.getElementById('complaint-input').value.trim();
+            if (!input) {
+                alert("請先輸入您的生活問題，才能啟動運算管線！");
                 return;
             }
 
-            const totalQty = cart.reduce((acc, curr) => acc + curr.qty, 0);
-            countEl.innerText = totalQty;
+            const container = document.getElementById('pipeline-container');
+            container.innerHTML = ''; // 清空畫布
 
-            let html = ''; let sum = 0;
-            cart.forEach((item, idx) => {
-                sum += item.price * item.qty;
-                html += `
-                    <div class="bg-black/20 p-3 rounded-xl border border-brand-accent/10 flex justify-between items-center shadow-inner">
-                        <div class="text-left">
-                            <p class="font-bold text-brand-accent">${item.name}</p>
-                            <p class="text-brand-cream/60">NT$ ${item.price} × ${item.qty}</p>
+            // 將按鈕與輸入框暫時鎖定
+            document.getElementById('complaint-input').disabled = true;
+
+            const msg = input.toLowerCase();
+            let strategy = "relax"; // 預設策略
+            let decompKw = ""; let patMatch = ""; let absFilter = ""; let algoTitle = ""; let algoDesc = ""; let price = "";
+
+            // 運算思維邏輯判斷
+            if (msg.includes('code') || msg.includes('累') || msg.includes('熬夜') || msg.includes('昏') || msg.includes('讀書') || msg.includes('考試') || msg.includes('卡關')) {
+                strategy = "alert";
+                decompKw = "['熬夜', '高認知負荷', '腦霧卡關']";
+                patMatch = "匹配目標：需要溫和激活神經元 ➜ 香櫞青茶多酚類化合物";
+                absFilter = "濾除物理雜訊 ➜ 提取「提神不傷胃」單一維度需求";
+                algoTitle = "莊友經典佛手青茶包";
+                algoDesc = "輕發酵製程完整鎖住竹山照鏡山特有的優雅雪梨蘭花清香。高活性的兒茶素能以最溫和的方式驅散思考霧氣，助您重回高效專注的心流！";
+                price = "NT$ 250";
+            } else if (msg.includes('油') || msg.includes('飽') || msg.includes('脹') || msg.includes('大餐') || msg.includes('肉') || msg.includes('宵夜') || msg.includes('吃太多')) {
+                strategy = "digest";
+                decompKw = "['高脂飲食', '消化道超載', '飽脹']";
+                patMatch = "匹配目標：需要加速脂肪乳化 ➜ 黑茶多酚與茶紅素";
+                absFilter = "濾除食物種類雜訊 ➜ 提取「強效去油解膩」單一維度需求";
+                algoTitle = "莊友陳年炭焙佛手黑茶包";
+                algoDesc = "傳承老手藝深層炭焙與慢速後發酵，茶湯濃厚帶有自然仙草蜜甜。高濃度黑茶素能極速瓦解胃部的油膩飽脹感，是吃完大餐後的最強去油處方！";
+                price = "NT$ 300";
+            } else {
+                strategy = "relax";
+                decompKw = "['壓力大', '皮質醇緊繃', '情緒焦慮']";
+                patMatch = "匹配目標：需要誘導大腦α波 ➜ 高濃度天然茶氨酸 (L-Theanine)";
+                absFilter = "濾除外在事件雜訊 ➜ 提取「深層安定舒眠」單一維度需求";
+                algoTitle = "莊友頂級佛手紅茶包";
+                algoDesc = "完全發酵製程轉化出優雅的柑橘熟果蜜香，茶性溫潤。蘊含的大量溫和茶氨酸能迅速撫平緊繃了一整天的焦慮神經，帶給身心最深度的安定感。";
+                price = "NT$ 280";
+            }
+
+            // 依序渲染四個運算思維節點
+            const nodes = [
+                {
+                    step: "STEP 1: DECOMPOSITION (拆解)",
+                    icon: "fa-solid fa-cubes-stacked text-blue-500",
+                    title: "解構模糊問題",
+                    content: `<div class="bg-blue-50 text-blue-700 font-mono text-xs p-2 rounded border border-blue-200 mt-2">擷取核心向量：${decompKw}</div>`
+                },
+                {
+                    step: "STEP 2: PATTERN RECOGNITION (模式識別)",
+                    icon: "fa-solid fa-fingerprint text-purple-500",
+                    title: "比對茶葉生化資料庫",
+                    content: `<div class="bg-purple-50 text-purple-700 font-mono text-xs p-2 rounded border border-purple-200 mt-2">${patMatch}</div>`
+                },
+                {
+                    step: "STEP 3: ABSTRACTION (抽象化)",
+                    icon: "fa-solid fa-filter text-orange-500",
+                    title: "排除無關雜訊",
+                    content: `<div class="bg-orange-50 text-orange-700 font-mono text-xs p-2 rounded border border-orange-200 mt-2">${absFilter}</div>`
+                },
+                {
+                    step: "STEP 4: ALGORITHM (演算法輸出解法)",
+                    icon: "fa-solid fa-check-double text-emerald-600",
+                    title: "最佳莊友佛手茶解法導出",
+                    content: `
+                        <div class="mt-4 p-4 bg-gradient-to-br from-tea-dark to-emerald-900 rounded-2xl text-white text-left shadow-xl relative overflow-hidden">
+                            <div class="absolute right-[-20px] top-[-20px] opacity-10 text-9xl"><i class="fa-solid fa-leaf"></i></div>
+                            <span class="text-[10px] font-mono bg-tea-gold/20 text-tea-gold px-2 py-1 rounded">Optimal Solution</span>
+                            <h3 class="font-serif font-bold text-xl mt-2 text-tea-gold">${algoTitle}</h3>
+                            <p class="text-xs text-slate-200 mt-2 leading-relaxed font-light">${algoDesc}</p>
+                            <div class="mt-4 flex justify-between items-center border-t border-white/20 pt-3">
+                                <span class="font-mono font-bold text-lg text-white">${price}</span>
+                                <button class="bg-white text-tea-dark text-xs font-bold px-4 py-2 rounded-lg shadow hover:bg-slate-100 transition-colors" onclick="alert('已加入採購物資庫！')">
+                                    採購此解法 <i class="fa-solid fa-arrow-right ml-1"></i>
+                                </button>
+                            </div>
                         </div>
-                        <button onclick="removeCartItem(${idx})" class="text-red-400 p-1 btn-bounce"><i class="fa-regular fa-trash-can"></i></button>
-                    </div>
-                `;
+                    `
+                }
+            ];
+
+            // 動態定時注入 HTML 以產生流水線動畫感
+            nodes.forEach((node, index) => {
+                setTimeout(() => {
+                    // 1. 繪製連接線 (除了第一個節點)
+                    if (index > 0) {
+                        const wire = document.createElement('div');
+                        wire.className = "h-8 sm:h-12 flex justify-center node-reveal";
+                        wire.innerHTML = `<div class="wire-vertical"></div>`;
+                        container.appendChild(wire);
+                    }
+
+                    // 2. 繪製卡片節點
+                    const card = document.createElement('div');
+                    card.className = "w-full max-w-xl glass-card rounded-2xl p-5 sm:p-6 text-center node-reveal relative z-10 border border-white";
+                    card.innerHTML = `
+                        <div class="text-[9px] sm:text-[10px] font-mono font-bold text-slate-400 tracking-widest uppercase mb-1">${node.step}</div>
+                        <div class="flex items-center justify-center gap-2 mb-2">
+                            <i class="${node.icon} text-lg"></i>
+                            <h3 class="font-bold text-slate-800 text-sm sm:text-base">${node.title}</h3>
+                        </div>
+                        ${node.content}
+                    `;
+                    container.appendChild(card);
+                    
+                    // 自動向下滾動，保持最新節點在畫面上
+                    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+
+                }, index * 1000); // 每個節點間隔 1 秒浮現
             });
-            container.innerHTML = html; totalEl.innerText = `NT$ ${sum}`;
-        }
-
-        function removeCartItem(idx) { cart.splice(idx, 1); updateCart(); }
-        function toggleCart() {
-            document.getElementById('cart-drawer').classList.toggle('translate-x-full');
-            document.getElementById('cart-overlay').classList.toggle('opacity-0');
-        }
-        function checkout() {
-            if(cart.length === 0) return showToast("清單目前沒有商品哦！");
-            showToast("成功串接智慧支付管道，交易成功！");
-            cart = []; updateCart(); toggleCart();
-        }
-
-        function showToast(txt) {
-            const t = document.getElementById('toast'); t.innerText = txt;
-            t.classList.remove('translate-y-20', 'opacity-0'); t.classList.add('translate-y-0', 'opacity-100');
-            setTimeout(() => { t.classList.add('translate-y-20', 'opacity-0'); t.classList.remove('translate-y-0', 'opacity-100'); }, 2500);
-        }
-
-        function attachRipple(e) {
-            const btn = e.currentTarget;
-            const circle = document.createElement("span");
-            const diameter = Math.max(btn.clientWidth, btn.clientHeight);
-            const radius = diameter / 2;
-            circle.style.width = circle.style.height = `${diameter}px`;
-            circle.style.left = `${e.clientX - btn.getBoundingClientRect().left - radius}px`;
-            circle.style.top = `${e.clientY - btn.getBoundingClientRect().top - radius}px`;
-            circle.classList.add("ripple-effect");
-            const prevRipple = btn.getElementsByClassName("ripple-effect")[0];
-            if (prevRipple) prevRipple.remove();
-            btn.appendChild(circle);
         }
     </script>
 </body>

@@ -3,9 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>莊友佛手茶 | 南投竹山照鏡山手採原葉茶包</title>
+    <title>莊友佛手茶 | 照鏡山生活抱怨的 AI 智能解題引擎</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Playfair+Display:ital,wght@0,700;1,400&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script>
         tailwind.config = {
@@ -13,9 +16,9 @@
                 extend: {
                     colors: {
                         brand: {
-                            darkgreen: '#1F3C2B', 
-                            lightgreen: '#EAF1EC', 
-                            accent: '#CBB28A', 
+                            darkgreen: '#1F3C2B', // 竹山竹林深綠
+                            lightgreen: '#EAF1EC', // 佛手茶湯嫩綠
+                            accent: '#CBB28A', // 莊友手感沙金
                             charcoal: '#333734',
                             cream: '#FCFAF7'
                         }
@@ -52,15 +55,14 @@
         }
         .scroll-animated { opacity: 1; transform: translateY(0); }
 
-        /* ─── ✨ 新增：AI 對話視窗彈出與縮小動畫 ─── */
+        /* AI 對話視窗彈出動畫 */
         #ai-chat-window {
-            transform-origin: bottom right; /* 以右下角按鈕為動畫中心點 */
+            transform-origin: bottom right;
             opacity: 0;
             transform: translateY(20px) scale(0.85);
             visibility: hidden;
             transition: opacity 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), visibility 0.4s;
         }
-        /* 當啟用時引入此 Class，產生順滑的物理彈跳放大效果 */
         #ai-chat-window.ai-chat-open {
             opacity: 1;
             transform: translateY(0) scale(1);
@@ -70,18 +72,20 @@
 </head>
 <body>
 
+    <!-- 頂部免運公告欄 -->
     <div class="bg-brand-darkgreen text-brand-cream text-center py-2 text-xs sm:text-sm tracking-wider font-light flex justify-center items-center gap-2 px-4">
-        <span>🎉 莊友佛手茶：全館照鏡山手採佛手茶包滿 $499 即享免運</span>
-        <span class="bg-brand-accent text-brand-darkgreen px-2 py-0.5 rounded text-xs font-medium animate-pulse">限時優惠</span>
+        <span>🎉 莊友佛手茶：生活抱怨傾聽中！全館滿 $499 即享免運直送</span>
+        <span class="bg-brand-accent text-brand-darkgreen px-2 py-0.5 rounded text-xs font-medium animate-pulse">運算思維實踐</span>
     </div>
 
+    <!-- 導覽列 -->
     <nav class="sticky top-0 z-40 bg-brand-cream/90 backdrop-blur-md border-b border-brand-lightgreen">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex justify-between items-center">
             <a href="#" class="flex items-center gap-2">
                 <div class="w-10 h-10 bg-brand-darkgreen rounded-full flex items-center justify-center text-brand-cream text-lg font-bold">莊</div>
                 <div class="flex flex-col">
                     <span class="text-xl font-bold text-brand-darkgreen tracking-widest">莊友佛手茶</span>
-                    <span class="text-[9px] text-brand-accent tracking-[0.2em] -mt-1 font-light">SINCE 1987 × 南投竹山</span>
+                    <span class="text-[9px] text-brand-accent tracking-[0.2em] -mt-1 font-light">民國76年老字號 × 南投竹山</span>
                 </div>
             </a>
 
@@ -100,27 +104,29 @@
         </div>
     </nav>
 
+    <!-- 首頁主視覺區 -->
     <header class="relative bg-gradient-to-b from-brand-lightgreen/30 to-brand-cream py-16 lg:py-24 overflow-hidden">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div class="space-y-6 text-center lg:text-left">
                 <div class="inline-flex items-center gap-2 bg-brand-lightgreen text-brand-darkgreen px-3 py-1 rounded-full text-sm font-medium">
-                    民國76年在地傳承 · 南投竹山照鏡山老字號直營
+                    期末專題：打造生活模糊問題的「解題引擎」
                 </div>
                 <h1 class="text-4xl sm:text-5xl font-extrabold text-brand-darkgreen tracking-tight leading-tight">
-                    大葉香櫞特有風味<br>
-                    <span class="text-brand-accent font-serif">莊友原葉立體佛手茶</span>
+                    將日常身心的抱怨<br>
+                    <span class="text-brand-accent font-serif">化為莊友佛手茶包解法</span>
                 </h1>
                 <p class="text-brand-charcoal/80 text-base sm:text-lg max-w-xl mx-auto lg:mx-0 leading-relaxed font-light">
-                    佛手茶又名香櫞茶，葉大如掌。我們將南投竹山溫潤風土培育的佛手原葉，完整製成頂級三角立體茶包。特有的天然雪梨香與熟果蜜韻，耐泡不苦澀，給忙碌的生活最純淨的釋壓陪伴。
+                    現實生活充滿了模糊的抱怨——思考打結、熬夜焦慮、宵夜油膩。我們串接 AI 智能對話技術，建立老字號大葉香櫞種佛手茶包的「解題引擎」。對右下角客服吐露你的抱怨，讓運算思維為你導向最佳的生活解法。
                 </p>
                 <div class="flex flex-col sm:flex-row justify-center lg:justify-start gap-4 pt-2">
-                    <a href="#products" class="bg-brand-darkgreen text-brand-cream text-center font-medium px-8 py-4 rounded-lg shadow-lg btn-bounce flex items-center justify-center gap-2" onclick="attachRipple(event)">
-                        <span>瀏覽佛手茶包系列</span>
-                        <i class="fa-solid fa-arrow-right"></i>
-                    </a>
+                    <button onclick="toggleAiChat()" class="bg-brand-darkgreen text-brand-cream text-center font-medium px-8 py-4 rounded-lg shadow-lg btn-bounce flex items-center justify-center gap-2">
+                        <span>開啟 AI 抱怨解題引擎</span>
+                        <i class="fa-solid fa-comments"></i>
+                    </button>
                 </div>
             </div>
 
+            <!-- 右側精美茶包展示卡片 -->
             <div class="flex justify-center">
                 <div class="bg-white p-8 rounded-2xl shadow-xl border border-brand-lightgreen max-w-sm w-full relative transition-transform duration-300 hover:scale-105">
                     <div class="absolute -top-4 -right-4 bg-brand-accent text-brand-darkgreen text-xs font-bold py-1 px-3 rounded-full shadow-md">
@@ -139,6 +145,7 @@
         </div>
     </header>
 
+    <!-- 照鏡山風土介紹區 -->
     <section id="about" class="py-20 bg-white border-t border-brand-lightgreen/50 scroll-animate">
         <div class="max-w-6xl mx-auto px-4">
             <div class="text-center space-y-3 mb-12">
@@ -166,11 +173,13 @@
         </div>
     </section>
 
+    <!-- 佛手茶包系列專區 -->
     <section id="products" class="py-20 bg-brand-cream border-t border-brand-lightgreen scroll-animate">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <h2 class="text-3xl font-bold text-brand-darkgreen mb-10 font-serif text-center">莊友正宗佛手茶包系列</h2>
             
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- 商品 1 -->
                 <div class="bg-white border border-brand-lightgreen p-6 rounded-2xl flex flex-col justify-between h-full shadow-sm hover:shadow-md transition-shadow">
                     <div class="space-y-3">
                         <span class="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2.5 py-1 rounded-full">🍃 清香提神</span>
@@ -183,6 +192,7 @@
                     </div>
                 </div>
 
+                <!-- 商品 2 -->
                 <div class="bg-white border border-brand-lightgreen p-6 rounded-2xl flex flex-col justify-between h-full shadow-sm hover:shadow-md transition-shadow">
                     <div class="space-y-3">
                         <span class="text-[10px] bg-orange-100 text-orange-800 font-bold px-2.5 py-1 rounded-full">🌙 溫潤舒壓</span>
@@ -195,6 +205,7 @@
                     </div>
                 </div>
 
+                <!-- 商品 3 -->
                 <div class="bg-white border border-brand-lightgreen p-6 rounded-2xl flex flex-col justify-between h-full shadow-sm hover:shadow-md transition-shadow">
                     <div class="space-y-3">
                         <span class="text-[10px] bg-amber-100 text-amber-800 font-bold px-2.5 py-1 rounded-full">🪵 炭焙去油</span>
@@ -208,6 +219,7 @@
                 </div>
             </div>
 
+            <!-- 頂級珍藏老茶磚 -->
             <div class="mt-12 bg-gradient-to-r from-brand-darkgreen to-emerald-950 rounded-2xl p-6 sm:p-8 text-brand-cream border border-brand-lightgreen/20 flex flex-col sm:flex-row justify-between items-center gap-6">
                 <div class="space-y-1 text-center sm:text-left">
                     <span class="bg-brand-accent/20 border border-brand-accent/30 text-brand-accent text-[10px] font-bold py-0.5 px-2 rounded-full">👑 鎮店老饕老茶磚</span>
@@ -222,6 +234,7 @@
         </div>
     </section>
 
+    <!-- 科學冷熱泡法指引區 -->
     <section id="science" class="py-20 bg-white scroll-animate">
         <div class="max-w-6xl mx-auto px-4">
             <h2 class="text-3xl font-bold text-brand-darkgreen font-serif text-center mb-12">佛手茶包標準沖泡指引</h2>
@@ -238,11 +251,13 @@
         </div>
     </section>
 
+    <!-- 頁尾 -->
     <footer class="bg-brand-darkgreen text-brand-cream/80 text-xs py-10 text-center border-t border-brand-lightgreen/10 space-y-2">
-        <p class="font-bold text-brand-cream text-sm">莊友佛手茶 × 亞洲大學專案實踐</p>
-        <p>© 2026 南投竹山照鏡山老字號直營團隊. 本網頁專為期末發表設計展示.</p>
+        <p class="font-bold text-brand-cream text-sm">莊友佛手茶 × 亞洲大學「運算思維與問題解決」期末專案</p>
+        <p>© 2026 南投竹山照鏡山老字號直營團隊. 本網頁專為課程展示設計成果.</p>
     </footer>
 
+    <!-- 購物車抽屜 -->
     <div id="cart-drawer" class="fixed inset-0 z-50 overflow-hidden pointer-events-none transition-all duration-300 translate-x-full">
         <div class="absolute inset-0 bg-black/40 opacity-0 transition-opacity duration-300" onclick="toggleCart()" id="cart-overlay"></div>
         <div class="absolute inset-y-0 right-0 max-w-md w-full bg-brand-cream shadow-2xl flex flex-col justify-between pointer-events-auto border-l border-brand-lightgreen">
@@ -251,7 +266,7 @@
                 <button onclick="toggleCart()" class="text-brand-darkgreen p-2 btn-bounce"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
             <div id="cart-items" class="flex-1 overflow-y-auto p-6 space-y-4 text-center text-brand-charcoal/50 text-xs py-12">
-                購物車空空的，快去向 AI 智能客服諮詢吧！
+                購物車空空的，快點擊右下角向 AI 侍茶師傾訴身心抱怨吧！
             </div>
             <div class="p-6 border-t border-brand-lightgreen bg-white space-y-4">
                 <div class="flex justify-between items-end"><span class="text-xs font-bold text-brand-charcoal">應付總額 (滿$499免運)</span><span id="total-price" class="text-xl font-extrabold text-brand-darkgreen">NT$ 0</span></div>
@@ -260,47 +275,53 @@
         </div>
     </div>
 
+    <!-- ─── ✨ 右下角：全新重塑符合課程規範的「AI 抱怨解題引擎」視窗 ─── -->
     <div class="fixed bottom-6 right-6 z-50 flex flex-col items-end">
         
-        <div id="ai-chat-window" class="w-80 sm:w-96 h-[450px] bg-white rounded-2xl shadow-2xl border border-brand-lightgreen flex flex-col justify-between overflow-hidden mb-4">
+        <div id="ai-chat-window" class="w-80 sm:w-96 h-[460px] bg-white rounded-2xl shadow-2xl border border-brand-lightgreen flex flex-col justify-between overflow-hidden mb-4">
+            <!-- 視窗頂部 -->
             <div class="bg-brand-darkgreen p-4 text-brand-cream flex justify-between items-center">
                 <div class="flex items-center gap-2">
                     <div class="w-7 h-7 bg-brand-accent rounded-full flex items-center justify-center text-brand-darkgreen text-xs font-bold"><i class="fa-solid fa-robot"></i></div>
                     <div>
-                        <h4 class="font-bold text-xs">莊友佛手茶 | AI 智能侍茶師</h4>
-                        <p class="text-[9px] text-brand-accent">24h 線上茶葉專業諮詢服務</p>
+                        <h4 class="font-bold text-xs">莊友佛手茶 | 運算思維解題引擎</h4>
+                        <p class="text-[9px] text-brand-accent">目標：將生活「抱怨」轉化為精準「解法」</p>
                     </div>
                 </div>
                 <button onclick="toggleAiChat()" class="text-brand-cream hover:text-brand-accent p-1"><i class="fa-solid fa-minus text-sm"></i></button>
             </div>
 
+            <!-- 對話內容區 -->
             <div id="ai-chat-messages" class="flex-1 p-4 overflow-y-auto space-y-3 bg-brand-cream/30 text-xs">
+                <!-- 符合目標定義的歡迎詞 -->
                 <div class="flex gap-2 items-start">
                     <div class="w-6 h-6 rounded-full bg-brand-darkgreen text-brand-cream flex items-center justify-center text-[10px] shrink-0"><i class="fa-solid fa-robot"></i></div>
                     <div class="bg-white p-2.5 rounded-r-xl rounded-bl-xl border border-brand-lightgreen text-brand-charcoal max-w-[85%] leading-relaxed">
-                        您好！我是莊友佛手茶的 AI 智能侍茶師 🍵。您可以問我任何關於茶葉的問題，例如：<br>
-                        🔹 「佛手茶青茶和紅茶差別在哪？」<br>
-                        🔹 「要怎麼做冷泡茶？」<br>
-                        🔹 「寫 code 熬夜很累推薦喝哪款？」
+                        歡迎來到期末專題的「解題引擎」🤖！請直接對我寫下你今天面臨的<strong>任何日常抱怨或生理不適</strong>（例如：寫 code 熬夜好累、期末考快瘋掉、宵夜吃太油肚子好脹）。<br><br>
+                        本引擎會運用<strong>問題拆解與模式識別</strong>，為您精確推導出對應的竹山佛手茶生化化合物解法！
                     </div>
                 </div>
             </div>
 
+            <!-- 視窗底部輸入端 -->
             <div class="p-3 border-t border-brand-lightgreen bg-white flex gap-2 items-center">
-                <input type="text" id="ai-user-msg" onkeypress="handleAiKeyPress(event)" class="flex-1 bg-brand-cream border border-brand-lightgreen rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-brand-darkgreen text-brand-charcoal" placeholder="請輸入您想詢問的茶葉問題...">
+                <input type="text" id="ai-user-msg" onkeypress="handleAiKeyPress(event)" class="flex-1 bg-brand-cream border border-brand-lightgreen rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-brand-darkgreen text-brand-charcoal" placeholder="請寫下你當下的生活抱怨...">
                 <button onclick="sendUserMessage()" class="bg-brand-darkgreen text-brand-cream w-8 h-8 rounded-xl flex items-center justify-center btn-bounce shadow-sm shrink-0"><i class="fa-solid fa-paper-plane text-xs"></i></button>
             </div>
         </div>
 
+        <!-- 懸浮圓形客服按鈕 -->
         <button onclick="toggleAiChat()" class="w-14 h-14 bg-brand-darkgreen text-brand-cream rounded-full flex items-center justify-center shadow-2xl hover:bg-emerald-900 transition-colors btn-bounce border-2 border-brand-accent/20">
             <i class="fa-solid fa-comments text-xl" id="ai-btn-icon"></i>
         </button>
     </div>
 
+    <!-- Toast 提示 -->
     <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-brand-darkgreen text-brand-cream py-2.5 px-6 rounded-full text-xs font-medium border border-brand-accent/30 shadow-xl transition-all duration-300 transform translate-y-20 opacity-0 pointer-events-none">
         成功加入購物車！
     </div>
 
+    <!-- JavaScript 核心解題邏輯 -->
     <script>
         let cart = [];
 
@@ -318,12 +339,11 @@
             document.querySelectorAll(".scroll-animate").forEach(section => animationObserver.observe(section));
         });
 
-        // ─── ✨ 修正：控制 AI 客服視窗的物理縮放彈跳動畫 ───
+        // 控制 AI 客服視窗的物理縮放彈跳動畫
         function toggleAiChat() {
             const win = document.getElementById('ai-chat-window');
             const icon = document.getElementById('ai-btn-icon');
             
-            // 透過切換 Class 來觸發帶有貝氏曲線的流暢動畫
             if (!win.classList.contains('ai-chat-open')) {
                 win.classList.add('ai-chat-open');
                 icon.className = "fa-solid fa-xmark text-xl";
@@ -337,7 +357,7 @@
             if (e.key === 'Enter') sendUserMessage();
         }
 
-        // AI 客服問答與打字機特效
+        // 符合「從抱怨到解法」的自然語言比對應答演算法
         function sendUserMessage() {
             const inputEl = document.getElementById('ai-user-msg');
             const msgText = inputEl.value.trim();
@@ -346,24 +366,24 @@
             inputEl.value = '';
             const msgArea = document.getElementById('ai-chat-messages');
 
-            // 渲染使用者訊息
+            // 1. 渲染消費者的「抱怨」內容
             const userHtml = `
                 <div class="flex gap-2 items-start justify-end">
                     <div class="bg-brand-lightgreen text-brand-darkgreen p-2.5 rounded-l-xl rounded-br-xl max-w-[85%] font-medium leading-relaxed shadow-sm">
-                        ${msgText}
+                        【💥 收到抱怨】：${msgText}
                     </div>
                 </div>
             `;
             msgArea.insertAdjacentHTML('beforeend', userHtml);
             msgArea.scrollTop = msgArea.scrollHeight;
 
-            // 顯示 AI 思考中狀態
+            // 顯示解題運算中狀態
             const aiLoadingId = 'ai-msg-loading-' + Date.now();
             const loadingHtml = `
                 <div class="flex gap-2 items-start" id="${aiLoadingId}">
                     <div class="w-6 h-6 rounded-full bg-brand-darkgreen text-brand-cream flex items-center justify-center text-[10px] shrink-0"><i class="fa-solid fa-robot"></i></div>
                     <div class="bg-white p-2 border border-brand-lightgreen rounded-r-xl rounded-bl-xl text-brand-charcoal/40 italic">
-                        AI 侍茶師正在思考回覆...
+                        解題引擎正在執行運算思維拆解...
                     </div>
                 </div>
             `;
@@ -372,28 +392,25 @@
                 msgArea.scrollTop = msgArea.scrollHeight;
             }, 300);
 
-            // 執行茶葉知識庫語意匹配
+            // 2. 執行解題邏輯收斂
             setTimeout(() => {
                 document.getElementById(aiLoadingId).remove();
 
                 const lowerMsg = msgText.toLowerCase();
                 let replyText = "";
 
-                if (lowerMsg.includes('歷史') || lowerMsg.includes('創立') || lowerMsg.includes('幾年') || lowerMsg.includes('創辦')) {
-                    replyText = "莊友佛手茶創立於民國76年（1987年），源自台灣南投竹山照鏡山。我們三十多年來堅持產地直營與傳統工藝烘焙，專注推廣大葉香櫞種佛手茶包，是深耕竹山在地的老字號茶行哦！";
-                } else if (lowerMsg.includes('泡') || lowerMsg.includes('冷泡') || lowerMsg.includes('熱水') || lowerMsg.includes('幾分鐘')) {
-                    replyText = "莊友佛手茶包不論冷熱泡都非常甘甜不苦澀！\n\n☕ 熱泡：以 90°C 熱水沖泡 300ml，靜置 3 分鐘即可釋放完整的雪梨蘭花香。可回沖 2~3 次。\n\n❄️ 冷泡：將 1~2 包茶包放入 600ml 常溫水中，放進 4°C 冰箱冷藏 6 至 8 小時，就能喝到清涼消暑的甘甜好茶！";
-                } else if (lowerMsg.includes('青茶') || lowerMsg.includes('紅茶') || lowerMsg.includes('黑茶') || lowerMsg.includes('差別') || lowerMsg.includes('不同')) {
-                    replyText = "我們家的正宗佛手茶包主要分為三款：\n\n1️⃣ 經典青茶（$250）：輕發酵，保留佛手茶特有的優雅雪梨清香，入口生津，提神醒腦必備。\n\n2️⃣ 頂級紅茶（$280）：全發酵，帶有飽滿的柑橘熟果香與蜜調，茶性溫潤不傷胃，適合舒壓放鬆。\n\n3️⃣ 炭焙黑茶（$300）：深烘焙與慢速後發酵，口感滑順飽滿、帶有天然仙草蜜甜，吃完大餐去油膩的效果非常好！";
-                } else if (lowerMsg.includes('code') || lowerMsg.includes('累') || lowerMsg.includes('熬夜') || lowerMsg.includes('昏') || lowerMsg.includes('讀書') || lowerMsg.includes('考試') || lowerMsg.includes('壓力')) {
-                    replyText = "寫 code 讀書辛苦了！熬夜思考容易大腦昏沉。非常推薦您試試我們的【莊友經典佛手青茶包】。它特有的香櫞品種雪梨清香能舒緩大腦疲勞，且富含豐富的天然兒茶素，能以最溫和、不傷胃的方式幫您激活思緒，重回高效專注的心流狀態！";
-                } else if (lowerMsg.includes('油') || lowerMsg.includes('飽') || lowerMsg.includes('脹') || lowerMsg.includes('大餐') || lowerMsg.includes('肉') || lowerMsg.includes('宵夜')) {
-                    replyText = "剛吃飽或吃完宵夜烤肉嗎？推薦您立刻泡一杯【莊友陳年炭焙佛手黑茶包】。這款茶經過老手藝深層炭焙，茶湯溫厚，富含豐富的茶紅素，能迅速瓦解胃部的油膩感，舒緩飽脹不適，是非常厲害的天然去油好幫手！";
+                // 基於「拆解、模式識別、抽象化、算法」推導的精準茶品解法
+                if (lowerMsg.includes('code') || lowerMsg.includes('累') || lowerMsg.includes('熬夜') || lowerMsg.includes('昏') || lowerMsg.includes('讀書') || lowerMsg.includes('考試') || lowerMsg.includes('當') || lowerMsg.includes('卡關')) {
+                    replyText = "💡【運算思維解題成功】\n\n1️⃣ 問題拆解：分析抱怨詞彙，將困擾定位為『長時間邏輯思維引發的皮質疲勞與腦霧』。\n2️⃣ 模式識別：比對資料庫，此模式契合輕發酵茶葉中『香櫞青茶多元酚活性物』的催化特徵。\n3️⃣ 抽象化解法：為您推薦【莊友經典佛手青茶包】。其特有的香櫞雪梨精油清香分子能打破思緒卡關，豐富的活性兒茶素能溫和且高效地重新激活專注力，完美排除咖啡因傷胃的負面影響！";
+                } else if (lowerMsg.includes('油') || lowerMsg.includes('飽') || lowerMsg.includes('脹') || lowerMsg.includes('大餐') || lowerMsg.includes('肉') || lowerMsg.includes('宵夜') || lowerMsg.includes('烤肉') || lowerMsg.includes('火鍋')) {
+                    replyText = "💡【運算思維解題成功】\n\n1️⃣ 問題拆解：分析抱怨詞彙，將困擾定位為『夜間過量油脂飲食造成消化系統重度超載』。\n2️⃣ 模式識別：此模式高度契合高溫深焙火與慢速後發酵所產生的『茶紅素與黑茶多酚複合物』。\n3️⃣ 抽象化解法：為您推薦【莊友陳年炭焙佛手黑茶包】。厚實溫潤的茶湯自帶仙草蜜甘甜，能高效乳化瓦解飽脹油膩感，穩定腸胃不適，是生活中最厲害的油膩解題處方！";
+                } else if (lowerMsg.includes('壓力') || lowerMsg.includes('焦慮') || lowerMsg.includes('睡不著') || lowerMsg.includes('失眠') || lowerMsg.includes('心跳') || lowerMsg.includes('緊繃') || lowerMsg.includes('煩')) {
+                    replyText = "💡【運算思維解題成功】\n\n1️⃣ 問題拆解：分析抱怨詞彙，將困擾定位為『神經系統皮質醇過高引發的情緒高壓與睡眠障礙』。\n2️⃣ 模式識別：此模式需要極大化『茶氨酸（L-Theanine）』成分來誘導大腦產生安定沉靜的 α 波。\n3️⃣ 抽象化解法：為您推薦【莊友頂級佛手紅茶包】。全發酵製程將大葉香櫞茶轉化為飽滿柑橘熟果香，蘊含的大量溫和茶氨酸能迅速撫平神經緊繃，助您重拾深度的身心平衡與好眠！";
                 } else {
-                    replyText = "您好！莊友 AI 侍茶師很高興為您服務。如果您在挑選茶包上有疑問，推薦您品嚐看看最經典的「佛手青茶包」，體驗我們竹山照鏡山特有的雪梨蘭花果香。全館滿 $499 即可享免運直送到家，有環境沖泡或風味問題都歡迎直接問我哦！";
+                    replyText = "💡【解題引擎應答】\n\n我們收到您的日常訴求囉！莊友 AI 解題引擎分析發現，您可能正面臨模糊的生活緊繃。建議您可以品嚐看看我們最百搭的「莊友經典佛手青茶包」，體驗南投竹山照鏡山傳承多年的雪梨蘭花清香，讓天然香櫞成分協助大腦切換回放鬆狀態。全館滿 $499 即可免運送到家，有任何冷熱泡或風味問題都可以隨時告訴我哦！";
                 }
 
-                // 渲染 AI 對話泡泡並執行打字機串流效果
+                // 渲染 AI 打字機特效泡泡
                 const aiMsgId = 'ai-msg-' + Date.now();
                 const aiBubbleHtml = `
                     <div class="flex gap-2 items-start animate-fade-in">
@@ -447,7 +464,7 @@
             const totalEl = document.getElementById('total-price');
             const countEl = document.getElementById('cart-count');
             if (cart.length === 0) {
-                container.innerHTML = "購物車空空的，快去向 AI 智能客服諮詢吧！";
+                container.innerHTML = "購物車空空的，快點擊右下角向 AI 侍茶師傾訴身心抱怨吧！";
                 countEl.classList.add('hidden');
                 totalEl.innerText = "NT$ 0";
                 return;

@@ -14,10 +14,7 @@
                 extend: {
                     colors: {
                         tea: {
-                            dark: '#1C3A27',
-                            light: '#EAF3EC',
-                            gold: '#D4AF37',
-                            card: 'rgba(255, 255, 255, 0.85)',
+                            dark: '#1C3A27', light: '#EAF3EC', gold: '#D4AF37',
                         }
                     },
                     fontFamily: {
@@ -32,18 +29,15 @@
     <style>
         body {
             background-color: #F8FAFC;
-            /* 網點畫布背景，營造思考工作區的感覺 */
             background-image: radial-gradient(#CBD5E1 1px, transparent 1px);
             background-size: 24px 24px;
             overflow-x: hidden;
         }
 
-        /* 玻璃擬物化 (Glassmorphism) 卡片 */
         .glass-card {
-            background: rgba(255, 255, 255, 0.7);
+            background: rgba(255, 255, 255, 0.85);
             backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.9);
             box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
         }
 
@@ -52,23 +46,30 @@
             0% { opacity: 0; transform: translateY(20px) scale(0.95); }
             100% { opacity: 1; transform: translateY(0) scale(1); }
         }
-        .node-reveal {
-            animation: popIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-        }
+        .node-reveal { animation: popIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
 
-        /* 節點間的動態連線軌跡 */
+        /* 連線動畫 */
         .wire-vertical {
             width: 2px;
             background: linear-gradient(to bottom, #1C3A27 0%, transparent 100%);
             background-size: 100% 200%;
             animation: flowDown 1.5s infinite linear;
         }
-        @keyframes flowDown {
-            0% { background-position: 0% -100%; }
-            100% { background-position: 0% 100%; }
+        @keyframes flowDown { 0% { background-position: 0% -100%; } 100% { background-position: 0% 100%; } }
+
+        /* 滑桿客製化美化 */
+        input[type=range] {
+            -webkit-appearance: none; width: 100%; background: transparent;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none; height: 16px; width: 16px; border-radius: 50%;
+            background: #1C3A27; cursor: pointer; margin-top: -6px; box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%; height: 4px; cursor: pointer; background: #CBD5E1; border-radius: 2px;
         }
 
-        /* 隱藏捲軸但可滾動 */
+        /* 隱藏捲軸 */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 10px; }
@@ -81,124 +82,180 @@
             <div class="w-8 h-8 rounded-lg bg-tea-dark text-white flex items-center justify-center font-serif font-bold text-sm">莊</div>
             <div>
                 <h1 class="font-bold text-tea-dark tracking-widest text-sm">莊友佛手茶</h1>
-                <p class="text-[9px] font-mono text-slate-500">Visual Problem-Solving Pipeline</p>
+                <p class="text-[9px] font-mono text-slate-500">Interactive CT Pipeline</p>
             </div>
         </div>
         <div class="text-[10px] font-mono text-slate-500 bg-white/50 px-3 py-1.5 rounded-full border border-slate-200 flex items-center gap-2">
             <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-            CT_ENGINE: ONLINE
+            ENGINE: INTERACTIVE_MODE
         </div>
     </header>
 
     <main class="flex-1 pt-24 pb-12 px-4 max-w-4xl mx-auto w-full relative z-10 flex flex-col items-center">
         
-        <div class="w-full glass-card rounded-3xl p-6 sm:p-8 relative z-20 text-center space-y-5">
-            <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-tea-light text-tea-dark mb-2">
-                <i class="fa-solid fa-seedling text-xl"></i>
+        <div class="w-full glass-card rounded-3xl p-6 sm:p-8 relative z-20 space-y-6 shadow-xl">
+            <div class="text-center space-y-2">
+                <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-tea-light text-tea-dark mb-1">
+                    <i class="fa-solid fa-sliders text-xl"></i>
+                </div>
+                <h2 class="font-serif text-2xl sm:text-3xl font-bold text-tea-dark">定義你的模糊問題</h2>
+                <p class="text-xs text-slate-500 font-light max-w-lg mx-auto">
+                    請輸入文字抱怨，並透過滑桿量化您的生理變數（Decomposition）。系統將結合雙重數據運算出最佳莊友佛手茶解法。
+                </p>
             </div>
-            <h2 class="font-serif text-2xl sm:text-3xl font-bold text-tea-dark">請輸入生活中的模糊問題</h2>
-            <p class="text-xs text-slate-500 font-light max-w-lg mx-auto">
-                無需自行挑選茶葉。請將您當下的疲勞、壓力、或飲食不適輸入畫布，系統將執行運算思維四大節點，為您推導出莊友佛手茶的最佳解法。
-            </p>
             
-            <div class="relative max-w-2xl mx-auto mt-4">
-                <textarea id="complaint-input" rows="3" class="w-full bg-white/60 border-2 border-slate-200 rounded-2xl p-4 text-sm focus:border-tea-dark focus:ring-4 focus:ring-tea-light outline-none transition-all resize-none shadow-inner" placeholder="例如：期末考熬夜寫程式，大腦很卡快瘋了... / 宵夜不小心吃太多炸物，肚子好脹..."></textarea>
-                
-                <button onclick="startPipeline()" class="absolute bottom-3 right-3 bg-tea-dark hover:bg-emerald-900 text-white font-bold text-xs px-5 py-2.5 rounded-xl shadow-lg transition-transform active:scale-95 flex items-center gap-2">
-                    <i class="fa-solid fa-play"></i> 執行管線
+            <div class="max-w-2xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="space-y-2">
+                    <label class="text-xs font-bold text-tea-dark font-mono"><i class="fa-solid fa-keyboard mr-1"></i>String Input (文字串流)</label>
+                    <textarea id="complaint-input" rows="4" class="w-full bg-white/60 border border-slate-300 rounded-xl p-3 text-sm focus:border-tea-dark outline-none transition-all resize-none" placeholder="例如：期末考熬夜寫程式，大腦很卡快瘋了..."></textarea>
+                </div>
+
+                <div class="space-y-4 bg-slate-50/50 p-4 rounded-xl border border-slate-200">
+                    <label class="text-xs font-bold text-tea-dark font-mono"><i class="fa-solid fa-chart-line mr-1"></i>Variables (生理變數擷取)</label>
+                    
+                    <div class="space-y-1">
+                        <div class="flex justify-between text-[10px] text-slate-600 font-bold">
+                            <span>🧠 腦霧卡關度 (Cognitive Load)</span>
+                            <span id="val-cog" class="font-mono text-tea-dark">50%</span>
+                        </div>
+                        <input type="range" id="slider-cog" min="0" max="100" value="50" oninput="document.getElementById('val-cog').innerText = this.value + '%'">
+                    </div>
+
+                    <div class="space-y-1">
+                        <div class="flex justify-between text-[10px] text-slate-600 font-bold">
+                            <span>🌙 情緒緊繃度 (Stress Level)</span>
+                            <span id="val-stress" class="font-mono text-amber-600">50%</span>
+                        </div>
+                        <input type="range" id="slider-stress" min="0" max="100" value="50" oninput="document.getElementById('val-stress').innerText = this.value + '%'">
+                    </div>
+
+                    <div class="space-y-1">
+                        <div class="flex justify-between text-[10px] text-slate-600 font-bold">
+                            <span>🥑 腸胃油膩度 (Lipid Burden)</span>
+                            <span id="val-lipid" class="font-mono text-blue-600">50%</span>
+                        </div>
+                        <input type="range" id="slider-lipid" min="0" max="100" value="50" oninput="document.getElementById('val-lipid').innerText = this.value + '%'">
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center pt-2">
+                <button onclick="startPipeline()" id="btn-start" class="bg-tea-dark hover:bg-emerald-900 text-white font-bold text-sm px-8 py-3 rounded-xl shadow-lg transition-transform active:scale-95 inline-flex items-center gap-2">
+                    <i class="fa-solid fa-play"></i> 執行運算思維管線
                 </button>
             </div>
         </div>
 
-        <div id="pipeline-container" class="w-full mt-2 flex flex-col items-center pb-20">
-            </div>
+        <div id="pipeline-container" class="w-full mt-2 flex flex-col items-center pb-20"></div>
 
     </main>
 
-    <button onclick="location.reload()" class="fixed bottom-6 right-6 w-12 h-12 bg-white rounded-full shadow-xl border border-slate-200 text-slate-400 hover:text-tea-dark flex items-center justify-center transition-all active:scale-90 z-50">
-        <i class="fa-solid fa-rotate-right"></i>
-    </button>
-
     <script>
-        // 運算思維：核心管線生成演算法
+        // 記錄全域狀態供動態頁籤使用
+        let currentTeaType = "";
+
         function startPipeline() {
-            const input = document.getElementById('complaint-input').value.trim();
-            if (!input) {
-                alert("請先輸入您的生活問題，才能啟動運算管線！");
+            const inputTxt = document.getElementById('complaint-input').value.toLowerCase();
+            const valCog = parseInt(document.getElementById('slider-cog').value);
+            const valStress = parseInt(document.getElementById('slider-stress').value);
+            const valLipid = parseInt(document.getElementById('slider-lipid').value);
+
+            if (!inputTxt && valCog === 50 && valStress === 50 && valLipid === 50) {
+                alert("請輸入一些抱怨文字或調整滑桿數據，系統才能進行特徵擷取！");
                 return;
             }
 
             const container = document.getElementById('pipeline-container');
-            container.innerHTML = ''; // 清空畫布
+            container.innerHTML = '';
+            document.getElementById('btn-start').innerHTML = '<i class="fa-solid fa-spinner animate-spin"></i> 運算中...';
+            document.getElementById('btn-start').classList.add('opacity-70', 'cursor-not-allowed');
 
-            // 將按鈕與輸入框暫時鎖定
-            document.getElementById('complaint-input').disabled = true;
+            // 綜合文字與滑桿權重進行演算法決策
+            let scoreGreen = valCog + (inputTxt.includes('code') || inputTxt.includes('熬夜') || inputTxt.includes('昏') ? 50 : 0);
+            let scoreBlack = valStress + (inputTxt.includes('壓力') || inputTxt.includes('焦慮') || inputTxt.includes('失眠') ? 50 : 0);
+            let scoreDark = valLipid + (inputTxt.includes('油') || inputTxt.includes('大餐') || inputTxt.includes('脹') ? 50 : 0);
 
-            const msg = input.toLowerCase();
-            let strategy = "relax"; // 預設策略
-            let decompKw = ""; let patMatch = ""; let absFilter = ""; let algoTitle = ""; let algoDesc = ""; let price = "";
-
-            // 運算思維邏輯判斷
-            if (msg.includes('code') || msg.includes('累') || msg.includes('熬夜') || msg.includes('昏') || msg.includes('讀書') || msg.includes('考試') || msg.includes('卡關')) {
-                strategy = "alert";
-                decompKw = "['熬夜', '高認知負荷', '腦霧卡關']";
-                patMatch = "匹配目標：需要溫和激活神經元 ➜ 香櫞青茶多酚類化合物";
-                absFilter = "濾除物理雜訊 ➜ 提取「提神不傷胃」單一維度需求";
+            let decompKw = `[腦霧:${valCog}%, 焦慮:${valStress}%, 油膩:${valLipid}%]`;
+            let patMatch, absFilter, algoTitle, algoDesc, price;
+            
+            // 模式識別決策樹
+            if (scoreGreen >= scoreBlack && scoreGreen >= scoreDark) {
+                currentTeaType = "green";
+                patMatch = "模式匹配：需刺激思考心流 ➜ 大葉香櫞青茶高活性多酚";
+                absFilter = "濾除物理雜訊 ➜ 提取「提神醒腦、激發專注」解法";
                 algoTitle = "莊友經典佛手青茶包";
                 algoDesc = "輕發酵製程完整鎖住竹山照鏡山特有的優雅雪梨蘭花清香。高活性的兒茶素能以最溫和的方式驅散思考霧氣，助您重回高效專注的心流！";
                 price = "NT$ 250";
-            } else if (msg.includes('油') || msg.includes('飽') || msg.includes('脹') || msg.includes('大餐') || msg.includes('肉') || msg.includes('宵夜') || msg.includes('吃太多')) {
-                strategy = "digest";
-                decompKw = "['高脂飲食', '消化道超載', '飽脹']";
-                patMatch = "匹配目標：需要加速脂肪乳化 ➜ 黑茶多酚與茶紅素";
-                absFilter = "濾除食物種類雜訊 ➜ 提取「強效去油解膩」單一維度需求";
+            } else if (scoreDark >= scoreGreen && scoreDark >= scoreBlack) {
+                currentTeaType = "dark";
+                patMatch = "模式匹配：需乳化脂質堆積 ➜ 重焙火黑茶多酚複合物";
+                absFilter = "濾除飲食種類雜訊 ➜ 提取「強效去油解膩」解法";
                 algoTitle = "莊友陳年炭焙佛手黑茶包";
                 algoDesc = "傳承老手藝深層炭焙與慢速後發酵，茶湯濃厚帶有自然仙草蜜甜。高濃度黑茶素能極速瓦解胃部的油膩飽脹感，是吃完大餐後的最強去油處方！";
                 price = "NT$ 300";
             } else {
-                strategy = "relax";
-                decompKw = "['壓力大', '皮質醇緊繃', '情緒焦慮']";
-                patMatch = "匹配目標：需要誘導大腦α波 ➜ 高濃度天然茶氨酸 (L-Theanine)";
-                absFilter = "濾除外在事件雜訊 ➜ 提取「深層安定舒眠」單一維度需求";
+                currentTeaType = "red";
+                patMatch = "模式匹配：需平復中樞神經 ➜ 高濃度天然茶氨酸 (L-Theanine)";
+                absFilter = "濾除外在事件雜訊 ➜ 提取「深層舒緩安定」解法";
                 algoTitle = "莊友頂級佛手紅茶包";
                 algoDesc = "完全發酵製程轉化出優雅的柑橘熟果蜜香，茶性溫潤。蘊含的大量溫和茶氨酸能迅速撫平緊繃了一整天的焦慮神經，帶給身心最深度的安定感。";
                 price = "NT$ 280";
             }
 
-            // 依序渲染四個運算思維節點
+            // 四個運算思維節點
             const nodes = [
                 {
-                    step: "STEP 1: DECOMPOSITION (拆解)",
-                    icon: "fa-solid fa-cubes-stacked text-blue-500",
-                    title: "解構模糊問題",
-                    content: `<div class="bg-blue-50 text-blue-700 font-mono text-xs p-2 rounded border border-blue-200 mt-2">擷取核心向量：${decompKw}</div>`
+                    step: "STEP 1: DECOMPOSITION (拆解)", icon: "fa-solid fa-layer-group text-blue-500", title: "量化身心抱怨矩陣",
+                    content: `<div class="bg-slate-100 font-mono text-xs p-2 rounded border border-slate-200 mt-2 text-slate-600">提取量化變數向量：<br><span class="text-blue-600 font-bold">${decompKw}</span></div>`
                 },
                 {
-                    step: "STEP 2: PATTERN RECOGNITION (模式識別)",
-                    icon: "fa-solid fa-fingerprint text-purple-500",
-                    title: "比對茶葉生化資料庫",
-                    content: `<div class="bg-purple-50 text-purple-700 font-mono text-xs p-2 rounded border border-purple-200 mt-2">${patMatch}</div>`
+                    step: "STEP 2: PATTERN RECOGNITION (模式識別)", icon: "fa-solid fa-fingerprint text-purple-500", title: "特徵比對資料庫",
+                    content: `<div class="bg-slate-100 font-mono text-xs p-2 rounded border border-slate-200 mt-2 text-slate-600"><span class="text-purple-600 font-bold">${patMatch}</span></div>`
                 },
                 {
-                    step: "STEP 3: ABSTRACTION (抽象化)",
-                    icon: "fa-solid fa-filter text-orange-500",
-                    title: "排除無關雜訊",
-                    content: `<div class="bg-orange-50 text-orange-700 font-mono text-xs p-2 rounded border border-orange-200 mt-2">${absFilter}</div>`
+                    step: "STEP 3: ABSTRACTION (抽象化)", icon: "fa-solid fa-filter text-orange-500", title: "排除無關環境雜訊",
+                    content: `<div class="bg-slate-100 font-mono text-xs p-2 rounded border border-slate-200 mt-2 text-slate-600"><span class="text-orange-600 font-bold">${absFilter}</span></div>`
                 },
                 {
-                    step: "STEP 4: ALGORITHM (演算法輸出解法)",
-                    icon: "fa-solid fa-check-double text-emerald-600",
-                    title: "最佳莊友佛手茶解法導出",
+                    step: "STEP 4: ALGORITHM (演算法輸出)", icon: "fa-solid fa-check-double text-emerald-600", title: "莊友佛手茶最佳解法導出",
                     content: `
-                        <div class="mt-4 p-4 bg-gradient-to-br from-tea-dark to-emerald-900 rounded-2xl text-white text-left shadow-xl relative overflow-hidden">
-                            <div class="absolute right-[-20px] top-[-20px] opacity-10 text-9xl"><i class="fa-solid fa-leaf"></i></div>
-                            <span class="text-[10px] font-mono bg-tea-gold/20 text-tea-gold px-2 py-1 rounded">Optimal Solution</span>
-                            <h3 class="font-serif font-bold text-xl mt-2 text-tea-gold">${algoTitle}</h3>
-                            <p class="text-xs text-slate-200 mt-2 leading-relaxed font-light">${algoDesc}</p>
-                            <div class="mt-4 flex justify-between items-center border-t border-white/20 pt-3">
-                                <span class="font-mono font-bold text-lg text-white">${price}</span>
-                                <button class="bg-white text-tea-dark text-xs font-bold px-4 py-2 rounded-lg shadow hover:bg-slate-100 transition-colors" onclick="alert('已加入採購物資庫！')">
-                                    採購此解法 <i class="fa-solid fa-arrow-right ml-1"></i>
+                        <div class="mt-4 bg-white border border-slate-200 rounded-2xl shadow-lg overflow-hidden text-left relative z-20">
+                            <div class="flex border-b border-slate-200 bg-slate-50 font-mono text-[10px] sm:text-xs">
+                                <button onclick="switchTab('result')" id="tab-result" class="flex-1 py-2 font-bold text-tea-dark border-b-2 border-tea-dark transition-colors"><i class="fa-solid fa-box-open mr-1"></i>處方結論</button>
+                                <button onclick="switchTab('sim')" id="tab-sim" class="flex-1 py-2 text-slate-400 hover:text-tea-dark border-b-2 border-transparent transition-colors"><i class="fa-solid fa-flask text-xs mr-1"></i>沖泡演算法模擬</button>
+                            </div>
+                            
+                            <div id="content-result" class="p-5 bg-gradient-to-br from-tea-light to-white">
+                                <span class="text-[9px] font-mono bg-tea-dark text-white px-2 py-1 rounded">Optimal Choice</span>
+                                <h3 class="font-serif font-bold text-xl mt-2 text-tea-dark">${algoTitle}</h3>
+                                <p class="text-xs text-slate-600 mt-2 leading-relaxed">${algoDesc}</p>
+                                <div class="mt-4 flex justify-between items-center border-t border-slate-200 pt-3">
+                                    <span class="font-mono font-bold text-lg text-tea-dark">${price}</span>
+                                    <button class="bg-tea-dark text-white text-xs font-bold px-4 py-2 rounded-lg shadow hover:bg-emerald-900 transition-colors active:scale-95" onclick="alert('已加入採購物資庫！')">
+                                        一鍵採購解法
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div id="content-sim" class="hidden p-5 bg-slate-800 text-white font-mono text-xs">
+                                <p class="text-emerald-400 mb-3"><i class="fa-solid fa-terminal mr-1"></i>執行佛手茶萃取演算法 (Extraction Loop)</p>
+                                <div class="space-y-2 text-[10px] text-slate-300">
+                                    <p>1. 初始化參數: <span class="text-yellow-400">Temp = 90°C</span>, <span class="text-blue-400">Water = 300ml</span></p>
+                                    <p>2. 載入物件: <span class="text-white">莊友立體原葉茶包</span></p>
+                                </div>
+                                
+                                <div class="mt-4 space-y-2">
+                                    <div class="flex justify-between text-[10px]">
+                                        <span id="sim-status">等待指令...</span>
+                                        <span id="sim-pct">0%</span>
+                                    </div>
+                                    <div class="w-full bg-slate-700 h-2 rounded-full overflow-hidden">
+                                        <div id="sim-bar" class="bg-emerald-500 h-2 w-0 transition-all duration-300"></div>
+                                    </div>
+                                </div>
+
+                                <button onclick="runSimulation()" id="btn-sim" class="w-full mt-4 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2 rounded text-[10px] uppercase tracking-widest active:scale-95 transition-transform">
+                                    <i class="fa-solid fa-play mr-1"></i> RUN_EXTRACTION()
                                 </button>
                             </div>
                         </div>
@@ -206,10 +263,9 @@
                 }
             ];
 
-            // 動態定時注入 HTML 以產生流水線動畫感
+            // 動態定時注入 HTML
             nodes.forEach((node, index) => {
                 setTimeout(() => {
-                    // 1. 繪製連接線 (除了第一個節點)
                     if (index > 0) {
                         const wire = document.createElement('div');
                         wire.className = "h-8 sm:h-12 flex justify-center node-reveal";
@@ -217,24 +273,80 @@
                         container.appendChild(wire);
                     }
 
-                    // 2. 繪製卡片節點
                     const card = document.createElement('div');
-                    card.className = "w-full max-w-xl glass-card rounded-2xl p-5 sm:p-6 text-center node-reveal relative z-10 border border-white";
+                    card.className = "w-full max-w-xl glass-card rounded-2xl p-5 text-center node-reveal border border-white relative z-10";
                     card.innerHTML = `
-                        <div class="text-[9px] sm:text-[10px] font-mono font-bold text-slate-400 tracking-widest uppercase mb-1">${node.step}</div>
+                        <div class="text-[10px] font-mono font-bold text-slate-400 tracking-widest uppercase mb-1">${node.step}</div>
                         <div class="flex items-center justify-center gap-2 mb-2">
                             <i class="${node.icon} text-lg"></i>
-                            <h3 class="font-bold text-slate-800 text-sm sm:text-base">${node.title}</h3>
+                            <h3 class="font-bold text-slate-800 text-sm">${node.title}</h3>
                         </div>
                         ${node.content}
                     `;
                     container.appendChild(card);
-                    
-                    // 自動向下滾動，保持最新節點在畫面上
                     window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
 
-                }, index * 1000); // 每個節點間隔 1 秒浮現
+                    // 恢復按鈕狀態
+                    if (index === 3) {
+                        document.getElementById('btn-start').innerHTML = '<i class="fa-solid fa-rotate-right"></i> 重新執行管線';
+                        document.getElementById('btn-start').classList.remove('opacity-70', 'cursor-not-allowed');
+                    }
+                }, index * 1000); 
             });
+        }
+
+        // 互動分頁切換邏輯
+        function switchTab(tabName) {
+            const tabRes = document.getElementById('tab-result');
+            const tabSim = document.getElementById('tab-sim');
+            const conRes = document.getElementById('content-result');
+            const conSim = document.getElementById('content-sim');
+
+            if (tabName === 'result') {
+                tabRes.className = "flex-1 py-2 font-bold text-tea-dark border-b-2 border-tea-dark transition-colors";
+                tabSim.className = "flex-1 py-2 text-slate-400 hover:text-tea-dark border-b-2 border-transparent transition-colors";
+                conRes.classList.remove('hidden');
+                conSim.classList.add('hidden');
+            } else {
+                tabSim.className = "flex-1 py-2 font-bold text-tea-dark border-b-2 border-tea-dark transition-colors";
+                tabRes.className = "flex-1 py-2 text-slate-400 hover:text-tea-dark border-b-2 border-transparent transition-colors";
+                conSim.classList.remove('hidden');
+                conRes.classList.add('hidden');
+            }
+        }
+
+        // 動態沖泡演算法模擬器
+        function runSimulation() {
+            const btn = document.getElementById('btn-sim');
+            const bar = document.getElementById('sim-bar');
+            const status = document.getElementById('sim-status');
+            const pct = document.getElementById('sim-pct');
+
+            btn.disabled = true;
+            btn.classList.add('opacity-50', 'cursor-not-allowed');
+            bar.style.width = '0%';
+            
+            let progress = 0;
+            status.innerText = "注入 90°C 熱水...";
+            
+            const interval = setInterval(() => {
+                progress += 5;
+                bar.style.width = `${progress}%`;
+                pct.innerText = `${progress}%`;
+
+                if (progress === 30) status.innerText = "茶葉舒展中 (Timing Loop)...";
+                if (progress === 60) {
+                    if (currentTeaType === "green") status.innerText = "釋放高活性兒茶素與雪梨香...";
+                    else if (currentTeaType === "dark") status.innerText = "萃取黑茶多酚與茶紅素...";
+                    else status.innerText = "釋放天然茶氨酸與熟果香...";
+                }
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    status.innerText = "萃取完成！請享用完美比例茶湯。";
+                    btn.innerHTML = '<i class="fa-solid fa-check"></i> 演算法執行完畢';
+                    btn.classList.replace('bg-emerald-600', 'bg-slate-600');
+                }
+            }, 150); // 模擬速度
         }
     </script>
 </body>

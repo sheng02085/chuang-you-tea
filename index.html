@@ -4,13 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>莊友佛手茶 | 運算思維液態玻璃引擎</title>
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&family=Noto+Sans+TC:wght@300;400;500;700&family=Noto+Serif+TC:wght@500;700&display=swap" rel="stylesheet">
-    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- 煙火特效套件 -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     
     <script>
@@ -30,6 +26,7 @@
         }
     </script>
     <style>
+        /* 佛手茶底色：動態流體漸層背景 */
         body, html {
             margin: 0; padding: 0; min-height: 100vh;
             font-family: 'Noto Sans TC', sans-serif;
@@ -46,6 +43,7 @@
             100% { background-position: 0% 50%; }
         }
 
+        /* 🍎 iOS 26 Liquid Glass */
         .liquid-glass {
             background: rgba(255, 255, 255, 0.08);
             backdrop-filter: blur(24px) saturate(150%);
@@ -105,7 +103,6 @@
 </head>
 <body class="antialiased min-h-screen flex flex-col relative">
 
-    <!-- 頂部導覽列 -->
     <header class="fixed top-0 w-full z-50 liquid-glass border-b border-white/20 px-6 py-3 flex justify-between items-center">
         <div class="flex items-center gap-3.5">
             <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-tea-gold to-yellow-200 text-tea-dark flex items-center justify-center font-serif font-bold text-lg shadow-[0_0_15px_rgba(212,175,55,0.5)]">莊</div>
@@ -115,9 +112,6 @@
             </div>
         </div>
         <div class="flex items-center gap-4">
-            <div class="hidden sm:flex text-xs font-mono text-white/80 liquid-glass-dark px-4 py-2 rounded-full items-center gap-2 border border-white/10">
-                <span id="engine-status-text">運算思維引擎：待命中 (READY)</span>
-            </div>
             <button onclick="toggleCart()" class="relative p-2 text-white hover:text-tea-gold transition-colors btn-bounce">
                 <i class="fa-solid fa-bag-shopping text-2xl drop-shadow-md"></i>
                 <span id="cart-count" class="absolute top-0 right-0 bg-red-500 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center shadow-lg hidden">0</span>
@@ -125,10 +119,8 @@
         </div>
     </header>
 
-    <!-- 主畫布區 -->
     <main class="flex-1 pt-32 pb-12 px-4 max-w-4xl mx-auto w-full relative z-10 flex flex-col items-center">
         
-        <!-- 核心輸入器 -->
         <div id="main-input-card" class="w-full liquid-glass rounded-[2rem] p-6 sm:p-10 relative z-20 space-y-6">
             <div class="text-center space-y-2">
                 <div class="inline-flex items-center justify-center w-14 h-14 rounded-full liquid-glass-dark mb-2 border border-white/20">
@@ -197,10 +189,8 @@
             </div>
         </div>
 
-        <!-- 動態生成的視覺化管線區 -->
         <div id="pipeline-container" class="w-full mt-2 flex flex-col items-center pb-8"></div>
 
-        <!-- 重新開始新運算 -->
         <div id="reset-container" class="hidden w-full flex justify-center pb-32 mt-6 relative z-20">
             <button onclick="resetPipeline()" class="bg-white/10 border border-white/30 text-white font-bold text-sm px-8 py-4 rounded-full hover:bg-white/20 active:scale-95 transition-all shadow-[0_0_20px_rgba(255,255,255,0.1)] flex items-center gap-2 backdrop-blur-md">
                 <i class="fa-solid fa-rotate-left"></i> 重新開始新運算
@@ -209,7 +199,6 @@
 
     </main>
 
-    <!-- 結帳憑證成功畫面 -->
     <div id="checkout-modal">
         <div class="absolute inset-0 bg-black/80 backdrop-blur-xl transition-opacity"></div>
         <div class="liquid-glass rounded-[3rem] p-10 max-w-md w-full text-center relative z-10 border border-white/30 node-reveal shadow-[0_0_50px_rgba(212,175,55,0.3)]">
@@ -238,7 +227,6 @@
         </div>
     </div>
 
-    <!-- 購物車抽屜 -->
     <div id="cart-drawer" class="fixed inset-0 z-50 overflow-hidden pointer-events-none transition-all duration-400 translate-x-full">
         <div class="absolute inset-0 bg-black/60 backdrop-blur-sm opacity-0 transition-opacity duration-300" onclick="toggleCart()" id="cart-overlay"></div>
         <div class="absolute inset-y-0 right-0 max-w-sm w-full liquid-glass shadow-2xl flex flex-col justify-between pointer-events-auto border-l border-white/20">
@@ -267,7 +255,6 @@
         </div>
     </div>
 
-    <!-- Toast -->
     <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 liquid-glass border border-white/20 text-white py-3 px-6 rounded-full text-xs font-medium shadow-2xl transition-all duration-300 transform translate-y-20 opacity-0 pointer-events-none flex items-center gap-2">
         <i class="fa-solid fa-circle-check text-tea-gold"></i>
         <span id="toast-msg">加入成功！</span>
@@ -287,7 +274,7 @@
             document.getElementById('cart-overlay').classList.toggle('opacity-0');
         }
 
-        // 啟動多維決策管線
+        // ====== 🌟 核心升級：進階多維決策樹演算法 ======
         function startPipeline() {
             const inputTxt = document.getElementById('complaint-input').value.trim().toLowerCase();
             const valCog = parseInt(document.getElementById('slider-cog').value);
@@ -302,8 +289,6 @@
                 inputBox.focus();
                 return;
             }
-
-            document.getElementById('engine-status-text').innerText = "運算思維引擎：分析運作中 (PROCESSING)";
 
             const container = document.getElementById('pipeline-container');
             container.innerHTML = '';
@@ -381,13 +366,12 @@
                 }
             }
 
-            // 🌟 趣味升級：在第三步與第四步之間注入一個動態神經突觸矩陣
+            // 3. 運算管線陣列與神經元視覺化
             const nodes = [
                 { step: "STEP 1: DECOMPOSITION", icon: "fa-solid fa-layer-group text-blue-400", title: "量化身心抱怨矩陣", content: `<div class="liquid-glass-dark font-mono text-[11px] p-3 rounded-xl border border-blue-400/30 mt-3 text-white/80 shadow-inner">多維變數向量：<br><span class="text-blue-300 font-bold">${decompKw}</span><br><span class="text-blue-200/50 mt-1 block">>> Keyword Matched: ${cogMatch||stressMatch||lipidMatch ? 'TRUE' : 'FALSE'}</span></div>` },
                 { step: "STEP 2: PATTERN RECOGNITION", icon: "fa-solid fa-fingerprint text-purple-400", title: "比對 6型 佛手茶生化庫", content: `<div class="liquid-glass-dark font-mono text-[11px] p-3 rounded-xl border border-purple-400/30 mt-3 text-white/80 shadow-inner"><span class="text-purple-300 font-bold">${patMatch}</span></div>` },
                 { step: "STEP 3: ABSTRACTION", icon: "fa-solid fa-filter text-orange-400", title: "排除環境干擾雜訊", content: `<div class="liquid-glass-dark font-mono text-[11px] p-3 rounded-xl border border-orange-400/30 mt-3 text-white/80 shadow-inner"><span class="text-orange-300 font-bold">${absFilter}</span></div>` },
                 
-                // 🧠 新增資工趣味：動態神經元分流矩陣視覺化（這會現場動態閃爍發光）
                 { step: "🧠 NEURAL DECISION SPACE", icon: "fa-solid fa-network-wired text-yellow-400", title: "特徵空間神經元權重分流", content: `
                     <div class="liquid-glass-dark rounded-xl p-4 font-mono text-[10px] space-y-3 border border-yellow-400/20 text-left">
                         <p class="text-yellow-400 flex items-center gap-1"><span class="w-1.5 h-1.5 bg-yellow-400 rounded-full animate-ping"></span>Live Matrix Weights Status:</p>
@@ -427,7 +411,6 @@
                                 <button onclick="runSimulation()" id="btn-sim" class="w-full mt-5 bg-emerald-500/20 hover:bg-emerald-500/40 border border-emerald-500/50 text-emerald-300 font-bold py-2.5 rounded-xl uppercase tracking-widest active:scale-95 transition-all">RUN_EXTRACTION()</button>
                             </div>
                             
-                            <!-- 🧪 趣味升級：在數位茶湯下方加載「生化特徵長條光譜圖」 -->
                             <div id="sim-result-area" class="hidden mt-2 text-center py-4 space-y-4">
                                 <div class="relative inline-block"><div class="absolute -top-6 left-1/2 -translate-x-1/2 text-white/40 text-3xl animate-steam">♨️</div><div class="text-5xl drop-shadow-[0_0_20px_rgba(212,175,55,0.6)]">🍵</div></div>
                                 <h4 class="text-tea-gold font-bold mt-2">數位生化萃取成功</h4>
@@ -449,7 +432,7 @@
                 }
             ];
 
-            // 動態節點按時序生成 (包含新增的神經元區)
+            // 按時序渲染節點卡片
             nodes.forEach((node, index) => {
                 setTimeout(() => {
                     if (index > 0) {
@@ -461,12 +444,11 @@
                     container.appendChild(card);
                     window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
 
-                    if (index === 4) { // 管線全部跑完
-                        document.getElementById('engine-status-text').innerText = "運算思維引擎：演算法部署完畢 (DEPLOYED)";
+                    if (index === 4) {
                         document.getElementById('reset-container').classList.remove('hidden');
                         document.getElementById('reset-container').classList.add('node-reveal');
                     }
-                }, index * 900); // 縮短一點間隔，讓流暢感更好
+                }, index * 900); 
             });
         }
 
@@ -477,11 +459,9 @@
             document.getElementById('reset-container').classList.remove('node-reveal');
             document.getElementById('btn-start').disabled = false;
             document.getElementById('btn-start').classList.remove('opacity-50');
-            document.getElementById('engine-status-text').innerText = "運算思維引擎：待命中 (READY)";
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // 升級版：執行模擬時，長條光譜圖會同步緩慢蓄力長大！
         function runSimulation() {
             const bar = document.getElementById('sim-bar');
             const status = document.getElementById('sim-status');
@@ -490,26 +470,26 @@
             document.getElementById('btn-sim').style.display = 'none'; 
             
             let progress = 0;
-            status.innerText = "茶葉化學鍵解構中...";
-            
             const interval = setInterval(() => {
                 progress += 5; bar.style.width = `${progress}%`; pct.innerText = `${progress}%`;
-                
-                if (progress === 30) status.innerText = "破壞物理晶格系統...";
-                if (progress === 60) status.innerText = "生化活性物融合交換中...";
-                
+                if (progress === 30) status.innerText = "茶葉化學鍵解構中...";
+                if (progress === 60) {
+                    if (currentTeaType === "ginseng") status.innerText = "萃取頂級皂苷與提神多酚...";
+                    else if (currentTeaType === "chenpi") status.innerText = "高壓萃取老陳皮揮發油...";
+                    else if (currentTeaType === "oolong") status.innerText = "釋放桂花芳香與烏龍活化因子...";
+                    else status.innerText = "生化特徵物融合中...";
+                }
                 if (progress >= 100) { 
                     clearInterval(interval); 
                     status.innerText = "運算完畢！"; 
                     resultArea.classList.remove('hidden'); 
                     resultArea.classList.add('node-reveal'); 
 
-                    // 依據茶葉型態動態給定長條光譜數值，製造極客感
                     setTimeout(() => {
                         if (currentTeaType === "green" || currentTeaType === "ginseng") {
                             document.getElementById('spec-flavor').innerText = "35%";
                             document.getElementById('spec-polyphenol').innerText = "96%";
-                            document.getElementById('spec-bar-flavor').style.style = "width: 35%; transition: width 0.8s ease;";
+                            document.getElementById('spec-bar-flavor').style.cssText = "width: 35%; transition: width 0.8s ease;";
                             document.getElementById('spec-bar-poly').style.cssText = "width: 96%; transition: width 0.8s ease;";
                         } else if (currentTeaType === "red" || currentTeaType === "oolong") {
                             document.getElementById('spec-flavor').innerText = "92%";

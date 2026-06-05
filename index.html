@@ -43,24 +43,25 @@
             100% { background-position: 0% 50%; }
         }
 
-        /* 🍎 iOS 26 Liquid Glass */
+        /* 🍎 iOS 26 Liquid Glass 特效與擬真流光邊框 */
         .liquid-glass {
-            background: rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(24px) saturate(150%);
-            -webkit-backdrop-filter: blur(24px) saturate(150%);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.07);
+            backdrop-filter: blur(28px) saturate(160%);
+            -webkit-backdrop-filter: blur(28px) saturate(160%);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            box-shadow: 0 15px 45px -12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .liquid-glass-dark {
-            background: rgba(0, 0, 0, 0.3);
+            background: rgba(0, 0, 0, 0.35);
             backdrop-filter: blur(20px) saturate(120%);
             -webkit-backdrop-filter: blur(20px) saturate(120%);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.12);
         }
 
         @keyframes popInGlass {
-            0% { opacity: 0; transform: translateY(30px) scale(0.9); filter: blur(10px); }
+            0% { opacity: 0; transform: translateY(30px) scale(0.92); filter: blur(10px); }
             100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
         }
         .node-reveal { animation: popInGlass 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
@@ -84,9 +85,9 @@
         input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; }
         input[type=range]::-webkit-slider-thumb {
             -webkit-appearance: none; height: 24px; width: 24px; border-radius: 50%;
-            background: rgba(255, 255, 255, 0.9); cursor: pointer; margin-top: -10px;
+            background: rgba(255, 255, 255, 0.95); cursor: pointer; margin-top: -10px;
             box-shadow: 0 0 15px rgba(255,255,255,0.8);
-            border: 2px solid rgba(255,255,255,0.5);
+            border: 2px solid rgba(255,255,255,0.6);
         }
         input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 0px; cursor: pointer; background: transparent; }
 
@@ -274,7 +275,7 @@
             document.getElementById('cart-overlay').classList.toggle('opacity-0');
         }
 
-        // ====== 🌟 核心升級：進階多維決策樹演算法 ======
+        // 啟動多維決策管線
         function startPipeline() {
             const inputTxt = document.getElementById('complaint-input').value.trim().toLowerCase();
             const valCog = parseInt(document.getElementById('slider-cog').value);
@@ -290,6 +291,11 @@
                 return;
             }
 
+            // ✨ AI-Mode 視覺微調：啟動後輸入卡片微微縮小並加深，聚焦於下方節點
+            const mainCard = document.getElementById('main-input-card');
+            mainCard.style.transform = "scale(0.97)";
+            mainCard.style.opacity = "0.85";
+
             const container = document.getElementById('pipeline-container');
             container.innerHTML = '';
             document.getElementById('reset-container').classList.add('hidden');
@@ -299,7 +305,7 @@
             startBtn.disabled = true;
             startBtn.classList.add('opacity-50');
 
-            // 1. NLP 關鍵字權重疊加
+            // NLP 權重疊加
             const cogMatch = ['code', '昏', '累', '熬夜', '卡', '考試', '讀書', '微積分'].some(k => inputTxt.includes(k));
             const stressMatch = ['壓力', '焦慮', '緊繃', '煩', '睡不著', '失眠', '崩潰'].some(k => inputTxt.includes(k));
             const lipidMatch = ['油', '脹', '飽', '大餐', '烤肉', '宵夜', '炸雞', '胖'].some(k => inputTxt.includes(k));
@@ -312,7 +318,6 @@
             let decompKw = `[腦霧:${valCog}%, 緊繃:${valStress}%, 油膩:${valLipid}%]`;
             let patMatch, absFilter, algoTitle, algoDesc, price;
             
-            // 2. 6型茶葉分流
             if (maxScore < 50) {
                 currentTeaType = "white";
                 patMatch = "匹配目標：需「清熱平燥」➜ 佛手白毫抗氧化活性";
@@ -366,7 +371,6 @@
                 }
             }
 
-            // 3. 運算管線陣列與神經元視覺化
             const nodes = [
                 { step: "STEP 1: DECOMPOSITION", icon: "fa-solid fa-layer-group text-blue-400", title: "量化身心抱怨矩陣", content: `<div class="liquid-glass-dark font-mono text-[11px] p-3 rounded-xl border border-blue-400/30 mt-3 text-white/80 shadow-inner">多維變數向量：<br><span class="text-blue-300 font-bold">${decompKw}</span><br><span class="text-blue-200/50 mt-1 block">>> Keyword Matched: ${cogMatch||stressMatch||lipidMatch ? 'TRUE' : 'FALSE'}</span></div>` },
                 { step: "STEP 2: PATTERN RECOGNITION", icon: "fa-solid fa-fingerprint text-purple-400", title: "比對 6型 佛手茶生化庫", content: `<div class="liquid-glass-dark font-mono text-[11px] p-3 rounded-xl border border-purple-400/30 mt-3 text-white/80 shadow-inner"><span class="text-purple-300 font-bold">${patMatch}</span></div>` },
@@ -432,7 +436,7 @@
                 }
             ];
 
-            // 按時序渲染節點卡片
+            // 依序渲染節點
             nodes.forEach((node, index) => {
                 setTimeout(() => {
                     if (index > 0) {
@@ -452,6 +456,7 @@
             });
         }
 
+        // 完全重置回原始狀態
         function resetPipeline() {
             document.getElementById('complaint-input').value = '';
             document.getElementById('pipeline-container').innerHTML = '';
@@ -459,6 +464,12 @@
             document.getElementById('reset-container').classList.remove('node-reveal');
             document.getElementById('btn-start').disabled = false;
             document.getElementById('btn-start').classList.remove('opacity-50');
+
+            // 還原輸入卡片的縮放與透明度
+            const mainCard = document.getElementById('main-input-card');
+            mainCard.style.transform = "scale(1)";
+            mainCard.style.opacity = "1";
+
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 

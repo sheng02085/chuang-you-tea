@@ -50,7 +50,6 @@
         @keyframes steam-rise { 0% { opacity: 0; transform: translateY(5px) scale(0.8); } 50% { opacity: 0.8; transform: translateY(-10px) scale(1.1); } 100% { opacity: 0; transform: translateY(-20px) scale(1.2); } }
         .animate-steam { animation: steam-rise 2s infinite ease-in-out; }
 
-        /* 滑桿客製化 */
         input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; }
         input[type=range]::-webkit-slider-thumb {
             -webkit-appearance: none; height: 24px; width: 24px; border-radius: 50%; background: rgba(255, 255, 255, 0.9); cursor: pointer; margin-top: -10px;
@@ -62,7 +61,6 @@
         
         #checkout-modal { display: none; position: fixed; inset: 0; z-index: 100; align-items: center; justify-content: center; padding: 20px; }
 
-        /* 掃描線動畫 */
         .scan-line {
             position: absolute; width: 100%; height: 2px; background: #34d399; box-shadow: 0 0 10px #34d399, 0 0 20px #34d399;
             top: 0; left: 0; opacity: 0; z-index: 10;
@@ -99,7 +97,7 @@
                 <div class="inline-flex items-center justify-center w-14 h-14 rounded-full liquid-glass-dark mb-2 border border-white/20">
                     <i class="fa-solid fa-brain text-2xl text-tea-gold"></i>
                 </div>
-                <h2 class="font-serif text-2xl sm:text-3xl font-bold text-white drop-shadow-lg">定義您的身心抱怨</h2>
+                <h2 class="font-serif text-2xl sm:text-3xl font-bold text-white drop-shadow-lg">定義您的專屬茶葉</h2>
                 <p class="text-xs text-white/60 font-light max-w-lg mx-auto leading-relaxed">
                     請寫下您的心境，您可手動拉動橫桿，或點擊<span class="text-emerald-400 font-bold">「NLP 掃描」</span>讓系統自動量化變數。
                 </p>
@@ -246,7 +244,6 @@
         let cart = [];
         let currentTeaType = "";
 
-        // 🌟 互動功能 1：NLP 自動掃描器
         function runNLPScanner() {
             const inputTxt = document.getElementById('complaint-input').value.trim().toLowerCase();
             if (!inputTxt) return alert("請先輸入文字抱怨，才能執行 NLP 語意掃描！");
@@ -262,13 +259,11 @@
                 btnNlp.innerHTML = '<i class="fa-solid fa-satellite-dish"></i> 重新掃描量化';
                 document.getElementById('nlp-badge').classList.remove('hidden');
 
-                // 權重計算與滑桿自動注水動畫
                 let cogScore = 15; let strScore = 15; let lipScore = 15;
                 if (['code', '昏', '累', '熬夜', '卡', '考', '讀', '微積分'].some(k => inputTxt.includes(k))) cogScore = 85;
                 if (['壓力', '焦慮', '緊繃', '煩', '睡不著', '失眠', '崩潰', '死'].some(k => inputTxt.includes(k))) strScore = 88;
                 if (['油', '脹', '飽', '大餐', '烤肉', '宵夜', '炸雞', '胖'].some(k => inputTxt.includes(k))) lipScore = 90;
 
-                // 觸發注水
                 updateFluidSlider('cog', cogScore);
                 updateFluidSlider('stress', strScore);
                 updateFluidSlider('lipid', lipScore);
@@ -324,7 +319,7 @@
             if (maxScore < 50) {
                 currentTeaType = "white"; patMatch = "需「清熱平燥」➜ 白茶高抗氧化活性";
                 absFilter = "濾除極端痛點 ➜ 提取「日常保養」"; algoTitle = "莊友白毫佛手白茶 (20入)"; price = 260;
-                algoDesc = "採用最少加工白茶工藝，保留高抗氧化物。適合輕微煩躁時日常飲用，溫和清熱舒緩。";
+                algoDesc = "採用最少加工白茶工藝，保留高抗氧化物。適合輕微煩躁時日常飲用，溫和清熱舒緩. ";
             } 
             else if (maxScore === scoreCog) {
                 if (scoreCog >= 120) {
@@ -360,7 +355,6 @@
                 }
             }
 
-            // ====== 🌟 互動功能 2：演算法溫度校準 UI 注入 ======
             const nodes = [
                 { step: "STEP 1: DECOMPOSITION", icon: "fa-solid fa-layer-group text-blue-400", title: "量化身心抱怨矩陣", content: `<div class="liquid-glass-dark font-mono text-[11px] p-3 rounded-xl border border-blue-400/30 mt-3 text-white/80 shadow-inner">多維變數向量：<br><span class="text-blue-300 font-bold">${decompKw}</span></div>` },
                 { step: "STEP 2: PATTERN RECOGNITION", icon: "fa-solid fa-fingerprint text-purple-400", title: "比對 6型 佛手茶生化庫", content: `<div class="liquid-glass-dark font-mono text-[11px] p-3 rounded-xl border border-purple-400/30 mt-3 text-white/80 shadow-inner"><span class="text-purple-300 font-bold">${patMatch}</span></div>` },
@@ -380,26 +374,22 @@
                                 <button class="bg-white/10 border border-white/20 text-white text-xs font-bold px-5 py-2.5 rounded-xl hover:bg-white/20 active:scale-95 transition-all" onclick="addToCart('${algoTitle}', ${price})"><i class="fa-solid fa-cart-plus mr-1"></i> 加入採購清單</button>
                             </div>
                         </div>
-                        
                         <div id="content-sim" class="hidden p-6 bg-black/60 text-white font-mono text-[11px]">
                             <div id="sim-main">
                                 <p class="text-emerald-400 mb-2">> Initialization (參數校準)</p>
                                 <p class="text-white/50 text-[10px] mb-4">系統鎖定中。請滑動下方溫度計，將水溫精準校準至 <span class="text-yellow-400 font-bold">90°C</span> 以解鎖演算法。</p>
-                                
                                 <div class="bg-black/50 p-4 rounded-xl border border-white/10 mb-5 relative">
                                     <div class="flex justify-between text-white/80 font-bold text-xs mb-2">
                                         <span>🌡️ 水溫校準 (Temp)</span><span id="temp-display" class="text-rose-400">20°C</span>
                                     </div>
                                     <input type="range" min="20" max="100" value="20" class="w-full h-2 bg-slate-700 rounded-full appearance-none outline-none z-20 relative" style="-webkit-appearance: none; cursor: pointer;" oninput="calibrateTemp(this.value)">
                                 </div>
-
                                 <div class="space-y-2">
                                     <div class="flex justify-between"><span id="sim-status" class="text-white/50">請先完成參數校準...</span><span id="sim-pct" class="text-emerald-400">0%</span></div>
                                     <div class="w-full bg-black/50 h-2.5 rounded-full overflow-hidden border border-white/10"><div id="sim-bar" class="bg-emerald-400 h-full w-0 transition-all duration-100"></div></div>
                                 </div>
                                 <button onclick="runSimulation()" id="btn-sim" disabled class="w-full mt-5 bg-emerald-500/10 border border-emerald-500/20 text-emerald-500/50 font-bold py-2.5 rounded-xl uppercase tracking-widest transition-all cursor-not-allowed">RUN_EXTRACTION() [LOCKED]</button>
                             </div>
-                            
                             <div id="sim-result-area" class="hidden mt-2 text-center py-4">
                                 <div class="relative inline-block"><div class="absolute -top-6 left-1/2 -translate-x-1/2 text-white/40 text-3xl animate-steam">♨️</div><div class="text-5xl drop-shadow-[0_0_20px_rgba(212,175,55,0.6)]">🍵</div></div>
                                 <h4 class="text-tea-gold font-bold mt-4">數位生化萃取成功</h4>
@@ -428,19 +418,15 @@
             });
         }
 
-        // 🌟 互動功能 2：演算法參數溫度校準邏輯
         function calibrateTemp(val) {
             const display = document.getElementById('temp-display');
             const btn = document.getElementById('btn-sim');
             const status = document.getElementById('sim-status');
-            
             display.innerText = val + '°C';
-            
-            if (val == 90) { // 精準對到 90 度解鎖
+            if (val == 90) {
                 display.className = "text-emerald-400 font-bold drop-shadow-[0_0_8px_#34d399] scale-110 transition-transform";
                 status.innerText = "參數驗證通過。系統就緒。";
                 status.className = "text-emerald-400";
-                
                 btn.disabled = false;
                 btn.className = "w-full mt-5 bg-emerald-500/30 hover:bg-emerald-500/50 border border-emerald-500/80 text-emerald-300 font-bold py-2.5 rounded-xl uppercase tracking-widest active:scale-95 transition-all shadow-[0_0_15px_rgba(16,185,129,0.4)] cursor-pointer animate-pulse";
                 btn.innerText = "RUN_EXTRACTION() [UNLOCKED]";
@@ -448,7 +434,6 @@
                 display.className = "text-rose-400";
                 status.innerText = "參數錯誤，系統鎖定中...";
                 status.className = "text-white/50";
-                
                 btn.disabled = true;
                 btn.className = "w-full mt-5 bg-emerald-500/10 border border-emerald-500/20 text-emerald-500/50 font-bold py-2.5 rounded-xl uppercase tracking-widest transition-all cursor-not-allowed";
                 btn.innerText = "RUN_EXTRACTION() [LOCKED]";
@@ -463,8 +448,6 @@
             document.getElementById('reset-container').classList.remove('node-reveal');
             document.getElementById('btn-start').disabled = false;
             document.getElementById('btn-start').classList.remove('opacity-50');
-            
-            // 重置滑桿
             ['cog', 'stress', 'lipid'].forEach(id => {
                 document.getElementById(`slider-${id}`).value = 50;
                 updateFluidSlider(id, 50);
@@ -478,11 +461,9 @@
             const pct = document.getElementById('sim-pct');
             const resultArea = document.getElementById('sim-result-area');
             document.getElementById('btn-sim').style.display = 'none'; 
-            
             let progress = 0;
             status.innerText = "注入 90°C 熱水解構化學鍵...";
             status.className = "text-white/80";
-            
             const interval = setInterval(() => {
                 progress += 5; bar.style.width = `${progress}%`; pct.innerText = `${progress}%`;
                 if (progress === 40) status.innerText = "生化特徵物融合交換中...";
@@ -495,57 +476,6 @@
             document.getElementById('tab-sim').className = t==='sim' ? "flex-1 py-3 font-bold text-tea-gold border-b-2 border-tea-gold bg-white/5" : "flex-1 py-3 text-white/40 hover:text-white border-b-2 border-transparent";
             document.getElementById('content-result').classList.toggle('hidden', t!=='result');
             document.getElementById('content-sim').classList.toggle('hidden', t!=='sim');
-        }
-
-        function addToCart(n, p) {
-            const i = cart.find(x => x.name === n);
-            if (i) { i.qty++; } else { cart.push({ name: n, price: p, qty: 1 }); }
-            updateCartUI();
-            const t = document.getElementById('toast');
-            document.getElementById('toast-msg').innerText = `已將解法加入採購庫！`;
-            t.classList.remove('translate-y-20', 'opacity-0'); t.classList.add('translate-y-0', 'opacity-100');
-            setTimeout(() => { t.classList.add('translate-y-20', 'opacity-0'); t.classList.remove('translate-y-0', 'opacity-100'); }, 2000);
-        }
-
-        function updateCartUI() {
-            const container = document.getElementById('cart-items');
-            const totalEl = document.getElementById('total-price');
-            const countEl = document.getElementById('cart-count');
-            if (cart.length === 0) {
-                container.innerHTML = `<div class="text-center py-12 text-white/40 text-xs">採購庫空虛。請先執行運算思維引擎！</div>`;
-                countEl.classList.add('hidden'); totalEl.innerText = "NT$ 0"; return;
-            }
-            countEl.innerText = cart.reduce((a, b) => a + b.qty, 0); countEl.classList.remove('hidden');
-            let h = ''; let s = 0;
-            cart.forEach((x, idx) => {
-                s += x.price * x.qty;
-                h += `<div class="liquid-glass-dark p-3 rounded-xl border border-white/10 flex justify-between items-center shadow-inner">
-                        <div class="text-left"><p class="font-bold text-white text-xs">${x.name}</p><p class="text-tea-gold font-bold text-xs mt-0.5">NT$ ${x.price} × ${x.qty}</p></div>
-                        <button onclick="cart.splice(${idx},1);updateCartUI();" class="text-red-400 p-2"><i class="fa-regular fa-trash-can"></i></button>
-                    </div>`;
-            });
-            container.innerHTML = h; totalEl.innerText = `NT$ ${s}`;
-        }
-
-        function checkout() {
-            if(cart.length === 0) return alert("採購庫目前沒有解法哦！");
-            const sum = cart.reduce((a, b) => a + (b.price * b.qty), 0);
-            document.getElementById('final-price-display').innerText = `NT$ ${sum}`;
-            document.getElementById('checkout-modal').style.display = 'flex';
-            
-            const count = 200;
-            const defaults = { origin: { y: 0.7 }, colors: ['#1C3A27', '#D4AF37', '#EAF3EC', '#664d14'] };
-            function fire(particleRatio, opts) { confetti({ ...defaults, ...opts, particleCount: Math.floor(count * particleRatio) }); }
-            fire(0.25, { spread: 26, startVelocity: 55 });
-            fire(0.2, { spread: 60 });
-            fire(0.35, { spread: 100, decay: 0.91, scalar: 0.8 });
-            fire(0.1, { spread: 120, startVelocity: 25, decay: 0.92, scalar: 1.2 });
-            fire(0.1, { spread: 120, startVelocity: 45 });
-        }
-
-        function closeCheckout() {
-            document.getElementById('checkout-modal').style.display = 'none';
-            cart = []; updateCartUI(); toggleCart(); resetPipeline();
         }
     </script>
 </body>

@@ -4,8 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>莊友佛手茶 | 運算思維液態玻璃引擎</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&family=Noto+Sans+TC:wght@300;400;500;700&family=Noto+Serif+TC:wght@500;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     
@@ -25,14 +28,12 @@
             background: linear-gradient(-45deg, #0A140E, #1C3A27, #664d14, #12261A);
             background-size: 400% 400%; animation: fluidBackground 15s ease infinite; color: #FFFFFF; overflow-x: hidden;
         }
-
         @keyframes fluidBackground { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
 
         .liquid-glass {
             background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(24px) saturate(150%); -webkit-backdrop-filter: blur(24px) saturate(150%);
             border: 1px solid rgba(255, 255, 255, 0.2); box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3);
         }
-
         .liquid-glass-dark {
             background: rgba(0, 0, 0, 0.3); backdrop-filter: blur(20px) saturate(120%); -webkit-backdrop-filter: blur(20px) saturate(120%);
             border: 1px solid rgba(255, 255, 255, 0.1);
@@ -46,28 +47,29 @@
             background-size: 100% 200%; animation: flowDown 1.5s infinite linear; box-shadow: 0 0 10px rgba(212,175,55,0.5);
         }
         @keyframes flowDown { 0% { background-position: 0% -100%; } 100% { background-position: 0% 100%; } }
-
         @keyframes steam-rise { 0% { opacity: 0; transform: translateY(5px) scale(0.8); } 50% { opacity: 0.8; transform: translateY(-10px) scale(1.1); } 100% { opacity: 0; transform: translateY(-20px) scale(1.2); } }
         .animate-steam { animation: steam-rise 2s infinite ease-in-out; }
 
-        /* 滑桿客製化 */
         input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; }
         input[type=range]::-webkit-slider-thumb {
             -webkit-appearance: none; height: 24px; width: 24px; border-radius: 50%; background: rgba(255, 255, 255, 0.9); cursor: pointer; margin-top: -10px;
             box-shadow: 0 0 15px rgba(255,255,255,0.8); border: 2px solid rgba(255,255,255,0.5);
         }
         input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 0px; cursor: pointer; background: transparent; }
-
         .btn-bounce:active { transform: scale(0.94); transition: transform 0.1s ease; }
-        
         #checkout-modal { display: none; position: fixed; inset: 0; z-index: 100; align-items: center; justify-content: center; padding: 20px; }
 
-        /* 掃描線動畫 */
+        /* ====== 新增：陣列滑動融合與 BBox 掃描特效 ====== */
         .scan-line {
             position: absolute; width: 100%; height: 2px; background: #34d399; box-shadow: 0 0 10px #34d399, 0 0 20px #34d399;
             top: 0; left: 0; opacity: 0; z-index: 10;
         }
         @keyframes scan { 0% { top: 0; opacity: 1; } 50% { opacity: 1; } 100% { top: 100%; opacity: 0; } }
+        
+        .array-block { transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1); transform-origin: center; }
+        .bbox-draw { animation: drawBox 0.4s ease-out forwards; }
+        @keyframes drawBox { 0% { width: 0; height: 0; opacity: 0; } 100% { width: 100%; height: 100%; opacity: 1; } }
+        .drop-defect { opacity: 0; transform: translateY(40px) scale(0.8); width: 0 !important; margin: 0 !important; padding: 0 !important; border: none !important; }
 
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
@@ -81,7 +83,7 @@
             <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-tea-gold to-yellow-200 text-tea-dark flex items-center justify-center font-serif font-bold text-lg shadow-[0_0_15px_rgba(212,175,55,0.5)]">莊</div>
             <div>
                 <h1 class="font-bold tracking-widest text-lg sm:text-xl text-white drop-shadow-md">莊友佛手茶</h1>
-                <p class="text-[10px] font-mono text-white/60 uppercase mt-0.5">Computational Thinking Logic Engine</p>
+                <p class="text-[10px] font-mono text-white/60 uppercase mt-0.5">Computational Thinking Engine</p>
             </div>
         </div>
         <div class="flex items-center gap-4">
@@ -94,71 +96,62 @@
 
     <main class="flex-1 pt-32 pb-12 px-4 max-w-4xl mx-auto w-full relative z-10 flex flex-col items-center">
         
+        <!-- 模組一：運算思維解題引擎 (原設計) -->
         <div id="main-input-card" class="w-full liquid-glass rounded-[2rem] p-6 sm:p-10 relative z-20 space-y-6">
             <div class="text-center space-y-2">
                 <div class="inline-flex items-center justify-center w-14 h-14 rounded-full liquid-glass-dark mb-2 border border-white/20">
                     <i class="fa-solid fa-brain text-2xl text-tea-gold"></i>
                 </div>
-                <h2 class="font-serif text-2xl sm:text-3xl font-bold text-white drop-shadow-lg">定義您的身心抱怨</h2>
+                <h2 class="font-serif text-2xl sm:text-3xl font-bold text-white drop-shadow-lg">模組一：身心抱怨解題引擎</h2>
                 <p class="text-xs text-white/60 font-light max-w-lg mx-auto leading-relaxed">
-                    運算思維第一步：拆解 (Decomposition)。請寫下抱怨，您可手動拉動橫桿，或點擊<span class="text-emerald-400 font-bold">「NLP 掃描」</span>讓系統自動量化變數。
+                    請寫下抱怨，您可手動拉動橫桿，或點擊<span class="text-emerald-400 font-bold">「NLP 掃描」</span>讓系統自動量化變數。
                 </p>
             </div>
             
             <div class="max-w-2xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- 文字區 + NLP 按鈕 -->
                 <div class="space-y-3 flex flex-col relative">
                     <label class="text-xs font-bold text-white/90 font-mono tracking-wider italic flex justify-between items-end">
                         <span><i class="fa-solid fa-terminal text-tea-gold mr-1"></i>STRING_INPUT</span>
                         <span id="nlp-badge" class="text-[9px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded border border-emerald-500/50 hidden">NLP Parsed</span>
                     </label>
                     <div class="relative flex-1 flex flex-col">
-                        <textarea id="complaint-input" rows="4" class="w-full liquid-glass-dark text-white rounded-2xl p-4 text-sm focus:border-tea-gold outline-none transition-all resize-none shadow-inner flex-1 placeholder:text-white/30" placeholder="請輸入您的抱怨描述...&#10;例如：熬夜寫程式好卡 / 剛吃完炸雞肚子好脹 / 明天期末考快崩潰..."></textarea>
-                        <div id="scan-line" class="scan-line"></div> </div>
-                    
+                        <textarea id="complaint-input" rows="4" class="w-full liquid-glass-dark text-white rounded-2xl p-4 text-sm focus:border-tea-gold outline-none transition-all resize-none shadow-inner flex-1 placeholder:text-white/30" placeholder="請輸入抱怨...&#10;例如：熬夜寫程式好卡 / 剛吃完炸雞肚子好脹..."></textarea>
+                        <div id="scan-line-nlp" class="scan-line"></div>
+                    </div>
                     <button onclick="runNLPScanner()" id="btn-nlp" class="w-full bg-emerald-500/10 hover:bg-emerald-500/30 border border-emerald-500/40 text-emerald-400 font-mono text-[10px] py-2 rounded-xl transition-all active:scale-95 flex items-center justify-center gap-2">
                         <i class="fa-solid fa-satellite-dish"></i> 啟動 NLP 語意自動掃描量化
                     </button>
                 </div>
 
+                <!-- 滑桿區 -->
                 <div class="space-y-5 liquid-glass-dark p-5 rounded-2xl flex flex-col justify-center border-t border-white/10">
                     <label class="text-xs font-bold text-white/90 font-mono tracking-wider italic"><i class="fa-solid fa-sliders text-tea-gold mr-1"></i>VARIABLES</label>
                     
                     <div class="space-y-1.5 relative">
-                        <div class="flex justify-between text-[11px] text-white/80 font-bold mb-1">
-                            <span>🧠 腦霧卡關度 (Cognitive Load)</span>
-                        </div>
+                        <div class="flex justify-between text-[11px] text-white/80 font-bold mb-1"><span>🧠 腦霧卡關度 (Cognitive)</span></div>
                         <div class="relative w-full h-8 bg-black/40 rounded-full shadow-inner overflow-hidden border border-white/10">
                             <div id="fill-cog" class="absolute top-0 left-0 h-full bg-gradient-to-r from-pink-500 to-rose-400 transition-all duration-300 ease-out" style="width: 50%;"></div>
                             <input type="range" id="slider-cog" min="0" max="100" value="50" class="absolute top-0 left-0 w-full h-full opacity-0 cursor-pointer z-10" oninput="updateFluidSlider('cog', this.value)">
-                            <div class="absolute inset-y-0 right-4 flex items-center pointer-events-none z-20">
-                                <span id="val-cog" class="font-mono font-bold text-xs text-white mix-blend-overlay">50%</span>
-                            </div>
+                            <div class="absolute inset-y-0 right-4 flex items-center pointer-events-none z-20"><span id="val-cog" class="font-mono font-bold text-xs text-white mix-blend-overlay">50%</span></div>
                         </div>
                     </div>
 
                     <div class="space-y-1.5 relative">
-                        <div class="flex justify-between text-[11px] text-white/80 font-bold mb-1">
-                            <span>🌙 情緒緊繃度 (Stress Level)</span>
-                        </div>
+                        <div class="flex justify-between text-[11px] text-white/80 font-bold mb-1"><span>🌙 情緒緊繃度 (Stress)</span></div>
                         <div class="relative w-full h-8 bg-black/40 rounded-full shadow-inner overflow-hidden border border-white/10">
                             <div id="fill-stress" class="absolute top-0 left-0 h-full bg-gradient-to-r from-amber-600 to-yellow-500 transition-all duration-300 ease-out" style="width: 50%;"></div>
                             <input type="range" id="slider-stress" min="0" max="100" value="50" class="absolute top-0 left-0 w-full h-full opacity-0 cursor-pointer z-10" oninput="updateFluidSlider('stress', this.value)">
-                            <div class="absolute inset-y-0 right-4 flex items-center pointer-events-none z-20">
-                                <span id="val-stress" class="font-mono font-bold text-xs text-white mix-blend-overlay">50%</span>
-                            </div>
+                            <div class="absolute inset-y-0 right-4 flex items-center pointer-events-none z-20"><span id="val-stress" class="font-mono font-bold text-xs text-white mix-blend-overlay">50%</span></div>
                         </div>
                     </div>
 
                     <div class="space-y-1.5 relative">
-                        <div class="flex justify-between text-[11px] text-white/80 font-bold mb-1">
-                            <span>🥑 腸胃油膩度 (Lipid Burden)</span>
-                        </div>
+                        <div class="flex justify-between text-[11px] text-white/80 font-bold mb-1"><span>🥑 腸胃油膩度 (Lipid)</span></div>
                         <div class="relative w-full h-8 bg-black/40 rounded-full shadow-inner overflow-hidden border border-white/10">
                             <div id="fill-lipid" class="absolute top-0 left-0 h-full bg-gradient-to-r from-blue-600 to-cyan-500 transition-all duration-300 ease-out" style="width: 50%;"></div>
                             <input type="range" id="slider-lipid" min="0" max="100" value="50" class="absolute top-0 left-0 w-full h-full opacity-0 cursor-pointer z-10" oninput="updateFluidSlider('lipid', this.value)">
-                            <div class="absolute inset-y-0 right-4 flex items-center pointer-events-none z-20">
-                                <span id="val-lipid" class="font-mono font-bold text-xs text-white mix-blend-overlay">50%</span>
-                            </div>
+                            <div class="absolute inset-y-0 right-4 flex items-center pointer-events-none z-20"><span id="val-lipid" class="font-mono font-bold text-xs text-white mix-blend-overlay">50%</span></div>
                         </div>
                     </div>
                 </div>
@@ -173,14 +166,74 @@
 
         <div id="pipeline-container" class="w-full mt-2 flex flex-col items-center pb-8"></div>
 
-        <div id="reset-container" class="hidden w-full flex justify-center pb-32 mt-6 relative z-20">
-            <button onclick="resetPipeline()" class="bg-white/10 border border-white/30 text-white font-bold text-sm px-8 py-4 rounded-full hover:bg-white/20 active:scale-95 transition-all shadow-[0_0_20px_rgba(255,255,255,0.1)] flex items-center gap-2 backdrop-blur-md">
-                <i class="fa-solid fa-rotate-left"></i> 重新開始新運算
+
+        <!-- ========================================== -->
+        <!-- 模組二：AI 視覺影像識別與陣列融合器 (全新硬核互動) -->
+        <!-- ========================================== -->
+        <div class="w-full max-w-xl flex justify-center py-6">
+            <div class="w-1 bg-white/20 h-12 rounded-full"></div>
+        </div>
+
+        <div class="w-full liquid-glass rounded-[2rem] p-6 sm:p-10 relative z-20 space-y-6">
+            <div class="text-center space-y-2">
+                <div class="inline-flex items-center justify-center w-14 h-14 rounded-full liquid-glass-dark mb-2 border border-white/20">
+                    <i class="fa-solid fa-microchip text-2xl text-emerald-400"></i>
+                </div>
+                <h2 class="font-serif text-2xl sm:text-3xl font-bold text-white drop-shadow-lg">模組二：AI 影像辨識與陣列融合</h2>
+                <p class="text-xs text-white/60 font-light max-w-lg mx-auto leading-relaxed">
+                    實作「模式識別 (Object Detection)」與「演算法操作 (Array Merging)」。
+                </p>
+            </div>
+
+            <!-- 茶葉陣列展示區 -->
+            <div class="bg-black/40 rounded-2xl p-6 border border-white/10 shadow-inner relative overflow-hidden">
+                <p class="font-mono text-xs text-emerald-400 mb-4">> Input_Array = [Leaf_0, Leaf_1, Leaf_2, Leaf_3, Leaf_4]</p>
+                <div id="scan-line-vision" class="scan-line"></div>
+                
+                <div id="array-container" class="flex flex-wrap sm:flex-nowrap gap-3 w-full relative">
+                    <!-- Block 1 (Premium) -->
+                    <div id="leaf-1" class="array-block flex-1 bg-gradient-to-br from-green-800 to-tea-dark h-24 rounded-xl border border-white/10 flex items-center justify-center relative">
+                        <i class="fa-solid fa-leaf text-2xl text-white/40"></i>
+                    </div>
+                    <!-- Block 2 (Defect) -->
+                    <div id="leaf-2" class="array-block flex-1 bg-gradient-to-br from-orange-900 to-amber-900 h-24 rounded-xl border border-white/10 flex items-center justify-center relative" data-defect="true">
+                        <i class="fa-solid fa-leaf text-2xl text-white/40"></i>
+                    </div>
+                    <!-- Block 3 (Premium) -->
+                    <div id="leaf-3" class="array-block flex-1 bg-gradient-to-br from-emerald-900 to-tea-dark h-24 rounded-xl border border-white/10 flex items-center justify-center relative">
+                        <i class="fa-solid fa-leaf text-2xl text-white/40"></i>
+                    </div>
+                    <!-- Block 4 (Defect) -->
+                    <div id="leaf-4" class="array-block flex-1 bg-gradient-to-br from-red-900 to-rose-900 h-24 rounded-xl border border-white/10 flex items-center justify-center relative" data-defect="true">
+                        <i class="fa-solid fa-leaf text-2xl text-white/40"></i>
+                    </div>
+                    <!-- Block 5 (Premium) -->
+                    <div id="leaf-5" class="array-block flex-1 bg-gradient-to-br from-green-900 to-tea-dark h-24 rounded-xl border border-white/10 flex items-center justify-center relative">
+                        <i class="fa-solid fa-leaf text-2xl text-white/40"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 控制面板 -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <button onclick="runBBoxScan()" id="btn-bbox" class="bg-blue-500/20 hover:bg-blue-500/40 border border-blue-500/50 text-blue-300 font-bold text-xs py-4 rounded-xl transition-all active:scale-95 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-camera-viewfinder"></i> 1. 執行 BBox 影像特徵掃描
+                </button>
+                <button onclick="runArrayMerge()" id="btn-merge" disabled class="bg-white/5 border border-white/10 text-white/30 font-bold text-xs py-4 rounded-xl transition-all cursor-not-allowed flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-object-group"></i> 2. 啟動陣列融合 (Sliding/Merge)
+                </button>
+            </div>
+        </div>
+
+        <div class="w-full flex justify-center pb-32 mt-12 relative z-20">
+            <button onclick="location.reload()" class="bg-white/10 border border-white/30 text-white font-bold text-sm px-8 py-4 rounded-full hover:bg-white/20 active:scale-95 transition-all shadow-[0_0_20px_rgba(255,255,255,0.1)] flex items-center gap-2 backdrop-blur-md">
+                <i class="fa-solid fa-rotate-left"></i> 重置全站系統
             </button>
         </div>
 
     </main>
 
+    <!-- 結帳憑證 -->
     <div id="checkout-modal">
         <div class="absolute inset-0 bg-black/80 backdrop-blur-xl transition-opacity"></div>
         <div class="liquid-glass rounded-[3rem] p-10 max-w-md w-full text-center relative z-10 border border-white/30 node-reveal shadow-[0_0_50px_rgba(212,175,55,0.3)]">
@@ -194,7 +247,7 @@
                 <div class="flex justify-between text-xs font-mono text-white/50"><span>TRANSACTION_ID</span><span>TXN-768823</span></div>
                 <div class="border-t border-white/10 pt-4">
                     <p class="text-xs text-white/80 leading-relaxed italic">
-                        恭喜！您的生活抱怨已成功轉化為「莊友佛手茶」生化解法。運算思維引擎已將對應的多元酚與理氣成分封裝完畢。
+                        恭喜！您的抱怨已成功轉化為「莊友佛手茶」生化解法。運算思維引擎已將對應多酚成分封裝完畢。
                     </p>
                 </div>
                 <div class="flex justify-between font-bold text-tea-gold border-t border-white/10 pt-4">
@@ -202,34 +255,23 @@
                     <span id="final-price-display">NT$ 0</span>
                 </div>
             </div>
-
-            <button onclick="closeCheckout()" class="w-full bg-white text-tea-dark font-bold py-4 rounded-2xl hover:bg-tea-light transition-all active:scale-95 shadow-lg">
-                返回控制台
-            </button>
+            <button onclick="closeCheckout()" class="w-full bg-white text-tea-dark font-bold py-4 rounded-2xl hover:bg-tea-light transition-all active:scale-95 shadow-lg">返回控制台</button>
         </div>
     </div>
 
+    <!-- 購物車 -->
     <div id="cart-drawer" class="fixed inset-0 z-50 overflow-hidden pointer-events-none transition-all duration-400 translate-x-full">
         <div class="absolute inset-0 bg-black/60 backdrop-blur-sm opacity-0 transition-opacity duration-300" onclick="toggleCart()" id="cart-overlay"></div>
         <div class="absolute inset-y-0 right-0 max-w-sm w-full liquid-glass shadow-2xl flex flex-col justify-between pointer-events-auto border-l border-white/20">
             <div class="p-6 border-b border-white/10 flex justify-between items-center liquid-glass-dark">
-                <h3 class="text-md font-bold text-tea-gold flex items-center gap-2">
-                    <i class="fa-solid fa-bag-shopping"></i><span>採購物資庫</span>
-                </h3>
-                <button onclick="toggleCart()" class="text-white/60 hover:text-white transition-colors active:scale-90">
-                    <i class="fa-solid fa-xmark text-xl"></i>
-                </button>
+                <h3 class="text-md font-bold text-tea-gold flex items-center gap-2"><i class="fa-solid fa-bag-shopping"></i><span>採購物資庫</span></h3>
+                <button onclick="toggleCart()" class="text-white/60 hover:text-white transition-colors active:scale-90"><i class="fa-solid fa-xmark text-xl"></i></button>
             </div>
             <div id="cart-items" class="flex-1 overflow-y-auto p-6 space-y-3">
-                <div class="text-center py-12 text-white/40 text-xs">
-                    目前沒有處方解法。請先執行運算思維管線！
-                </div>
+                <div class="text-center py-12 text-white/40 text-xs">目前沒有處方解法。請先執行運算思維管線！</div>
             </div>
             <div class="p-6 border-t border-white/10 liquid-glass-dark space-y-4">
-                <div class="flex justify-between items-end">
-                    <span class="text-xs font-bold text-white/60">應付總額</span>
-                    <span id="total-price" class="text-xl font-mono font-extrabold text-tea-gold">NT$ 0</span>
-                </div>
+                <div class="flex justify-between items-end"><span class="text-xs font-bold text-white/60">應付總額</span><span id="total-price" class="text-xl font-mono font-extrabold text-tea-gold">NT$ 0</span></div>
                 <button onclick="checkout()" class="w-full bg-tea-gold text-tea-dark hover:bg-yellow-400 font-bold py-3.5 rounded-xl shadow-[0_0_15px_rgba(212,175,55,0.3)] transition-transform active:scale-95 text-sm flex items-center justify-center gap-2">
                     <i class="fa-solid fa-credit-card"></i> 部署解法 (結帳)
                 </button>
@@ -237,22 +279,24 @@
         </div>
     </div>
 
+    <!-- Toast -->
     <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 liquid-glass border border-white/20 text-white py-3 px-6 rounded-full text-xs font-medium shadow-2xl transition-all duration-300 transform translate-y-20 opacity-0 pointer-events-none flex items-center gap-2">
-        <i class="fa-solid fa-circle-check text-tea-gold"></i>
-        <span id="toast-msg">加入成功！</span>
+        <i class="fa-solid fa-circle-check text-tea-gold"></i><span id="toast-msg">加入成功！</span>
     </div>
 
     <script>
         let cart = [];
         let currentTeaType = "";
 
-        // 🌟 互動功能 1：NLP 自動掃描器
+        /* ==================================
+           互動模組一：NLP 掃描與決策引擎
+           ================================== */
         function runNLPScanner() {
             const inputTxt = document.getElementById('complaint-input').value.trim().toLowerCase();
             if (!inputTxt) return alert("請先輸入文字抱怨，才能執行 NLP 語意掃描！");
-
+            
             const btnNlp = document.getElementById('btn-nlp');
-            const scanLine = document.getElementById('scan-line');
+            const scanLine = document.getElementById('scan-line-nlp');
             
             btnNlp.innerHTML = '<i class="fa-solid fa-spinner animate-spin"></i> 語意模型分析中...';
             scanLine.style.animation = 'scan 1.5s ease-in-out';
@@ -262,31 +306,19 @@
                 btnNlp.innerHTML = '<i class="fa-solid fa-satellite-dish"></i> 重新掃描量化';
                 document.getElementById('nlp-badge').classList.remove('hidden');
 
-                // 權重計算與滑桿自動注水動畫
                 let cogScore = 15; let strScore = 15; let lipScore = 15;
                 if (['code', '昏', '累', '熬夜', '卡', '考', '讀', '微積分'].some(k => inputTxt.includes(k))) cogScore = 85;
                 if (['壓力', '焦慮', '緊繃', '煩', '睡不著', '失眠', '崩潰', '死'].some(k => inputTxt.includes(k))) strScore = 88;
                 if (['油', '脹', '飽', '大餐', '烤肉', '宵夜', '炸雞', '胖'].some(k => inputTxt.includes(k))) lipScore = 90;
 
-                // 觸發注水
-                updateFluidSlider('cog', cogScore);
-                updateFluidSlider('stress', strScore);
-                updateFluidSlider('lipid', lipScore);
-                document.getElementById('slider-cog').value = cogScore;
-                document.getElementById('slider-stress').value = strScore;
-                document.getElementById('slider-lipid').value = lipScore;
-                
+                updateFluidSlider('cog', cogScore); updateFluidSlider('stress', strScore); updateFluidSlider('lipid', lipScore);
+                document.getElementById('slider-cog').value = cogScore; document.getElementById('slider-stress').value = strScore; document.getElementById('slider-lipid').value = lipScore;
             }, 1500);
         }
 
         function updateFluidSlider(id, val) {
             document.getElementById(`val-${id}`).innerText = val + '%';
             document.getElementById(`fill-${id}`).style.width = val + '%';
-        }
-
-        function toggleCart() {
-            document.getElementById('cart-drawer').classList.toggle('translate-x-full');
-            document.getElementById('cart-overlay').classList.toggle('opacity-0');
         }
 
         function startPipeline() {
@@ -297,25 +329,19 @@
 
             if (!inputTxt) {
                 alert("【系統提示】請先輸入文字描述您的抱怨，系統才能擷取特徵！");
-                return;
+                document.getElementById('complaint-input').focus(); return;
             }
 
             const container = document.getElementById('pipeline-container');
             container.innerHTML = '';
-            document.getElementById('reset-container').classList.add('hidden');
-            document.getElementById('reset-container').classList.remove('node-reveal');
-
-            const startBtn = document.getElementById('btn-start');
-            startBtn.disabled = true;
-            startBtn.classList.add('opacity-50');
+            document.getElementById('btn-start').disabled = true;
+            document.getElementById('btn-start').classList.add('opacity-50');
 
             const cogMatch = ['code', '昏', '累', '熬夜', '卡', '考試', '讀書', '微積分'].some(k => inputTxt.includes(k));
             const stressMatch = ['壓力', '焦慮', '緊繃', '煩', '睡不著', '失眠', '崩潰'].some(k => inputTxt.includes(k));
             const lipidMatch = ['油', '脹', '飽', '大餐', '烤肉', '宵夜', '炸雞', '胖'].some(k => inputTxt.includes(k));
 
-            let scoreCog = valCog + (cogMatch ? 60 : 0);
-            let scoreStress = valStress + (stressMatch ? 60 : 0);
-            let scoreLipid = valLipid + (lipidMatch ? 60 : 0);
+            let scoreCog = valCog + (cogMatch ? 60 : 0); let scoreStress = valStress + (stressMatch ? 60 : 0); let scoreLipid = valLipid + (lipidMatch ? 60 : 0);
             let maxScore = Math.max(scoreCog, scoreStress, scoreLipid);
 
             let decompKw = `[腦霧:${valCog}%, 緊繃:${valStress}%, 油膩:${valLipid}%]`;
@@ -325,51 +351,26 @@
                 currentTeaType = "white"; patMatch = "需「清熱平燥」➜ 白茶高抗氧化活性";
                 absFilter = "濾除極端痛點 ➜ 提取「日常保養」"; algoTitle = "莊友白毫佛手白茶 (20入)"; price = 260;
                 algoDesc = "採用最少加工白茶工藝，保留高抗氧化物。適合輕微煩躁時日常飲用，溫和清熱舒緩。";
-            } 
-            else if (maxScore === scoreCog) {
-                if (scoreCog >= 120) {
-                    currentTeaType = "ginseng"; patMatch = "需「極限提神大補」➜ 香櫞多酚+皂苷";
-                    absFilter = "濾除一般疲勞 ➜ 提取「極限大補」"; algoTitle = "莊友人蔘佛手茶磚 (150g)"; price = 650;
-                    algoDesc = "專為極端熬夜與大腦超載設計！結合高濃度多酚與人蔘皂苷，強力大補元氣。";
-                } else {
-                    currentTeaType = "green"; patMatch = "需「提神益思」➜ 香櫞青茶高兒茶素";
-                    absFilter = "濾除外在事件 ➜ 提取「溫和提神」"; algoTitle = "莊友經典佛手青茶包 (20入)"; price = 250;
-                    algoDesc = "輕發酵製程鎖住幽雅蘭花清香，最高活性茶多酚能迅速驅散大腦昏沉。";
-                }
-            } 
-            else if (maxScore === scoreLipid) {
-                if (scoreLipid >= 120) {
-                    currentTeaType = "chenpi"; patMatch = "需「消積化滯」➜ 陳皮揮發油+黑茶多酚";
-                    absFilter = "濾除一般飽足感 ➜ 提取「極限去油」"; algoTitle = "莊友陳皮佛手老熟茶 (20入)"; price = 350;
-                    algoDesc = "採用十年老陳皮與炭焙佛手黑茶渥堆發酵。專治極端暴飲暴食與嚴重腸胃死鎖！";
-                } else {
-                    currentTeaType = "dark"; patMatch = "需「和胃止痛」➜ 黑茶多酚與揮發油";
-                    absFilter = "濾除食物雜訊 ➜ 提取「消食解膩」"; algoTitle = "莊友炭焙佛手黑茶包 (20入)"; price = 300;
-                    algoDesc = "手工深層炭焙製程，高濃度黑茶多酚能加速分解脂肪，解除腸胃脹滿。";
-                }
-            } 
-            else { 
-                if (scoreCog >= 70) {
-                    currentTeaType = "oolong"; patMatch = "需「疏肝且活化」➜ 桂花香氣+烏龍多酚";
-                    absFilter = "濾除單一情緒 ➜ 提取「解鬱+提神」"; algoTitle = "莊友桂花佛手烏龍茶 (20入)"; price = 290;
-                    algoDesc = "完美平衡！烏龍醇厚結合桂花芬芳，舒緩極度高壓情緒同時喚醒卡住的思緒。";
-                } else {
-                    currentTeaType = "red"; patMatch = "需「純粹疏肝理氣」➜ 佛手高黃酮類";
-                    absFilter = "濾除環境雜訊 ➜ 提取「深度解鬱」"; algoTitle = "莊友頂級佛手紅茶包 (20入)"; price = 280;
-                    algoDesc = "全發酵製程，高含量黃酮類與茶氨酸能有效疏解肝氣鬱結，撫平深層情緒壓力。";
-                }
+            } else if (maxScore === scoreCog) {
+                if (scoreCog >= 120) { currentTeaType = "ginseng"; patMatch = "需「極限提神大補」➜ 香櫞多酚+皂苷"; absFilter = "濾除一般疲勞 ➜ 提取「極限大補」"; algoTitle = "莊友人蔘佛手茶磚 (150g)"; price = 650; algoDesc = "專為極端熬夜與大腦超載設計！結合高濃度多酚與人蔘皂苷，強力大補元氣。";
+                } else { currentTeaType = "green"; patMatch = "需「提神益思」➜ 香櫞青茶高兒茶素"; absFilter = "濾除外在事件 ➜ 提取「溫和提神」"; algoTitle = "莊友經典佛手青茶包 (20入)"; price = 250; algoDesc = "輕發酵製程鎖住幽雅蘭花清香，最高活性茶多酚能迅速驅散大腦昏沉。"; }
+            } else if (maxScore === scoreLipid) {
+                if (scoreLipid >= 120) { currentTeaType = "chenpi"; patMatch = "需「消積化滯」➜ 陳皮揮發油+黑茶多酚"; absFilter = "濾除一般飽足感 ➜ 提取「極限去油」"; algoTitle = "莊友陳皮佛手老熟茶 (20入)"; price = 350; algoDesc = "採用十年老陳皮與炭焙佛手黑茶渥堆發酵。專治極端暴飲暴食與嚴重腸胃死鎖！";
+                } else { currentTeaType = "dark"; patMatch = "需「和胃止痛」➜ 黑茶多酚與揮發油"; absFilter = "濾除食物雜訊 ➜ 提取「消食解膩」"; algoTitle = "莊友炭焙佛手黑茶包 (20入)"; price = 300; algoDesc = "手工深層炭焙製程，高濃度黑茶多酚能加速分解脂肪，解除腸胃脹滿。"; }
+            } else { 
+                if (scoreCog >= 70) { currentTeaType = "oolong"; patMatch = "需「疏肝且活化」➜ 桂花香氣+烏龍多酚"; absFilter = "濾除單一情緒 ➜ 提取「解鬱+提神」"; algoTitle = "莊友桂花佛手烏龍茶 (20入)"; price = 290; algoDesc = "完美平衡！烏龍醇厚結合桂花芬芳，舒緩極度高壓情緒同時喚醒卡住的思緒。";
+                } else { currentTeaType = "red"; patMatch = "需「純粹疏肝理氣」➜ 佛手高黃酮類"; absFilter = "濾除環境雜訊 ➜ 提取「深度解鬱」"; algoTitle = "莊友頂級佛手紅茶包 (20入)"; price = 280; algoDesc = "全發酵製程，高含量黃酮類與茶氨酸能有效疏解肝氣鬱結，撫平深層情緒壓力。"; }
             }
 
-            // ====== 🌟 互動功能 2：演算法溫度校準 UI 注入 ======
             const nodes = [
-                { step: "STEP 1: DECOMPOSITION", icon: "fa-solid fa-layer-group text-blue-400", title: "量化身心抱怨矩陣", content: `<div class="liquid-glass-dark font-mono text-[11px] p-3 rounded-xl border border-blue-400/30 mt-3 text-white/80 shadow-inner">多維變數向量：<br><span class="text-blue-300 font-bold">${decompKw}</span></div>` },
-                { step: "STEP 2: PATTERN RECOGNITION", icon: "fa-solid fa-fingerprint text-purple-400", title: "比對 6型 佛手茶生化庫", content: `<div class="liquid-glass-dark font-mono text-[11px] p-3 rounded-xl border border-purple-400/30 mt-3 text-white/80 shadow-inner"><span class="text-purple-300 font-bold">${patMatch}</span></div>` },
-                { step: "STEP 3: ABSTRACTION", icon: "fa-solid fa-filter text-orange-400", title: "排除環境干擾雜訊", content: `<div class="liquid-glass-dark font-mono text-[11px] p-3 rounded-xl border border-orange-400/30 mt-3 text-white/80 shadow-inner"><span class="text-orange-300 font-bold">${absFilter}</span></div>` },
+                { step: "STEP 1: DECOMPOSITION", icon: "fa-solid fa-layer-group text-blue-400", title: "量化身心抱怨矩陣", content: `<div class="liquid-glass-dark font-mono text-[11px] p-3 rounded-xl border border-blue-400/30 mt-3 text-white/80 shadow-inner">${decompKw}</div>` },
+                { step: "STEP 2: PATTERN RECOGNITION", icon: "fa-solid fa-fingerprint text-purple-400", title: "比對生化庫", content: `<div class="liquid-glass-dark font-mono text-[11px] p-3 rounded-xl border border-purple-400/30 mt-3 text-white/80 shadow-inner"><span class="text-purple-300 font-bold">${patMatch}</span></div>` },
+                { step: "STEP 3: ABSTRACTION", icon: "fa-solid fa-filter text-orange-400", title: "排除環境雜訊", content: `<div class="liquid-glass-dark font-mono text-[11px] p-3 rounded-xl border border-orange-400/30 mt-3 text-white/80 shadow-inner"><span class="text-orange-300 font-bold">${absFilter}</span></div>` },
                 { step: "STEP 4: ALGORITHM", icon: "fa-solid fa-check-double text-emerald-400", title: "最佳解法精準導出", content: `
                     <div class="mt-5 liquid-glass-dark rounded-2xl shadow-2xl overflow-hidden text-left border border-white/20">
                         <div class="flex border-b border-white/10 bg-black/40 font-mono text-[11px]">
                             <button onclick="switchTab('result')" id="tab-result" class="flex-1 py-3 font-bold text-tea-gold border-b-2 border-tea-gold bg-white/5">處方結論</button>
-                            <button onclick="switchTab('sim')" id="tab-sim" class="flex-1 py-3 text-white/40 hover:text-white border-b-2 border-transparent">沖泡演算法模擬</button>
+                            <button onclick="switchTab('sim')" id="tab-sim" class="flex-1 py-3 text-white/40 hover:text-white border-b-2 border-transparent">參數驗證模擬</button>
                         </div>
                         <div id="content-result" class="p-6">
                             <span class="text-[10px] font-mono bg-tea-gold text-tea-dark font-bold px-2 py-1 rounded">Optimal Match</span>
@@ -381,25 +382,21 @@
                             </div>
                         </div>
                         
+                        <!-- 💡 互動 1.5：溫度參數校準 -->
                         <div id="content-sim" class="hidden p-6 bg-black/60 text-white font-mono text-[11px]">
                             <div id="sim-main">
                                 <p class="text-emerald-400 mb-2">> Initialization (參數校準)</p>
-                                <p class="text-white/50 text-[10px] mb-4">系統鎖定中。請滑動下方溫度計，將水溫精準校準至 <span class="text-yellow-400 font-bold">90°C</span> 以解鎖演算法。</p>
-                                
+                                <p class="text-white/50 text-[10px] mb-4">系統鎖定。請滑動下方溫度計，將水溫精準校準至 <span class="text-yellow-400 font-bold">90°C</span> 解鎖演算法。</p>
                                 <div class="bg-black/50 p-4 rounded-xl border border-white/10 mb-5 relative">
-                                    <div class="flex justify-between text-white/80 font-bold text-xs mb-2">
-                                        <span>🌡️ 水溫校準 (Temp)</span><span id="temp-display" class="text-rose-400">20°C</span>
-                                    </div>
+                                    <div class="flex justify-between text-white/80 font-bold text-xs mb-2"><span>🌡️ 水溫 (Temp)</span><span id="temp-display" class="text-rose-400">20°C</span></div>
                                     <input type="range" min="20" max="100" value="20" class="w-full h-2 bg-slate-700 rounded-full appearance-none outline-none z-20 relative" style="-webkit-appearance: none; cursor: pointer;" oninput="calibrateTemp(this.value)">
                                 </div>
-
                                 <div class="space-y-2">
-                                    <div class="flex justify-between"><span id="sim-status" class="text-white/50">請先完成參數校準...</span><span id="sim-pct" class="text-emerald-400">0%</span></div>
+                                    <div class="flex justify-between"><span id="sim-status" class="text-white/50">等待參數校準...</span><span id="sim-pct" class="text-emerald-400">0%</span></div>
                                     <div class="w-full bg-black/50 h-2.5 rounded-full overflow-hidden border border-white/10"><div id="sim-bar" class="bg-emerald-400 h-full w-0 transition-all duration-100"></div></div>
                                 </div>
                                 <button onclick="runSimulation()" id="btn-sim" disabled class="w-full mt-5 bg-emerald-500/10 border border-emerald-500/20 text-emerald-500/50 font-bold py-2.5 rounded-xl uppercase tracking-widest transition-all cursor-not-allowed">RUN_EXTRACTION() [LOCKED]</button>
                             </div>
-                            
                             <div id="sim-result-area" class="hidden mt-2 text-center py-4">
                                 <div class="relative inline-block"><div class="absolute -top-6 left-1/2 -translate-x-1/2 text-white/40 text-3xl animate-steam">♨️</div><div class="text-5xl drop-shadow-[0_0_20px_rgba(212,175,55,0.6)]">🍵</div></div>
                                 <h4 class="text-tea-gold font-bold mt-4">數位生化萃取成功</h4>
@@ -419,75 +416,20 @@
                     card.innerHTML = `<div class="text-[10px] font-mono font-bold text-white/40 tracking-widest uppercase mb-1">${node.step}</div><div class="flex items-center justify-center gap-2 mb-2"><i class="${node.icon} text-lg"></i><h3 class="font-bold text-white text-base">${node.title}</h3></div>${node.content}`;
                     container.appendChild(card);
                     window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-
-                    if (index === 3) {
-                        document.getElementById('reset-container').classList.remove('hidden');
-                        document.getElementById('reset-container').classList.add('node-reveal');
-                    }
                 }, index * 800); 
             });
         }
 
-        // 🌟 互動功能 2：演算法參數溫度校準邏輯
         function calibrateTemp(val) {
-            const display = document.getElementById('temp-display');
-            const btn = document.getElementById('btn-sim');
-            const status = document.getElementById('sim-status');
-            
+            const display = document.getElementById('temp-display'); const btn = document.getElementById('btn-sim'); const status = document.getElementById('sim-status');
             display.innerText = val + '°C';
-            
-            if (val == 90) { // 精準對到 90 度解鎖
-                display.className = "text-emerald-400 font-bold drop-shadow-[0_0_8px_#34d399] scale-110 transition-transform";
-                status.innerText = "參數驗證通過。系統就緒。";
-                status.className = "text-emerald-400";
-                
-                btn.disabled = false;
-                btn.className = "w-full mt-5 bg-emerald-500/30 hover:bg-emerald-500/50 border border-emerald-500/80 text-emerald-300 font-bold py-2.5 rounded-xl uppercase tracking-widest active:scale-95 transition-all shadow-[0_0_15px_rgba(16,185,129,0.4)] cursor-pointer animate-pulse";
-                btn.innerText = "RUN_EXTRACTION() [UNLOCKED]";
+            if (val == 90) {
+                display.className = "text-emerald-400 font-bold drop-shadow-[0_0_8px_#34d399]"; status.innerText = "驗證通過。系統就緒。"; status.className = "text-emerald-400";
+                btn.disabled = false; btn.className = "w-full mt-5 bg-emerald-500/30 hover:bg-emerald-500/50 border border-emerald-500/80 text-emerald-300 font-bold py-2.5 rounded-xl uppercase tracking-widest active:scale-95 transition-all shadow-[0_0_15px_rgba(16,185,129,0.4)] cursor-pointer animate-pulse"; btn.innerText = "RUN_EXTRACTION() [UNLOCKED]";
             } else {
-                display.className = "text-rose-400";
-                status.innerText = "參數錯誤，系統鎖定中...";
-                status.className = "text-white/50";
-                
-                btn.disabled = true;
-                btn.className = "w-full mt-5 bg-emerald-500/10 border border-emerald-500/20 text-emerald-500/50 font-bold py-2.5 rounded-xl uppercase tracking-widest transition-all cursor-not-allowed";
-                btn.innerText = "RUN_EXTRACTION() [LOCKED]";
+                display.className = "text-rose-400"; status.innerText = "參數錯誤，系統鎖定中..."; status.className = "text-white/50";
+                btn.disabled = true; btn.className = "w-full mt-5 bg-emerald-500/10 border border-emerald-500/20 text-emerald-500/50 font-bold py-2.5 rounded-xl uppercase tracking-widest transition-all cursor-not-allowed"; btn.innerText = "RUN_EXTRACTION() [LOCKED]";
             }
-        }
-
-        function resetPipeline() {
-            document.getElementById('complaint-input').value = '';
-            document.getElementById('nlp-badge').classList.add('hidden');
-            document.getElementById('pipeline-container').innerHTML = '';
-            document.getElementById('reset-container').classList.add('hidden');
-            document.getElementById('reset-container').classList.remove('node-reveal');
-            document.getElementById('btn-start').disabled = false;
-            document.getElementById('btn-start').classList.remove('opacity-50');
-            
-            // 重置滑桿
-            ['cog', 'stress', 'lipid'].forEach(id => {
-                document.getElementById(`slider-${id}`).value = 50;
-                updateFluidSlider(id, 50);
-            });
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        function runSimulation() {
-            const bar = document.getElementById('sim-bar');
-            const status = document.getElementById('sim-status');
-            const pct = document.getElementById('sim-pct');
-            const resultArea = document.getElementById('sim-result-area');
-            document.getElementById('btn-sim').style.display = 'none'; 
-            
-            let progress = 0;
-            status.innerText = "注入 90°C 熱水解構化學鍵...";
-            status.className = "text-white/80";
-            
-            const interval = setInterval(() => {
-                progress += 5; bar.style.width = `${progress}%`; pct.innerText = `${progress}%`;
-                if (progress === 40) status.innerText = "生化特徵物融合交換中...";
-                if (progress >= 100) { clearInterval(interval); status.innerText = "運算完畢！"; resultArea.classList.remove('hidden'); resultArea.classList.add('node-reveal'); }
-            }, 80);
         }
 
         function switchTab(t) {
@@ -497,56 +439,106 @@
             document.getElementById('content-sim').classList.toggle('hidden', t!=='sim');
         }
 
+        function runSimulation() {
+            const bar = document.getElementById('sim-bar'); const status = document.getElementById('sim-status'); const pct = document.getElementById('sim-pct'); const resultArea = document.getElementById('sim-result-area');
+            document.getElementById('btn-sim').style.display = 'none'; let progress = 0;
+            const interval = setInterval(() => {
+                progress += 5; bar.style.width = `${progress}%`; pct.innerText = `${progress}%`;
+                if (progress === 30) status.innerText = "茶葉化學鍵解構中..."; if (progress === 60) status.innerText = "生化特徵物融合中...";
+                if (progress >= 100) { clearInterval(interval); status.innerText = "運算完畢！"; resultArea.classList.remove('hidden'); resultArea.classList.add('node-reveal'); }
+            }, 80);
+        }
+
+        /* ==================================
+           互動模組二：視覺影像識別與陣列融合器
+           ================================== */
+        function runBBoxScan() {
+            const btn = document.getElementById('btn-bbox');
+            const scanLine = document.getElementById('scan-line-vision');
+            btn.innerHTML = '<i class="fa-solid fa-spinner animate-spin"></i> 影像模型分析中...';
+            scanLine.style.animation = 'scan 1.5s ease-in-out';
+
+            setTimeout(() => {
+                scanLine.style.animation = 'none';
+                btn.innerHTML = '<i class="fa-solid fa-check"></i> 掃描完成。解鎖融合權限';
+                btn.className = "bg-slate-700 border border-slate-600 text-slate-400 font-bold text-xs py-4 rounded-xl cursor-not-allowed flex items-center justify-center gap-2";
+                btn.disabled = true;
+
+                // 畫出 BBox 與信心分數
+                const blocks = document.querySelectorAll('.array-block');
+                blocks.forEach(block => {
+                    const isDefect = block.getAttribute('data-defect') === 'true';
+                    const box = document.createElement('div');
+                    
+                    if(isDefect) {
+                        box.className = "absolute inset-0 border-2 border-rose-500 rounded-xl bbox-draw pointer-events-none";
+                        box.innerHTML = `<div class="absolute -top-3 left-2 bg-rose-500 text-white font-mono text-[9px] px-1 rounded shadow-lg">Defect:0.89</div>`;
+                    } else {
+                        box.className = "absolute inset-0 border-2 border-emerald-400 rounded-xl bbox-draw pointer-events-none shadow-[inset_0_0_15px_rgba(52,211,153,0.3)]";
+                        box.innerHTML = `<div class="absolute -top-3 left-2 bg-emerald-400 text-tea-dark font-bold font-mono text-[9px] px-1 rounded shadow-lg">Premium:0.98</div>`;
+                    }
+                    block.appendChild(box);
+                });
+
+                // 解鎖第二步按鈕
+                const mergeBtn = document.getElementById('btn-merge');
+                mergeBtn.disabled = false;
+                mergeBtn.className = "bg-emerald-500/20 hover:bg-emerald-500/40 border border-emerald-500/50 text-emerald-300 font-bold text-xs py-4 rounded-xl transition-all active:scale-95 flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(52,211,153,0.3)] animate-pulse";
+            }, 1500);
+        }
+
+        function runArrayMerge() {
+            const btn = document.getElementById('btn-merge');
+            btn.innerHTML = '<i class="fa-solid fa-spinner animate-spin"></i> 陣列融合執行中...';
+            btn.classList.remove('animate-pulse');
+
+            // 1. 先把瑕疵區塊掉落 (Drop)
+            const blocks = document.querySelectorAll('.array-block');
+            blocks.forEach(block => {
+                if(block.getAttribute('data-defect') === 'true') {
+                    block.classList.add('drop-defect');
+                }
+            });
+
+            // 2. 剩下的自動滑動合併 (藉由 CSS flex gap 與 width 0 自然實現)
+            setTimeout(() => {
+                btn.innerHTML = '<i class="fa-solid fa-check-double"></i> 陣列已純化 (Array_Merged)';
+                btn.className = "bg-tea-gold text-tea-dark font-bold text-xs py-4 rounded-xl flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(212,175,55,0.5)]";
+            }, 600);
+        }
+
+        /* ==================================
+           購物車與結帳邏輯
+           ================================== */
+        function toggleCart() { document.getElementById('cart-drawer').classList.toggle('translate-x-full'); document.getElementById('cart-overlay').classList.toggle('opacity-0'); }
         function addToCart(n, p) {
             const i = cart.find(x => x.name === n);
             if (i) { i.qty++; } else { cart.push({ name: n, price: p, qty: 1 }); }
             updateCartUI();
-            const t = document.getElementById('toast');
-            document.getElementById('toast-msg').innerText = `已將解法加入採購庫！`;
+            const t = document.getElementById('toast'); document.getElementById('toast-msg').innerText = `已將解法加入採購庫！`;
             t.classList.remove('translate-y-20', 'opacity-0'); t.classList.add('translate-y-0', 'opacity-100');
             setTimeout(() => { t.classList.add('translate-y-20', 'opacity-0'); t.classList.remove('translate-y-0', 'opacity-100'); }, 2000);
         }
-
         function updateCartUI() {
-            const container = document.getElementById('cart-items');
-            const totalEl = document.getElementById('total-price');
-            const countEl = document.getElementById('cart-count');
-            if (cart.length === 0) {
-                container.innerHTML = `<div class="text-center py-12 text-white/40 text-xs">採購庫空虛。請先執行運算思維引擎！</div>`;
-                countEl.classList.add('hidden'); totalEl.innerText = "NT$ 0"; return;
-            }
+            const container = document.getElementById('cart-items'); const totalEl = document.getElementById('total-price'); const countEl = document.getElementById('cart-count');
+            if (cart.length === 0) { container.innerHTML = `<div class="text-center py-12 text-white/40 text-xs">採購庫空虛。請先執行運算思維引擎！</div>`; countEl.classList.add('hidden'); totalEl.innerText = "NT$ 0"; return; }
             countEl.innerText = cart.reduce((a, b) => a + b.qty, 0); countEl.classList.remove('hidden');
             let h = ''; let s = 0;
             cart.forEach((x, idx) => {
                 s += x.price * x.qty;
-                h += `<div class="liquid-glass-dark p-3 rounded-xl border border-white/10 flex justify-between items-center shadow-inner">
-                        <div class="text-left"><p class="font-bold text-white text-xs">${x.name}</p><p class="text-tea-gold font-bold text-xs mt-0.5">NT$ ${x.price} × ${x.qty}</p></div>
-                        <button onclick="cart.splice(${idx},1);updateCartUI();" class="text-red-400 p-2"><i class="fa-regular fa-trash-can"></i></button>
-                    </div>`;
+                h += `<div class="liquid-glass-dark p-3 rounded-xl border border-white/10 flex justify-between items-center shadow-inner"><div class="text-left"><p class="font-bold text-white text-xs">${x.name}</p><p class="text-tea-gold font-bold text-xs mt-0.5">NT$ ${x.price} × ${x.qty}</p></div><button onclick="cart.splice(${idx},1);updateCartUI();" class="text-red-400 p-2"><i class="fa-regular fa-trash-can"></i></button></div>`;
             });
             container.innerHTML = h; totalEl.innerText = `NT$ ${s}`;
         }
-
         function checkout() {
             if(cart.length === 0) return alert("採購庫目前沒有解法哦！");
-            const sum = cart.reduce((a, b) => a + (b.price * b.qty), 0);
-            document.getElementById('final-price-display').innerText = `NT$ ${sum}`;
+            const sum = cart.reduce((a, b) => a + (b.price * b.qty), 0); document.getElementById('final-price-display').innerText = `NT$ ${sum}`;
             document.getElementById('checkout-modal').style.display = 'flex';
-            
-            const count = 200;
-            const defaults = { origin: { y: 0.7 }, colors: ['#1C3A27', '#D4AF37', '#EAF3EC', '#664d14'] };
-            function fire(particleRatio, opts) { confetti({ ...defaults, ...opts, particleCount: Math.floor(count * particleRatio) }); }
-            fire(0.25, { spread: 26, startVelocity: 55 });
-            fire(0.2, { spread: 60 });
-            fire(0.35, { spread: 100, decay: 0.91, scalar: 0.8 });
-            fire(0.1, { spread: 120, startVelocity: 25, decay: 0.92, scalar: 1.2 });
-            fire(0.1, { spread: 120, startVelocity: 45 });
+            const count = 200; const defaults = { origin: { y: 0.7 }, colors: ['#1C3A27', '#D4AF37', '#EAF3EC', '#664d14'] };
+            function fire(pr, opts) { confetti({ ...defaults, ...opts, particleCount: Math.floor(count * pr) }); }
+            fire(0.25, { spread: 26, startVelocity: 55 }); fire(0.2, { spread: 60 }); fire(0.35, { spread: 100, decay: 0.91, scalar: 0.8 }); fire(0.1, { spread: 120, startVelocity: 25, decay: 0.92, scalar: 1.2 }); fire(0.1, { spread: 120, startVelocity: 45 });
         }
-
-        function closeCheckout() {
-            document.getElementById('checkout-modal').style.display = 'none';
-            cart = []; updateCartUI(); toggleCart(); resetPipeline();
-        }
+        function closeCheckout() { document.getElementById('checkout-modal').style.display = 'none'; cart = []; updateCartUI(); toggleCart(); }
     </script>
 </body>
 </html>

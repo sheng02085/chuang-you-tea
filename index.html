@@ -3,10 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>莊友佛手茶 | 運算思維</title>
+    <title>莊友佛手茶 | 運算思維液態玻璃引擎</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&family=Noto+Sans+TC:wght@300;400;500;700&family=Noto+Serif+TC:wght@500;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- 煙火特效套件 -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     
     <script>
@@ -26,6 +30,7 @@
         }
     </script>
     <style>
+        /* 佛手茶底色：動態流體漸層背景 */
         body, html {
             margin: 0; padding: 0; min-height: 100vh;
             font-family: 'Noto Sans TC', sans-serif;
@@ -42,6 +47,7 @@
             100% { background-position: 0% 50%; }
         }
 
+        /* 🍎 iOS 26 Liquid Glass */
         .liquid-glass {
             background: rgba(255, 255, 255, 0.08);
             backdrop-filter: blur(24px) saturate(150%);
@@ -101,26 +107,31 @@
 </head>
 <body class="antialiased min-h-screen flex flex-col relative">
 
+    <!-- 頂部資訊列：比例調整更為大器，移除綠點 -->
     <header class="fixed top-0 w-full z-50 liquid-glass border-b border-white/20 px-6 py-3 flex justify-between items-center">
-        <div class="flex items-center gap-3">
-            <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-tea-gold to-yellow-200 text-tea-dark flex items-center justify-center font-serif font-bold text-sm shadow-[0_0_15px_rgba(212,175,55,0.5)]">莊</div>
+        <div class="flex items-center gap-3.5">
+            <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-tea-gold to-yellow-200 text-tea-dark flex items-center justify-center font-serif font-bold text-lg shadow-[0_0_15px_rgba(212,175,55,0.5)]">莊</div>
             <div>
-                <h1 class="font-bold tracking-widest text-sm text-white drop-shadow-md">莊友佛手茶</h1>
+                <h1 class="font-bold tracking-widest text-lg sm:text-xl text-white drop-shadow-md">莊友佛手茶</h1>
+                <p class="text-[10px] font-mono text-white/60 uppercase mt-0.5">Computational Thinking Logic Engine</p>
             </div>
         </div>
         <div class="flex items-center gap-4">
-            <div class="hidden sm:flex text-[10px] font-mono text-white/80 liquid-glass-dark px-3 py-1.5 rounded-full items-center gap-2 border border-white/10">
-                <span id="engine-status-dot" class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_#34d399]"></span>
+            <!-- 移除綠點，僅保留文字狀態 -->
+            <div class="hidden sm:flex text-xs font-mono text-white/80 liquid-glass-dark px-4 py-2 rounded-full items-center gap-2 border border-white/10">
+                <span id="engine-status-text">運算思維引擎：待命中 (READY)</span>
             </div>
             <button onclick="toggleCart()" class="relative p-2 text-white hover:text-tea-gold transition-colors btn-bounce">
-                <i class="fa-solid fa-bag-shopping text-xl drop-shadow-md"></i>
+                <i class="fa-solid fa-bag-shopping text-2xl drop-shadow-md"></i>
                 <span id="cart-count" class="absolute top-0 right-0 bg-red-500 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center shadow-lg hidden">0</span>
             </button>
         </div>
     </header>
 
-    <main class="flex-1 pt-28 pb-12 px-4 max-w-4xl mx-auto w-full relative z-10 flex flex-col items-center">
+    <!-- 主畫布區 -->
+    <main class="flex-1 pt-32 pb-12 px-4 max-w-4xl mx-auto w-full relative z-10 flex flex-col items-center">
         
+        <!-- 核心輸入器 -->
         <div id="main-input-card" class="w-full liquid-glass rounded-[2rem] p-6 sm:p-10 relative z-20 space-y-6">
             <div class="text-center space-y-2">
                 <div class="inline-flex items-center justify-center w-14 h-14 rounded-full liquid-glass-dark mb-2 border border-white/20">
@@ -128,7 +139,7 @@
                 </div>
                 <h2 class="font-serif text-2xl sm:text-3xl font-bold text-white drop-shadow-lg">定義您的身心抱怨</h2>
                 <p class="text-xs text-white/60 font-light max-w-lg mx-auto leading-relaxed">
-                    運算思維第一步：拆解。請寫下不滿並拉動右側橫桿，讓系統推薦您最適合的茶葉。
+                    運算思維第一步：拆解 (Decomposition)。請寫下抱怨並量化變數，讓系統進行多層次決策樹識別。
                 </p>
             </div>
             
@@ -227,6 +238,7 @@
         </div>
     </div>
 
+    <!-- 購物車抽屜 -->
     <div id="cart-drawer" class="fixed inset-0 z-50 overflow-hidden pointer-events-none transition-all duration-400 translate-x-full">
         <div class="absolute inset-0 bg-black/60 backdrop-blur-sm opacity-0 transition-opacity duration-300" onclick="toggleCart()" id="cart-overlay"></div>
         <div class="absolute inset-y-0 right-0 max-w-sm w-full liquid-glass shadow-2xl flex flex-col justify-between pointer-events-auto border-l border-white/20">
@@ -255,6 +267,7 @@
         </div>
     </div>
 
+    <!-- Toast -->
     <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 liquid-glass border border-white/20 text-white py-3 px-6 rounded-full text-xs font-medium shadow-2xl transition-all duration-300 transform translate-y-20 opacity-0 pointer-events-none flex items-center gap-2">
         <i class="fa-solid fa-circle-check text-tea-gold"></i>
         <span id="toast-msg">加入成功！</span>
@@ -291,7 +304,6 @@
             }
 
             document.getElementById('engine-status-text').innerText = "運算思維引擎：分析運作中 (PROCESSING)";
-            document.getElementById('engine-status-dot').className = "w-1.5 h-1.5 rounded-full bg-yellow-400 animate-spin shadow-[0_0_8px_#fbbf24]";
 
             const container = document.getElementById('pipeline-container');
             container.innerHTML = '';
@@ -317,7 +329,6 @@
             
             // 2. 擴充版 6 種茶葉之決策樹
             if (maxScore < 50) {
-                // 如果數值都很低且沒對到關鍵字 -> 日常保養
                 currentTeaType = "white";
                 patMatch = "匹配目標：需「清熱平燥」➜ 佛手白毫抗氧化活性";
                 absFilter = "濾除極端痛點 ➜ 提取「日常溫和保養」解法";
@@ -326,7 +337,6 @@
             } 
             else if (maxScore === scoreCog) {
                 if (scoreCog >= 120) {
-                    // 極端疲勞 / 熬夜
                     currentTeaType = "ginseng";
                     patMatch = "匹配目標：需「極限提神大補」➜ 香櫞多酚 + 皂苷萃取";
                     absFilter = "濾除一般疲勞 ➜ 提取「極限續航大補元氣」解法";
@@ -342,7 +352,6 @@
             } 
             else if (maxScore === scoreLipid) {
                 if (scoreLipid >= 120) {
-                    // 極端腸胃負載
                     currentTeaType = "chenpi";
                     patMatch = "匹配目標：需「強力消積化滯」➜ 陳皮揮發油 + 黑茶多酚";
                     absFilter = "濾除一般飽足感 ➜ 提取「極限去油消脹」解法";
@@ -356,9 +365,8 @@
                     algoDesc = "手工深層炭焙製程，高濃度黑茶多酚能加速分解飯後脂肪，解除腸胃一般脹滿。";
                 }
             } 
-            else { // scoreStress 是最大值
+            else { 
                 if (scoreCog >= 70) {
-                    // 壓力大 + 帶有腦霧卡關
                     currentTeaType = "oolong";
                     patMatch = "匹配目標：需「疏肝且活化」➜ 桂花香氣分子 + 烏龍多酚";
                     absFilter = "濾除單一情緒 ➜ 提取「解鬱同時提神」複合解法";
@@ -423,9 +431,7 @@
 
                     if (index === 3) {
                         document.getElementById('engine-status-text').innerText = "運算思維引擎：演算法部署完畢 (DEPLOYED)";
-                        document.getElementById('engine-status-dot').className = "w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_#34d399]";
                         
-                        // 顯現重置按鈕
                         document.getElementById('reset-container').classList.remove('hidden');
                         document.getElementById('reset-container').classList.add('node-reveal');
                     }
@@ -443,7 +449,6 @@
             document.getElementById('btn-start').classList.remove('opacity-50');
             
             document.getElementById('engine-status-text').innerText = "運算思維引擎：待命中 (READY)";
-            document.getElementById('engine-status-dot').className = "w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_#34d399]";
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 

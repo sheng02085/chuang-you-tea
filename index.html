@@ -76,7 +76,7 @@ body, html {
     </button>
   </header>
 
-  <main class="flex-1 pt-24 pb-10 px-4 max-w-2xl mx-auto w-full relative z-10">
+  <main class="flex-1 pt-24 pb-10 px-4 max-w-2xl lg:max-w-4xl mx-auto w-full relative z-10">
 
     <!-- ============ 入口頁 ============ -->
     <section id="view-landing" class="view active node-reveal">
@@ -86,10 +86,10 @@ body, html {
           <p class="text-white/50 text-xs mt-2">點選任一款看故事與配方，或直接讓 AI 幫你推薦</p>
         </div>
 
-        <div id="tea-card-list" class="grid grid-cols-1 gap-3"></div>
+        <div id="tea-card-list" class="grid grid-cols-1 md:grid-cols-3 gap-3"></div>
 
         <button onclick="showView('companion')" class="w-full liquid-glass-dark border border-emerald-400/40 rounded-2xl p-4 text-left flex items-center gap-4 hover:bg-white/10 transition-all btn-bounce">
-          <div class="w-11 h-11 rounded-full bg-emerald-400/20 border border-emerald-400/50 flex items-center justify-center text-emerald-300 text-lg"><span>🤖</span></div>
+          <div class="w-11 h-11 rounded-full bg-emerald-400/20 border border-emerald-400/50 flex items-center justify-center text-emerald-300 text-lg flex-shrink-0"><span>🤖</span></div>
           <div>
             <div class="font-bold text-sm">AI 茶伴</div>
             <div class="text-[11px] text-white/50">聊聊今天的心情，讓 AI 從三款茶裡幫你挑一款</div>
@@ -194,13 +194,13 @@ function renderLandingCards() {
   box.innerHTML = '';
   TEA_DB.forEach(tea => {
     const btn = document.createElement('button');
-    btn.className = "liquid-glass-dark border border-white/20 rounded-2xl p-4 text-left flex items-center gap-4 hover:bg-white/10 transition-all btn-bounce";
+    btn.className = "liquid-glass-dark border border-white/20 rounded-2xl p-4 text-left flex md:flex-col items-center md:items-start gap-4 md:gap-3 hover:bg-white/10 hover:border-tea-gold/50 transition-all btn-bounce";
     btn.onclick = () => openProduct(tea.id);
     btn.innerHTML = `
-      <div class="w-11 h-11 rounded-full bg-tea-gold/20 border border-tea-gold/50 flex items-center justify-center text-lg">${tea.emoji}</div>
+      <div class="w-11 h-11 md:w-14 md:h-14 rounded-full bg-tea-gold/20 border border-tea-gold/50 flex items-center justify-center text-lg md:text-2xl flex-shrink-0">${tea.emoji}</div>
       <div>
-        <div class="font-bold text-sm">${tea.name}</div>
-        <div class="text-[11px] text-white/50">${tea.series}</div>
+        <div class="font-bold text-sm md:text-base">${tea.name}</div>
+        <div class="text-[11px] text-white/50 mt-0.5">${tea.series}</div>
       </div>`;
     box.appendChild(btn);
   });

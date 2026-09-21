@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>莊友佛手茶 | 一握・系列</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&family=Noto+Sans+TC:wght@300;400;500;700&family=Noto+Serif+TC:wght@500;700&display=swap" rel="stylesheet">
+
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: { tea: { dark: '#12261A', light: '#EAF3EC', gold: '#D4AF37', amber: '#C5832B' } },
+      fontFamily: { sans: ['Noto Sans TC', 'sans-serif'], serif: ['Noto Serif TC', 'serif'], mono: ['Fira Code', 'monospace'] }
+    }
+  }
+}
+</script>
+<style>
+body, html {
+  margin: 0; padding: 0; min-height: 100vh; font-family: 'Noto Sans TC', sans-serif;
+  background: linear-gradient(-45deg, #0A140E, #1C3A27, #664d14, #12261A);
+  background-size: 400% 400%; animation: fluidBackground 18s ease infinite; color: #FFFFFF;
+}
+@keyframes fluidBackground { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+
+.liquid-glass {
+  background: rgba(255,255,255,0.08); backdrop-filter: blur(24px) saturate(150%); -webkit-backdrop-filter: blur(24px) saturate(150%);
+  border: 1px solid rgba(255,255,255,0.2); box-shadow: 0 10px 40px -10px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.3);
+}
+.liquid-glass-dark {
+  background: rgba(0,0,0,0.3); backdrop-filter: blur(20px) saturate(120%); -webkit-backdrop-filter: blur(20px) saturate(120%);
+  border: 1px solid rgba(255,255,255,0.1);
+}
+@keyframes popIn { 0% { opacity: 0; transform: translateY(20px) scale(0.96); } 100% { opacity: 1; transform: translateY(0) scale(1); } }
+.node-reveal { animation: popIn 0.5s cubic-bezier(0.16,1,0.3,1) forwards; }
+.btn-bounce:active { transform: scale(0.95); transition: transform .1s ease; }
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius: 10px; }
+
+.view { display: none; }
+.view.active { display: block; }
+
+.typing-dot { animation: blink 1.4s infinite both; }
+.typing-dot:nth-child(2) { animation-delay: .2s; }
+.typing-dot:nth-child(3) { animation-delay: .4s; }
+@keyframes blink { 0%,80%,100% { opacity: .2; } 40% { opacity: 1; } }
+
+.chip { transition: all .15s ease; }
+.chip:active { transform: scale(.95); }
+
+@keyframes fadeInUp {
+  0% { opacity: 0; transform: translateY(14px); filter: blur(4px); }
+  100% { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
+.fade-in-block {
+  opacity: 0;
+  animation: fadeInUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+</style>
+</head>
+<body class="antialiased min-h-screen flex flex-col relative">
+
+  <header class="fixed top-0 w-full z-50 liquid-glass border-b border-white/20 px-6 py-3 flex justify-between items-center">
+    <div class="flex items-center gap-3.5">
+      <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-tea-gold to-yellow-200 text-tea-dark flex items-center justify-center font-serif font-bold text-lg shadow-[0_0_15px_rgba(212,175,55,0.5)]">莊</div>
+      <div>
+        <h1 class="font-bold tracking-widest text-lg text-white drop-shadow-md">莊友佛手茶</h1>
+        <p id="header-sub" class="text-[10px] font-mono text-white/60 mt-0.5">一握・系列</p>
+      </div>
+    </div>
+    <button id="back-btn" onclick="showView('landing')" class="hidden text-white/70 hover:text-white text-xs font-mono border border-white/20 rounded-full px-3 py-1.5 btn-bounce">
+      <span class="mr-1">←</span>返回
+    </button>
+  </header>
+
+  <main class="flex-1 pt-24 pb-10 px-4 max-w-2xl lg:max-w-4xl mx-auto w-full relative z-10">
+
+    <!-- ============ 入口頁 ============ -->
+    <section id="view-landing" class="view active node-reveal">
+      <div class="liquid-glass rounded-[2rem] p-8 text-center space-y-6">
+        <div>
+          <h2 class="font-serif text-2xl font-bold">選擇想了解的茶款</h2>
+          <p class="text-white/50 text-xs mt-2">點選任一款看故事與配方，或直接讓 AI 幫你推薦</p>
+        </div>
+
+        <div id="tea-card-list" class="grid grid-cols-1 md:grid-cols-3 gap-3"></div>
+
+        <button onclick="showView('companion')" class="w-full liquid-glass-dark border border-emerald-400/40 rounded-2xl p-4 text-left flex items-center gap-4 hover:bg-white/10 transition-all btn-bounce">
+          <div class="w-11 h-11 rounded-full bg-emerald-400/20 border border-emerald-400/50 flex items-center justify-center text-emerald-300 text-lg flex-shrink-0"><span>🤖</span></div>
+          <div>
+            <div class="font-bold text-sm">AI 茶伴</div>
+            <div class="text-[11px] text-white/50">聊聊今天的心情，讓 AI 從三款茶裡幫你挑一款</div>
+          </div>
+        </button>
+
+        <div class="border-t border-white/10 pt-6">
+          <div class="grid grid-cols-3 gap-3 text-center">
+            <div>
+              <div class="text-2xl">🍃</div>
+              <div class="text-[11px] font-bold text-white/80 mt-2">選一款茶</div>
+              <div class="text-[10px] text-white/40 mt-0.5">看故事與配方</div>
+            </div>
+            <div>
+              <div class="text-2xl">💬</div>
+              <div class="text-[11px] font-bold text-white/80 mt-2">隨時提問</div>
+              <div class="text-[10px] text-white/40 mt-0.5">佛手茶的任何事</div>
+            </div>
+            <div>
+              <div class="text-2xl">☕</div>
+              <div class="text-[11px] font-bold text-white/80 mt-2">泡開享用</div>
+              <div class="text-[10px] text-white/40 mt-0.5">留一點時間給自己</div>
+            </div>
+          </div>
+        </div>
+
+        <p class="text-white/30 text-[11px] italic pt-2">莊友佛手茶——把佛手的溫潤，留給忙碌生活裡的你。</p>
+      </div>
+    </section>
+
+    <!-- ============ 產品介紹頁（內容用 JS 動態帶入） ============ -->
+    <section id="view-product" class="view">
+      <div id="product-content" class="space-y-4"></div>
+    </section>
+
+    <!-- ============ AI 茶伴 ============ -->
+    <section id="view-companion" class="view">
+      <div class="liquid-glass rounded-[2rem] overflow-hidden node-reveal flex flex-col" style="min-height: 480px;">
+        <div class="p-4 border-b border-white/10 flex items-center gap-2">
+          <span class="text-emerald-300">🤖</span>
+          <span class="text-sm font-bold">AI 茶伴</span>
+        </div>
+        <div id="companion-log" class="flex-1 p-4 space-y-3 overflow-y-auto text-xs"></div>
+        <div id="companion-chips" class="p-3 border-t border-white/10 flex flex-wrap gap-2"></div>
+        <div class="p-3 border-t border-white/10 flex gap-2">
+          <input id="companion-input" type="text" placeholder="想放鬆一下 / 最近外食比較多 / 想喝點溫暖的…" class="flex-1 liquid-glass-dark rounded-full px-4 py-2.5 text-xs outline-none placeholder:text-white/30" onkeydown="if(event.key==='Enter') sendCompanion()">
+          <button onclick="sendCompanion()" class="w-10 h-10 rounded-full bg-emerald-400 text-tea-dark flex items-center justify-center btn-bounce"><span class="text-xs">➤</span></button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+<script>
+/* =========================================================
+   在這裡貼上你的 Cloudflare Worker 網址
+   （不再需要把 Gemini API 金鑰放在這裡，金鑰現在存在
+   Cloudflare 後台的加密變數裡，安全多了）
+   ========================================================= */
+const WORKER_URL = "https://tea.arp21760208.workers.dev/";
+const GEMINI_MODEL = "gemini-2.5-flash-lite";
+
+/* =========================================================
+   茶款資料庫 —— 之後要加其他款，照同樣格式加進這個陣列，
+   產品介紹頁跟 AI 茶伴會自動抓取
+   ========================================================= */
+const TEA_DB = [
+  {
+    id: "yanran",
+    emoji: "🌹",
+    name: "一握・嫣然",
+    series: "女性日常系列",
+    formula: "佛手烏龍 70% ・ 玫瑰 10% ・ 紅棗 10% ・ 枸杞 10%",
+    flavor: "烏龍茶香、優雅花香、微甜果香",
+    fit: "忙碌想放鬆、想要一點花香儀式感、情緒緊繃需要溫和舒緩時",
+    story: "莊友佛手茶的創辦人，常看著身邊的女性朋友，忙起來一整天連喝口水的時間都沒有。「一握・嫣然」的誕生，就是想留一個小小的儀式感給她們——不需要精緻的茶具，不需要特別的場合，只要泡開的那一刻，玫瑰香氣散開，就像是幫自己按下一個暫停鍵。",
+    features: ["🍵 佛手烏龍作為茶底，帶來溫潤茶香", "🌹 玫瑰帶出優雅花香，是這款茶的靈魂", "🍯 紅棗與枸杞增添微甜果香，口感更圓潤"],
+    scenario: "下午茶水間、工作空檔、通勤路上、睡前想靜下來的時刻。",
+    philosophy: "照顧別人之前，先學會照顧自己。這款茶不強調「功效」，而是強調「留白」——在忙碌的日常裡，留十分鐘給自己，讓身體跟情緒都能喘口氣。"
+  },
+  {
+    id: "qingying",
+    emoji: "🍊",
+    name: "一握・輕盈",
+    series: "外食族／聚餐後系列",
+    formula: "佛手烏龍 70% ・ 陳皮 15% ・ 山楂 15%",
+    flavor: "茶香、柑橘、果酸",
+    fit: "大餐後、外食聚餐較多、腸胃感覺油膩脹氣時",
+    story: "外食、聚餐是現代生活很難避免的日常。「一握・輕盈」不是要你克制什麼，而是想在大餐過後，給腸胃一個溫柔的緩衝——陳皮與山楂的酸甜果香，讓身體重新找回輕盈的感覺。",
+    features: ["🍵 佛手烏龍作為茶底，帶出醇厚茶香", "🍊 柑橘調的陳皮，氣味明亮開胃", "🍎 酸甜果香的山楂，收尾清爽不甜膩"],
+    scenario: "聚餐後、大餐過後、下午想喝點清爽飲品的時候。",
+    philosophy: "生活本來就有很多不得已的聚餐與應酬，不需要愧疚，只要記得在之後留一杯茶的時間，讓自己重新歸零。"
+  },
+  {
+    id: "nuanyang",
+    emoji: "🔥",
+    name: "一握・暖陽",
+    series: "秋冬暖飲系列",
+    formula: "佛手烏龍 65% ・ 紅棗 15% ・ 桂圓 15% ・ 薑 5%",
+    flavor: "醇厚茶感、紅棗桂圓甜香、輕微薑香",
+    fit: "天氣轉涼、想喝點溫暖的、身體感覺涼涼的時候",
+    story: "天氣轉涼的時候，總是特別想念一點溫度。「一握・暖陽」把紅棗桂圓的甜香與薑的暖意封進茶湯裡，像是把陽光泡進了杯子裡，握在手中。",
+    features: ["🍵 佛手烏龍的醇厚感作為基底", "🍯 紅棗桂圓帶來溫和甜香", "🫚 薑帶出輕微辛香，喝完全身暖起來"],
+    scenario: "秋冬午後、天氣轉涼、身體覺得涼涼的時候。",
+    philosophy: "生活不用一直往前，有時候也可以慢慢來。這款茶想陪你度過那些需要放慢腳步的午後。"
+  }
+];
+
+let currentTeaId = null;
+const productLogs = {};
+
+// 把一段文字拆成一句一句，回傳帶淡入動畫、各自延遲出場的 span 組合
+function splitSentences(text) {
+  return text.match(/[^。！？]+[。！？]?/g) || [text];
+}
+function fadeText(text, baseDelayMs, stepMs = 110) {
+  return splitSentences(text)
+    .map((s, i) => `<span class="fade-in-block" style="display:inline-block; animation-delay:${baseDelayMs + i * stepMs}ms">${s}</span>`)
+    .join('');
+}
+
+function renderLandingCards() {
+  const box = document.getElementById('tea-card-list');
+  box.innerHTML = '';
+  TEA_DB.forEach(tea => {
+    const btn = document.createElement('button');
+    btn.className = "liquid-glass-dark border border-white/20 rounded-2xl p-4 text-left flex md:flex-col items-center md:items-start gap-4 md:gap-3 hover:bg-white/10 hover:border-tea-gold/50 transition-all btn-bounce";
+    btn.onclick = () => openProduct(tea.id);
+    btn.innerHTML = `
+      <div class="w-11 h-11 md:w-14 md:h-14 rounded-full bg-tea-gold/20 border border-tea-gold/50 flex items-center justify-center text-lg md:text-2xl flex-shrink-0">${tea.emoji}</div>
+      <div>
+        <div class="font-bold text-sm md:text-base">${tea.name}</div>
+        <div class="text-[11px] text-white/50 mt-0.5">${tea.series}</div>
+      </div>`;
+    box.appendChild(btn);
+  });
+}
+
+function openProduct(teaId) {
+  currentTeaId = teaId;
+  const tea = TEA_DB.find(t => t.id === teaId);
+  const box = document.getElementById('product-content');
+  // 每個區塊依序淡入的起始延遲（毫秒），區塊內的文字再逐句往後接
+  const D = (n) => n * 550;
+  box.innerHTML = `
+    <div class="liquid-glass rounded-[2rem] p-6 fade-in-block" style="animation-delay:${D(0)}ms">
+      <span class="text-[10px] font-mono bg-tea-gold text-tea-dark font-bold px-2 py-1 rounded">${tea.series}</span>
+      <h2 class="font-serif text-2xl font-bold mt-3">${tea.emoji} ${tea.name}</h2>
+      <p class="text-xs text-white/50 mt-1">${tea.formula}</p>
+    </div>
+    <div class="liquid-glass-dark rounded-2xl p-5 border border-white/10 fade-in-block" style="animation-delay:${D(1)}ms">
+      <h3 class="text-tea-gold font-bold text-sm mb-2"><span class="mr-1.5">🪶</span>故事</h3>
+      <p class="text-xs text-white/70 leading-relaxed">${fadeText(tea.story, D(1) + 150)}</p>
+    </div>
+    <div class="liquid-glass-dark rounded-2xl p-5 border border-white/10 fade-in-block" style="animation-delay:${D(2)}ms">
+      <h3 class="text-tea-gold font-bold text-sm mb-2"><span class="mr-1.5">🌿</span>配方特色</h3>
+      <ul class="text-xs text-white/70 space-y-1.5">${tea.features.map((f, i) => `<li class="fade-in-block" style="animation-delay:${D(2) + 150 + i * 160}ms">${f}</li>`).join('')}</ul>
+    </div>
+    <div class="liquid-glass-dark rounded-2xl p-5 border border-white/10 fade-in-block" style="animation-delay:${D(3)}ms">
+      <h3 class="text-tea-gold font-bold text-sm mb-2"><span class="mr-1.5">☕</span>生活情境</h3>
+      <p class="text-xs text-white/70 leading-relaxed">${fadeText(tea.scenario, D(3) + 150)}</p>
+    </div>
+    <div class="liquid-glass-dark rounded-2xl p-5 border border-white/10 fade-in-block" style="animation-delay:${D(4)}ms">
+      <h3 class="text-tea-gold font-bold text-sm mb-2"><span class="mr-1.5">💛</span>想傳達的理念</h3>
+      <p class="text-xs text-white/70 leading-relaxed">${fadeText(tea.philosophy, D(4) + 150)}</p>
+    </div>
+    <div class="liquid-glass rounded-[2rem] overflow-hidden fade-in-block" style="animation-delay:${D(5)}ms">
+      <div class="p-4 border-b border-white/10 flex items-center gap-2">
+        <span class="text-tea-gold">💬</span>
+        <span class="text-sm font-bold">問問關於這款茶的任何事</span>
+      </div>
+      <div id="product-chat-log" class="p-4 space-y-3 max-h-[340px] overflow-y-auto text-xs"></div>
+      <div class="p-3 border-t border-white/10 flex flex-wrap gap-2">
+        <button class="chip text-[10px] liquid-glass-dark border border-white/20 rounded-full px-3 py-1.5" onclick="askProduct('這款茶為什麼會有這樣的配方組合？')">為什麼這樣配？</button>
+        <button class="chip text-[10px] liquid-glass-dark border border-white/20 rounded-full px-3 py-1.5" onclick="askProduct('佛手茶是什麼？')">佛手茶是什麼？</button>
+        <button class="chip text-[10px] liquid-glass-dark border border-white/20 rounded-full px-3 py-1.5" onclick="askProduct('這些材料在傳統飲食文化中有什麼特色？')">傳統飲食文化特色？</button>
+      </div>
+      <div class="p-3 border-t border-white/10 flex gap-2">
+        <input id="product-chat-input" type="text" placeholder="輸入你的問題…" class="flex-1 liquid-glass-dark rounded-full px-4 py-2.5 text-xs outline-none placeholder:text-white/30" onkeydown="if(event.key==='Enter') askProduct()">
+        <button onclick="askProduct()" class="w-10 h-10 rounded-full bg-tea-gold text-tea-dark flex items-center justify-center btn-bounce"><span class="text-xs">➤</span></button>
+      </div>
+    </div>`;
+
+  // 還原（或初始化）這款茶各自的聊天紀錄
+  const log = document.getElementById('product-chat-log');
+  if (!productLogs[teaId]) {
+    productLogs[teaId] = [{ role: 'bot', text: `你好，我是「${tea.name}」的專屬茶伴，關於這款茶或佛手茶的任何問題都可以問我 ${tea.emoji}` }];
+  }
+  productLogs[teaId].forEach(m => addBubble('product-chat-log', m.role, m.text));
+
+  showView('product');
+}
+
+function showView(name) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-' + name).classList.add('active');
+  document.getElementById('view-' + name).classList.add('node-reveal');
+  document.getElementById('back-btn').classList.toggle('hidden', name === 'landing');
+  const sub = name === 'landing' ? '一握・系列' : (name === 'product' ? TEA_DB.find(t=>t.id===currentTeaId)?.name || '產品介紹' : 'AI 茶伴');
+  document.getElementById('header-sub').innerText = sub;
+  window.scrollTo({top: 0, behavior: 'smooth'});
+  if (name === 'companion' && document.getElementById('companion-log').children.length === 0) {
+    startCompanion();
+  }
+}
+
+function addBubble(logId, role, text) {
+  const log = document.getElementById(logId);
+  const wrap = document.createElement('div');
+  wrap.className = role === 'user' ? 'flex justify-end' : 'flex justify-start';
+  const bubble = document.createElement('div');
+  bubble.className = role === 'user'
+    ? 'bg-tea-gold text-tea-dark rounded-2xl rounded-tr-sm px-4 py-2.5 max-w-[80%] font-medium'
+    : 'liquid-glass-dark border border-white/10 rounded-2xl rounded-tl-sm px-4 py-2.5 max-w-[85%] text-white/85 leading-relaxed';
+  bubble.innerText = text;
+  wrap.appendChild(bubble);
+  log.appendChild(wrap);
+  log.scrollTop = log.scrollHeight;
+  return bubble;
+}
+
+// 讓 AI 的回覆一個字一個字跑出來，回傳一個 Promise，動畫跑完才 resolve
+function typeIntoBubble(logId, bubble, text, speed = 22) {
+  return new Promise(resolve => {
+    const log = document.getElementById(logId);
+    let i = 0;
+    const timer = setInterval(() => {
+      i++;
+      bubble.innerText = text.slice(0, i);
+      log.scrollTop = log.scrollHeight;
+      if (i >= text.length) {
+        clearInterval(timer);
+        resolve();
+      }
+    }, speed);
+  });
+}
+
+function addTyping(logId) {
+  const log = document.getElementById(logId);
+  const wrap = document.createElement('div');
+  wrap.className = 'flex justify-start';
+  wrap.id = logId + '-typing';
+  wrap.innerHTML = `<div class="liquid-glass-dark border border-white/10 rounded-2xl rounded-tl-sm px-4 py-3 flex gap-1">
+    <span class="typing-dot">●</span><span class="typing-dot">●</span><span class="typing-dot">●</span>
+  </div>`;
+  log.appendChild(wrap);
+  log.scrollTop = log.scrollHeight;
+}
+function removeTyping(logId) {
+  const el = document.getElementById(logId + '-typing');
+  if (el) el.remove();
+}
+
+// 把我們自己存的對話紀錄格式，轉成 Gemini API 要的格式（bot 要轉成 model）
+function toGeminiContents(history) {
+  return history.map(m => ({ role: m.role === 'user' ? 'user' : 'model', parts: [{ text: m.text }] }));
+}
+
+async function callGemini(systemPrompt, contents) {
+  const res = await fetch(WORKER_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      model: GEMINI_MODEL,
+      contents,
+      systemInstruction: { parts: [{ text: systemPrompt }] },
+      generationConfig: { temperature: 0.8, maxOutputTokens: 400 }
+    })
+  });
+  if (!res.ok) {
+    const errText = await res.text();
+    throw new Error(`API 錯誤 (${res.status}): ${errText}`);
+  }
+  const data = await res.json();
+  return data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || "（沒有收到回覆，請再試一次）";
+}
+
+/* ---------------- 產品介紹頁問答 ---------------- */
+async function askProduct(presetText) {
+  const tea = TEA_DB.find(t => t.id === currentTeaId);
+  const input = document.getElementById('product-chat-input');
+  const text = presetText || input.value.trim();
+  if (!text) return;
+  input.value = '';
+  addBubble('product-chat-log', 'user', text);
+  productLogs[currentTeaId].push({ role: 'user', text });
+  addTyping('product-chat-log');
+
+  const systemPrompt = `你是「莊友佛手茶」品牌的茶伴 AI，現在使用者正在看的是「${tea.name}」這款茶的介紹頁。
+這款茶資訊：系列「${tea.series}」，配方「${tea.formula}」，風味「${tea.flavor}」，適合情境「${tea.fit}」。
+請以溫暖、口語、像懂茶的朋友的語氣回答使用者關於這款茶、佛手茶本身、茶葉配方材料、或傳統飲食茶文化的問題。
+使用者前面說過的話你都記得，遇到「這款茶」「剛剛那個」之類的指涉，直接依對話紀錄判斷指的是什麼，不要反問。
+回答控制在 100 字以內，不要條列，不要使用「首先/其次」這類生硬詞，不要提及你是語言模型。若問題與茶完全無關，禮貌引導回到茶的話題。`;
+
+  try {
+    const contents = toGeminiContents(productLogs[currentTeaId]);
+    const reply = await callGemini(systemPrompt, contents);
+    removeTyping('product-chat-log');
+    const bubble = addBubble('product-chat-log', 'bot', '');
+    await typeIntoBubble('product-chat-log', bubble, reply);
+    productLogs[currentTeaId].push({ role: 'bot', text: reply });
+  } catch (e) {
+    removeTyping('product-chat-log');
+    const errMsg = '目前連線有點問題，稍後再試試看 🙏（' + e.message + '）';
+    addBubble('product-chat-log', 'bot', errMsg);
+  }
+}
+
+/* ---------------- AI 茶伴推薦流程 ---------------- */
+let companionStage = 0;
+let companionHistory = [];
+
+function startCompanion() {
+  addBubble('companion-log', 'bot', '嗨，今天想喝一杯什麼樣的茶呢？可以跟我說說你今天的狀態或心情 🍃');
+  renderChips(['想放鬆一下', '最近外食比較多', '想喝點溫暖的', '想來點花香']);
+}
+
+function renderChips(options) {
+  const box = document.getElementById('companion-chips');
+  box.innerHTML = '';
+  options.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'chip text-[10px] liquid-glass-dark border border-white/20 rounded-full px-3 py-1.5';
+    btn.innerText = opt;
+    btn.onclick = () => { document.getElementById('companion-input').value = opt; sendCompanion(); };
+    box.appendChild(btn);
+  });
+}
+
+async function sendCompanion() {
+  const input = document.getElementById('companion-input');
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = '';
+  document.getElementById('companion-chips').innerHTML = '';
+  addBubble('companion-log', 'user', text);
+  companionHistory.push({ role: 'user', text });
+  addTyping('companion-log');
+
+  const dbText = TEA_DB.map(t => `- ${t.name}（${t.series}）：配方 ${t.formula}；風味 ${t.flavor}；適合 ${t.fit}`).join('\n');
+  const systemPrompt = `你是「莊友佛手茶」的 AI 茶伴，任務是根據使用者描述的今天狀態或心情，從下面的茶款清單中挑一款最適合的推薦給他。
+茶款清單：
+${dbText}
+
+請以專業、簡潔、像品茶師介紹茶葉的語氣回覆，格式參考：「今天的你可以試試『茶名』，用一句話說明為什麼適合、能帶來什麼感受。」
+只推薦清單裡的一款，不要編造清單以外的茶。控制在 80 字以內，不要條列。
+使用者前面說過的話你都記得，如果使用者接著問「這款茶的介紹」「為什麼推薦這款」之類的問題，直接針對你剛剛推薦的那一款回答，不要反問使用者是指哪一款。`;
+
+  try {
+    const contents = toGeminiContents(companionHistory);
+    const reply = await callGemini(systemPrompt, contents);
+    removeTyping('companion-log');
+    const bubble = addBubble('companion-log', 'bot', '');
+    await typeIntoBubble('companion-log', bubble, reply);
+    companionHistory.push({ role: 'bot', text: reply });
+
+    // 從 AI 的回覆文字裡比對出提到的是哪一款茶，出現的話在下面加一個可以直接點過去的按鈕
+    const mentionedTea = TEA_DB.find(t => reply.includes(t.name));
+    if (mentionedTea) {
+      const linkWrap = document.createElement('div');
+      linkWrap.className = 'flex justify-start mt-1';
+      const linkBtn = document.createElement('button');
+      linkBtn.className = 'chip text-[11px] bg-tea-gold/90 text-tea-dark font-bold rounded-full px-3.5 py-1.5 flex items-center gap-1.5';
+      linkBtn.innerHTML = `<span>${mentionedTea.emoji}</span>看看「${mentionedTea.name}」的完整介紹 →`;
+      linkBtn.onclick = () => openProduct(mentionedTea.id);
+      linkWrap.appendChild(linkBtn);
+      document.getElementById('companion-log').appendChild(linkWrap);
+      document.getElementById('companion-log').scrollTop = document.getElementById('companion-log').scrollHeight;
+    }
+
+    if (companionStage === 0) {
+      companionStage = 1;
+      renderChips(['再推薦一次', '想看這款茶的介紹']);
+    }
+  } catch (e) {
+    removeTyping('companion-log');
+    addBubble('companion-log', 'bot', '目前連線有點問題，稍後再試試看 🙏（' + e.message + '）');
+  }
+}
+
+renderLandingCards();
+</script>
+</body>
+</html>

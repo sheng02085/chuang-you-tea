@@ -54,9 +54,29 @@ body, html {
 
 #tea-scroll::-webkit-scrollbar { display: none; }
 
+/* iOS / WebKit 重繪相容性 */
+@supports (-webkit-touch-callout: none) {
+  /* iPhone 上 LINE、Safari、Chrome 都使用 WebKit。
+     停用容易造成舊 compositing layer 殘留的頁面動畫，
+     保留互動與玻璃效果。 */
+  .view.node-reveal,
+  .view.node-reveal * {
+    animation: none !important;
+  }
+
+  .view.node-reveal,
+  .fade-in-block,
+  .scroll-fade,
+  .scroll-fade.in-view {
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+  }
+}
+
 @keyframes fadeInUp {
-  0% { opacity: 0; transform: translateY(14px); filter: blur(4px); }
-  100% { opacity: 1; transform: translateY(0); filter: blur(0); }
+  0% { opacity: 0; transform: translateY(10px); }
+  100% { opacity: 1; transform: translateY(0); }
 }
 .fade-in-block {
   opacity: 0;
@@ -307,14 +327,49 @@ function openProduct(teaId) {
   showView('product');
 }
 
+function forceIOSRepaint(el) {
+  // 輕量 layout flush，讓 iOS WebKit 在 view 切換後重新提交畫面。
+  if (!el) return;
+  void el.getBoundingClientRect();
+}
+
 function showView(name) {
-  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-  document.getElementById('view-' + name).classList.add('active');
-  document.getElementById('view-' + name).classList.add('node-reveal');
+  const views = document.querySelectorAll('.view');
+  const target = document.getElementById('view-' + name);
+  if (!target) return;
+
+  // 清掉上一個 view 的動畫狀態，避免 WebKit 保留舊 compositing layer。
+  views.forEach(v => {
+    v.classList.remove('active');
+    v.classList.remove('node-reveal');
+  });
+
+  // 先完成一次 layout，再顯示目標 view。
+  void document.body.offsetHeight;
+  target.classList.add('active');
+  void target.offsetHeight;
+
+  // 分兩個 frame 執行，讓 iOS 先完成 display/layout 再重繪。
+  requestAnimationFrame(() => {
+    target.classList.add('node-reveal');
+    forceIOSRepaint(target);
+
+    requestAnimationFrame(() => forceIOSRepaint(target));
+  });
+
   document.getElementById('back-btn').classList.toggle('hidden', name === 'landing');
-  const sub = name === 'landing' ? '一握・系列' : (name === 'product' ? TEA_DB.find(t=>t.id===currentTeaId)?.name || '產品介紹' : 'AI 茶伴');
+
+  const sub = name === 'landing'
+    ? '一握・系列'
+    : (name === 'product'
+        ? TEA_DB.find(t => t.id === currentTeaId)?.name || '產品介紹'
+        : 'AI 茶伴');
+
   document.getElementById('header-sub').innerText = sub;
-  window.scrollTo({top: 0, behavior: 'auto'});
+
+  // 不使用 smooth，避免 iOS 同時處理捲動動畫與 view 重繪。
+  window.scrollTo(0, 0);
+
   // 每款茶進到產品頁時，整個頁面背景會換成那款茶的專屬色調；離開產品頁則還原
   if (name === 'product') {
     const tea = TEA_DB.find(t => t.id === currentTeaId);
@@ -322,6 +377,7 @@ function showView(name) {
   } else {
     document.body.style.backgroundImage = DEFAULT_BG;
   }
+
   if (name === 'companion' && document.getElementById('companion-log').children.length === 0) {
     startCompanion();
   }

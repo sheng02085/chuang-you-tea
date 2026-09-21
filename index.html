@@ -446,6 +446,21 @@ ${dbText}
     const bubble = addBubble('companion-log', 'bot', '');
     await typeIntoBubble('companion-log', bubble, reply);
     companionHistory.push({ role: 'bot', text: reply });
+
+    // 從 AI 的回覆文字裡比對出提到的是哪一款茶，出現的話在下面加一個可以直接點過去的按鈕
+    const mentionedTea = TEA_DB.find(t => reply.includes(t.name));
+    if (mentionedTea) {
+      const linkWrap = document.createElement('div');
+      linkWrap.className = 'flex justify-start mt-1';
+      const linkBtn = document.createElement('button');
+      linkBtn.className = 'chip text-[11px] bg-tea-gold/90 text-tea-dark font-bold rounded-full px-3.5 py-1.5 flex items-center gap-1.5';
+      linkBtn.innerHTML = `<span>${mentionedTea.emoji}</span>看看「${mentionedTea.name}」的完整介紹 →`;
+      linkBtn.onclick = () => openProduct(mentionedTea.id);
+      linkWrap.appendChild(linkBtn);
+      document.getElementById('companion-log').appendChild(linkWrap);
+      document.getElementById('companion-log').scrollTop = document.getElementById('companion-log').scrollHeight;
+    }
+
     if (companionStage === 0) {
       companionStage = 1;
       renderChips(['再推薦一次', '想看這款茶的介紹']);

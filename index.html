@@ -73,7 +73,7 @@ body, html {
 
   <header class="fixed top-0 w-full z-50 liquid-glass border-b border-white/20 px-6 py-3 flex justify-between items-center">
     <button onclick="showView('landing')" class="flex items-center gap-3.5 btn-bounce text-left">
-      <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-tea-gold to-yellow-200 text-tea-dark flex items-center justify-center font-serif font-bold text-lg shadow-[0_0_15px_rgba(212,175,55,0.5)]">莊</div>
+      <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-tea-gold to-yellow-200 text-tea-dark flex items-center justify-center font-serif font-bold text-lg shadow-[0_0_15px_rgba(212,175,55,0.5)]">茶</div>
       <div>
         <h1 class="font-bold tracking-widest text-lg text-white drop-shadow-md">一握茶研所</h1>
         <p id="header-sub" class="text-[10px] font-mono text-white/60 mt-0.5">一握・系列</p>
@@ -163,7 +163,7 @@ const TEA_DB = [
     formula: "佛手烏龍 70% ・ 玫瑰 10% ・ 紅棗 10% ・ 枸杞 10%",
     flavor: "烏龍茶香、優雅花香、微甜果香",
     fit: "忙碌想放鬆、想要一點花香儀式感、情緒緊繃需要溫和舒緩時",
-    story: "莊友佛手茶的創辦人，常看著身邊的女性朋友，忙起來一整天連喝口水的時間都沒有。「一握・嫣然」的誕生，就是想留一個小小的儀式感給她們——不需要精緻的茶具，不需要特別的場合，只要泡開的那一刻，玫瑰香氣散開，就像是幫自己按下一個暫停鍵。",
+    story: "一握茶研所的創辦人，常看著身邊的女性朋友，忙起來一整天連喝口水的時間都沒有。「一握・嫣然」的誕生，就是想留一個小小的儀式感給她們——不需要精緻的茶具，不需要特別的場合，只要泡開的那一刻，玫瑰香氣散開，就像是幫自己按下一個暫停鍵。",
     features: [
       { icon: "🍵", label: "茶底", desc: "佛手烏龍，溫潤茶香" },
       { icon: "🌹", label: "花香", desc: "玫瑰，優雅香氣" },
@@ -410,7 +410,7 @@ async function askProduct(presetText) {
   productLogs[currentTeaId].push({ role: 'user', text });
   addTyping('product-chat-log');
 
-  const systemPrompt = `你是「莊友佛手茶」品牌的茶伴 AI，現在使用者正在看的是「${tea.name}」這款茶的介紹頁。
+  const systemPrompt = `你是「一握茶研所」品牌的茶伴 AI，現在使用者正在看的是「${tea.name}」這款茶的介紹頁。
 這款茶資訊：系列「${tea.series}」，配方「${tea.formula}」，風味「${tea.flavor}」，適合情境「${tea.fit}」。
 請以溫暖、口語、像懂茶的朋友的語氣回答使用者關於這款茶、佛手茶本身、茶葉配方材料、或傳統飲食茶文化的問題。
 使用者前面說過的話你都記得，遇到「這款茶」「剛剛那個」之類的指涉，直接依對話紀錄判斷指的是什麼，不要反問。
@@ -463,7 +463,7 @@ async function sendCompanion() {
   addTyping('companion-log');
 
   const dbText = TEA_DB.map(t => `- ${t.name}（${t.series}）：配方 ${t.formula}；風味 ${t.flavor}；適合 ${t.fit}`).join('\n');
-  const systemPrompt = `你是「莊友佛手茶」的 AI 茶伴，任務是根據使用者描述的今天狀態或心情，從下面的茶款清單中挑一款最適合的推薦給他。
+  const systemPrompt = `你是「一握茶研所」的 AI 茶伴，任務是根據使用者描述的今天狀態或心情，從下面的茶款清單中挑一款最適合的推薦給他。
 茶款清單：
 ${dbText}
 

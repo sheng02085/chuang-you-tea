@@ -57,20 +57,17 @@ body, html {
 /* iOS / WebKit 重繪相容性 */
 @supports (-webkit-touch-callout: none) {
   /* iPhone 上 LINE、Safari、Chrome 都使用 WebKit。
-     停用容易造成舊 compositing layer 殘留的頁面動畫，
-     保留互動與玻璃效果。 */
-  .view.node-reveal,
-  .view.node-reveal * {
-    animation: none !important;
+     真正容易讓 WebKit 卡住重繪的，是「模糊(blur) + 位移(transform)」
+     這個組合的 compositing 負擔太重，不是動畫本身。這裡把 blur 跟
+     transform 拿掉，只留最輕量的透明度淡入，其餘 JS 邏輯完全不用改，
+     因為只是重新定義同名的 keyframes。 */
+  @keyframes fadeInUp {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
   }
-
-  .view.node-reveal,
-  .fade-in-block,
-  .scroll-fade,
-  .scroll-fade.in-view {
-    opacity: 1 !important;
-    transform: none !important;
-    filter: none !important;
+  @keyframes popIn {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
   }
 }
 

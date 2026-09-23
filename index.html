@@ -54,26 +54,6 @@ body, html {
 
 #tea-scroll::-webkit-scrollbar { display: none; }
 
-/* iOS / WebKit 重繪相容性 */
-@supports (-webkit-touch-callout: none) {
-  /* iPhone 上 LINE、Safari、Chrome 都使用 WebKit。
-     停用容易造成舊 compositing layer 殘留的頁面動畫，
-     保留互動與玻璃效果。 */
-  .view.node-reveal,
-  .view.node-reveal * {
-    animation: none !important;
-  }
-
-  .view.node-reveal,
-  .fade-in-block,
-  .scroll-fade,
-  .scroll-fade.in-view {
-    opacity: 1 !important;
-    transform: none !important;
-    filter: none !important;
-  }
-}
-
 @keyframes fadeInUp {
   0% { opacity: 0; transform: translateY(10px); }
   100% { opacity: 1; transform: translateY(0); }
@@ -86,6 +66,25 @@ body, html {
 .scroll-fade { opacity: 0; }
 .scroll-fade.in-view {
   animation: fadeInUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* ===== iOS / WebKit 重繪相容性 =====
+   iPhone 上 LINE、Safari、Chrome 底層都是 WebKit。
+   只停用「整個 view 的 node-reveal 進場動畫」——那是造成返回白屏
+   （舊 compositing layer 殘留）的主因；
+   卡片與文字各自的淡入＋上移動畫、玻璃效果、底色漸變全部保留。 */
+@supports (-webkit-touch-callout: none) {
+  .view.node-reveal {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  /* blur 在 WebKit 上 compositing 負擔重，進場動畫一律不帶 blur */
+  .fade-in-block,
+  .scroll-fade,
+  .scroll-fade.in-view {
+    filter: none !important;
+  }
 }
 </style>
 </head>

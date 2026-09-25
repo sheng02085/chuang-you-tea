@@ -118,7 +118,7 @@ body, html {
       </div>
 
       <!-- 熱門茶款 -->
-      <div id="tea-section" class="scroll-fade">
+      <div id="tea-section" class="scroll-fade" style="scroll-margin-top: 96px;">
         <h3 class="font-bold text-base lg:text-xl mb-3 lg:mb-5 flex items-center gap-2 px-1"><span>🌿</span>熱門茶款</h3>
         <div id="tea-scroll" class="flex md:grid md:grid-cols-3 gap-3 lg:gap-5 overflow-x-auto md:overflow-visible pb-3 -mx-4 px-4 md:mx-0 md:px-0 snap-x snap-mandatory" style="scrollbar-width:none;"></div>
       </div>
@@ -164,7 +164,7 @@ body, html {
    Cloudflare 後台的加密變數裡，安全多了）
    ========================================================= */
 const WORKER_URL = "https://tea.arp21760208.workers.dev/";
-const GEMINI_MODEL = "gemini-2.5-flash-lite";
+const GEMINI_MODEL = "gemini-3.5-flash-lite";
 
 /* =========================================================
    茶款資料庫 —— 之後要加其他款，照同樣格式加進這個陣列，
@@ -173,11 +173,20 @@ const GEMINI_MODEL = "gemini-2.5-flash-lite";
 const TEA_DB = [
   {
     id: "yanran",
+    culture: "佛手烏龍是臺灣特色烏龍茶，茶樹葉片寬大、形似佛手柑的葉子而得名。玫瑰自古就是入茶、入點心的花草素材；紅棗與枸杞則是華人飲食中常見的藥食同源食材，經常出現在家常湯品與茶飲裡。",
+    drinkInfo: [
+      { label: "原料", text: "佛手烏龍茶、玫瑰、紅棗、枸杞" },
+      { label: "沖泡", text: "1 包茶包加約 300ml、90～95°C 熱水，浸泡 3～5 分鐘，可依口味調整濃淡" },
+      { label: "咖啡因", text: "含茶葉，含咖啡因，睡前飲用請斟酌份量" },
+      { label: "保存", text: "開封後請密封，存放於陰涼乾燥處" },
+      { label: "注意", text: "對上述原料過敏者請避免飲用；本產品為一般茶飲，非藥品，不具醫療效果" }
+    ],
     color: "#E8829B",
     bg: "linear-gradient(-45deg, #170D12, #3A1C2A, #66142D, #260F1A)",
     emoji: "🌹",
     name: "一握・嫣然",
-    series: "女性日常系列",
+    series: "女性日常茶飲",
+    slogan: "照顧生活，也別忘了照顧自己。",
     tag: "花香｜回甘",
     formula: "佛手烏龍 70% ・ 玫瑰 10% ・ 紅棗 10% ・ 枸杞 10%",
     flavor: "烏龍茶香、優雅花香、微甜果香",
@@ -193,11 +202,20 @@ const TEA_DB = [
   },
   {
     id: "qingying",
+    culture: "佛手烏龍是臺灣特色烏龍茶，茶樹葉片寬大、形似佛手柑的葉子而得名。陳皮是柑橘果皮經長時間乾燥陳放而成，是廣東飲食中常見的入菜、入茶材料；山楂則常見於傳統點心，像是山楂餅和糖葫蘆。",
+    drinkInfo: [
+      { label: "原料", text: "佛手烏龍茶、陳皮、山楂" },
+      { label: "沖泡", text: "1 包茶包加約 300ml、90～95°C 熱水，浸泡 3～5 分鐘，可依口味調整濃淡" },
+      { label: "咖啡因", text: "含茶葉，含咖啡因，睡前飲用請斟酌份量" },
+      { label: "保存", text: "開封後請密封，存放於陰涼乾燥處" },
+      { label: "注意", text: "對上述原料過敏者請避免飲用；本產品為一般茶飲，非藥品，不具醫療效果" }
+    ],
     color: "#F0A04B",
     bg: "linear-gradient(-45deg, #17110A, #3A2A1C, #664014, #26170F)",
     emoji: "🍊",
     name: "一握・輕盈",
-    series: "外食族／聚餐後系列",
+    series: "外食及聚餐族群",
+    slogan: "吃得盡興，回到剛剛好的清爽。",
     tag: "柑橘｜清爽",
     formula: "佛手烏龍 70% ・ 陳皮 15% ・ 山楂 15%",
     flavor: "茶香、柑橘、果酸",
@@ -213,11 +231,20 @@ const TEA_DB = [
   },
   {
     id: "nuanyang",
+    culture: "佛手烏龍是臺灣特色烏龍茶，茶樹葉片寬大、形似佛手柑的葉子而得名。紅棗桂圓茶是許多臺灣家庭冬天常見的暖飲；薑在華人飲食中也常用於冬季料理與熱飲，帶來溫暖的香氣。",
+    drinkInfo: [
+      { label: "原料", text: "佛手烏龍茶、紅棗、桂圓、薑" },
+      { label: "沖泡", text: "1 包茶包加約 300ml、90～95°C 熱水，浸泡 3～5 分鐘，可依口味調整濃淡" },
+      { label: "咖啡因", text: "含茶葉，含咖啡因，睡前飲用請斟酌份量" },
+      { label: "保存", text: "開封後請密封，存放於陰涼乾燥處" },
+      { label: "注意", text: "對上述原料過敏者請避免飲用；本產品為一般茶飲，非藥品，不具醫療效果" }
+    ],
     color: "#E2703A",
     bg: "linear-gradient(-45deg, #170D0A, #3A1F1C, #661F14, #260F0D)",
     emoji: "🔥",
     name: "一握・暖陽",
-    series: "秋冬暖飲系列",
+    series: "秋冬暖飲",
+    slogan: "把陽光泡進茶裡，把溫暖握在手中。",
     tag: "暖香｜回甘",
     formula: "佛手烏龍 65% ・ 紅棗 15% ・ 桂圓 15% ・ 薑 5%",
     flavor: "醇厚茶感、紅棗桂圓甜香、輕微薑香",
@@ -276,11 +303,13 @@ function openProduct(teaId) {
     <div class="liquid-glass rounded-[2rem] p-6 fade-in-block" style="animation-delay:${D(0)}ms">
       <span class="text-[10px] font-mono font-bold px-2 py-1 rounded" style="background:${tea.color}; color:#12261A">${tea.series}</span>
       <h2 class="font-serif text-2xl font-bold mt-3">${tea.emoji} ${tea.name}</h2>
-      <p class="text-xs text-white/50 mt-1">${tea.formula}</p>
+      <p class="font-serif text-sm mt-2" style="color:${tea.color}">「${tea.slogan}」</p>
+      <p class="text-xs text-white/50 mt-2">${tea.formula}</p>
     </div>
     <div class="liquid-glass-dark rounded-2xl p-5 border border-white/10 fade-in-block" style="animation-delay:${D(1)}ms">
-      <h3 class="font-bold text-sm mb-2" style="color:${tea.color}"><span class="mr-1.5">🪶</span>故事</h3>
+      <h3 class="font-bold text-sm mb-2" style="color:${tea.color}"><span class="mr-1.5">🪶</span>茶款故事</h3>
       <p class="text-xs text-white/70 leading-relaxed">${fadeText(tea.story, D(1) + 150)}</p>
+      <p class="text-xs text-white/70 leading-relaxed mt-2">${fadeText(tea.philosophy, D(1) + 600)}</p>
     </div>
     <div class="liquid-glass-dark rounded-2xl p-5 border border-white/10 fade-in-block" style="animation-delay:${D(2)}ms">
       <h3 class="font-bold text-sm mb-3" style="color:${tea.color}"><span class="mr-1.5">🌿</span>配方特色</h3>
@@ -292,24 +321,28 @@ function openProduct(teaId) {
         </div>`).join('')}</div>
     </div>
     <div class="liquid-glass-dark rounded-2xl p-5 border border-white/10 fade-in-block" style="animation-delay:${D(3)}ms">
-      <h3 class="font-bold text-sm mb-2" style="color:${tea.color}"><span class="mr-1.5">☕</span>生活情境</h3>
-      <p class="text-xs text-white/70 leading-relaxed">${fadeText(tea.scenario, D(3) + 150)}</p>
+      <h3 class="font-bold text-sm mb-2" style="color:${tea.color}"><span class="mr-1.5">📜</span>文化背景</h3>
+      <p class="text-xs text-white/70 leading-relaxed">${fadeText(tea.culture, D(3) + 150)}</p>
     </div>
     <div class="liquid-glass-dark rounded-2xl p-5 border border-white/10 fade-in-block" style="animation-delay:${D(4)}ms">
-      <h3 class="font-bold text-sm mb-2" style="color:${tea.color}"><span class="mr-1.5">💛</span>想傳達的理念</h3>
-      <p class="text-xs text-white/70 leading-relaxed">${fadeText(tea.philosophy, D(4) + 150)}</p>
+      <h3 class="font-bold text-sm mb-2" style="color:${tea.color}"><span class="mr-1.5">☕</span>生活情境</h3>
+      <p class="text-xs text-white/70 leading-relaxed">${fadeText(tea.scenario, D(4) + 150)}</p>
     </div>
-    <div class="liquid-glass rounded-[2rem] overflow-hidden fade-in-block" style="animation-delay:${D(5)}ms; border-top:2px solid ${tea.color}">
+    <div class="liquid-glass-dark rounded-2xl p-5 border border-white/10 fade-in-block" style="animation-delay:${D(5)}ms">
+      <h3 class="font-bold text-sm mb-3" style="color:${tea.color}"><span class="mr-1.5">🫖</span>飲用資訊</h3>
+      <div class="space-y-2">${tea.drinkInfo.map((r, i) => `
+        <div class="flex gap-3 text-xs fade-in-block" style="animation-delay:${D(5) + 150 + i * 120}ms">
+          <span class="font-bold flex-shrink-0 w-12" style="color:${tea.color}">${r.label}</span>
+          <span class="text-white/70 leading-relaxed">${r.text}</span>
+        </div>`).join('')}</div>
+    </div>
+    <div class="liquid-glass rounded-[2rem] overflow-hidden fade-in-block" style="animation-delay:${D(6)}ms; border-top:2px solid ${tea.color}">
       <div class="p-4 border-b border-white/10 flex items-center gap-2">
         <span style="color:${tea.color}">💬</span>
         <span class="text-sm font-bold">問問關於這款茶的任何事</span>
       </div>
       <div id="product-chat-log" class="p-4 space-y-3 max-h-[340px] overflow-y-auto text-xs"></div>
-      <div class="p-3 border-t border-white/10 flex flex-wrap gap-2">
-        <button class="chip text-[10px] liquid-glass-dark border border-white/20 rounded-full px-3 py-1.5" onclick="askProduct('這款茶為什麼會有這樣的配方組合？')">為什麼這樣配？</button>
-        <button class="chip text-[10px] liquid-glass-dark border border-white/20 rounded-full px-3 py-1.5" onclick="askProduct('佛手茶是什麼？')">佛手茶是什麼？</button>
-        <button class="chip text-[10px] liquid-glass-dark border border-white/20 rounded-full px-3 py-1.5" onclick="askProduct('這些材料在傳統飲食文化中有什麼特色？')">傳統飲食文化特色？</button>
-      </div>
+      <div id="product-chips" class="p-3 border-t border-white/10 flex flex-wrap gap-2"></div>
       <div class="p-3 border-t border-white/10 flex gap-2">
         <input id="product-chat-input" type="text" placeholder="輸入你的問題…" class="flex-1 liquid-glass-dark rounded-full px-4 py-2.5 text-xs outline-none placeholder:text-white/30" onkeydown="if(event.key==='Enter') askProduct()">
         <button onclick="askProduct()" class="w-10 h-10 rounded-full flex items-center justify-center btn-bounce" style="background:${tea.color}; color:#12261A"><span class="text-xs">➤</span></button>
@@ -322,8 +355,38 @@ function openProduct(teaId) {
     productLogs[teaId] = [{ role: 'bot', text: `你好，我是「${tea.name}」的專屬茶伴，關於這款茶或佛手茶的任何問題都可以問我 ${tea.emoji}` }];
   }
   productLogs[teaId].forEach(m => addBubble('product-chat-log', m.role, m.text));
+  renderProductChips();
 
   showView('product');
+}
+
+/* 快速提問按鈕：題庫比顯示數量多，每次問完就從題庫裡重新抽一批不重複的，
+   不會一直卡在同三個問題 */
+const PRODUCT_QUESTION_POOL = [
+  '這款茶為什麼會有這樣的配方組合？',
+  '佛手茶是什麼？',
+  '這些材料在傳統飲食文化中有什麼特色？',
+  '這款茶適合什麼時候喝？',
+  '這款茶會苦嗎？',
+  '要怎麼沖泡才好喝？',
+  '可以冷泡嗎？',
+  '跟一般烏龍茶有什麼不同？'
+];
+// suggestions：AI 產生的建議問題；沒有（或解析失敗）時，退回從題庫隨機抽
+function renderProductChips(suggestions) {
+  const box = document.getElementById('product-chips');
+  if (!box) return;
+  const picks = (suggestions && suggestions.length)
+    ? suggestions.slice(0, 3)
+    : [...PRODUCT_QUESTION_POOL].sort(() => Math.random() - 0.5).slice(0, 3);
+  box.innerHTML = '';
+  picks.forEach(q => {
+    const btn = document.createElement('button');
+    btn.className = 'chip text-[10px] liquid-glass-dark border border-white/20 rounded-full px-3 py-1.5';
+    btn.innerText = q;
+    btn.onclick = () => askProduct(q);
+    box.appendChild(btn);
+  });
 }
 
 function forceIOSRepaint(el) {
@@ -368,6 +431,11 @@ function showView(name) {
 
   // 不使用 smooth，避免 iOS 同時處理捲動動畫與 view 重繪。
   window.scrollTo(0, 0);
+
+  // 回到首頁時把網址上的 ?tea= 拿掉，避免重新整理又跳回茶款頁
+  if (name === 'landing' && location.search) {
+    history.replaceState(null, '', location.pathname);
+  }
 
   // 每款茶進到產品頁時，整個頁面背景會換成那款茶的專屬色調；離開產品頁則還原
   if (name === 'product') {
@@ -461,6 +529,7 @@ async function askProduct(presetText) {
   const text = presetText || input.value.trim();
   if (!text) return;
   input.value = '';
+  document.getElementById('product-chips').innerHTML = '';
   addBubble('product-chat-log', 'user', text);
   productLogs[currentTeaId].push({ role: 'user', text });
   addTyping('product-chat-log');
@@ -470,19 +539,30 @@ async function askProduct(presetText) {
 請以溫暖、口語、像懂茶的朋友的語氣回答使用者關於這款茶、佛手茶本身、茶葉配方材料、或傳統飲食茶文化的問題。
 使用者前面說過的話你都記得，遇到「這款茶」「剛剛那個」之類的指涉，直接依對話紀錄判斷指的是什麼，不要反問。
 【重要規範】絕對不能使用「燃脂」「排油」「減肥」「瘦身」「代謝」「消脂」等暗示醫療或減重功效的字眼，即使使用者主動問「這款茶能減肥嗎」也一樣。遇到這類問題，只回答茶本身的風味、傳統飲食文化中的角色與感受（例如「讓人餐後感覺清爽舒服」），並清楚說明這是茶飲不是保健品或藥品，不具有醫療或減重功效，不要用任何轉折語氣暗示它「還是有幫助」。
-回答控制在 100 字以內，不要條列，不要使用「首先/其次」這類生硬詞，不要提及你是語言模型。若問題與茶完全無關，禮貌引導回到茶的話題。`;
+回答控制在 100 字以內，不要條列，不要使用「首先/其次」這類生硬詞，不要提及你是語言模型。若問題與茶完全無關，禮貌引導回到茶的話題。
+【輸出格式】回答結束後，另起一行，固定用這個格式列出 3 個使用者可能想接著問的問題：
+【建議】問題一|問題二|問題三
+規則：問題一必須直接延續使用者剛剛問的內容或你剛剛的回答（追問細節）；問題二、三可以帶到這款茶的其他面向（沖泡方式、風味、適合時機、佛手茶文化等）。每個問題 15 字以內，用使用者的口吻，不要跟對話中已經問過的重複，也不要出現上面禁止的功效字眼。`;
 
   try {
     const contents = toGeminiContents(productLogs[currentTeaId]);
-    const reply = await callGemini(systemPrompt, contents);
+    const raw = await callGemini(systemPrompt, contents);
+    // 把 AI 附在最後的【建議】那行拆出來，當作按鈕；泡泡裡只顯示正文
+    const [replyPart, suggestPart] = raw.split('【建議】');
+    const reply = replyPart.trim();
+    const suggestions = suggestPart
+      ? suggestPart.split('|').map(s => s.trim()).filter(Boolean)
+      : [];
     removeTyping('product-chat-log');
     const bubble = addBubble('product-chat-log', 'bot', '');
     await typeIntoBubble('product-chat-log', bubble, reply);
     productLogs[currentTeaId].push({ role: 'bot', text: reply });
+    renderProductChips(suggestions);
   } catch (e) {
     removeTyping('product-chat-log');
     const errMsg = '目前連線有點問題，稍後再試試看 🙏（' + e.message + '）';
     addBubble('product-chat-log', 'bot', errMsg);
+    renderProductChips();
   }
 }
 
@@ -492,13 +572,13 @@ let companionHistory = [];
 
 function startCompanion() {
   addBubble('companion-log', 'bot', '嗨，今天想喝一杯什麼樣的茶呢？可以跟我說說你今天的狀態或心情 🍃');
-  renderChips(['想放鬆一下', '最近外食比較多', '想喝點溫暖的', '想來點花香']);
+  renderChips(['想放鬆一下', '最近外食比較多', '想喝點溫暖的']);
 }
 
 function renderChips(options) {
   const box = document.getElementById('companion-chips');
   box.innerHTML = '';
-  options.forEach(opt => {
+  options.slice(0, 3).forEach(opt => {
     const btn = document.createElement('button');
     btn.className = 'chip text-[10px] liquid-glass-dark border border-white/20 rounded-full px-3 py-1.5';
     btn.innerText = opt;
@@ -525,11 +605,20 @@ ${dbText}
 請以專業、簡潔、像品茶師介紹茶葉的語氣回覆，格式參考：「今天的你可以試試『茶名』，用一句話說明為什麼適合、能帶來什麼感受。」
 只推薦清單裡的一款，不要編造清單以外的茶。控制在 80 字以內，不要條列。
 使用者前面說過的話你都記得，如果使用者接著問「這款茶的介紹」「為什麼推薦這款」之類的問題，直接針對你剛剛推薦的那一款回答，不要反問使用者是指哪一款。
-【重要規範】絕對不能使用「燃脂」「排油」「減肥」「瘦身」「代謝」「消脂」等暗示醫療或減重功效的字眼，即使使用者主動問也一樣。只能描述風味與情境上的舒適感（例如餐後清爽），並清楚說明茶飲不具醫療或減重功效，不要用任何轉折語氣暗示它「還是有幫助」。`;
+【重要規範】絕對不能使用「燃脂」「排油」「減肥」「瘦身」「代謝」「消脂」等暗示醫療或減重功效的字眼，即使使用者主動問也一樣。只能描述風味與情境上的舒適感（例如餐後清爽），並清楚說明茶飲不具醫療或減重功效，不要用任何轉折語氣暗示它「還是有幫助」。
+【輸出格式】回答結束後，另起一行，固定用這個格式列出 3 個使用者可能想接著說的話：
+【建議】建議一|建議二|建議三
+規則：建議一必須直接延續剛剛的對話（例如追問你推薦的這款茶）；建議二、三可以是換一種心情或狀態、或想了解其他茶款。每個 15 字以內，用使用者的口吻，不要跟對話中已經說過的重複，也不要出現上面禁止的功效字眼。`;
 
   try {
     const contents = toGeminiContents(companionHistory);
-    const reply = await callGemini(systemPrompt, contents);
+    const raw = await callGemini(systemPrompt, contents);
+    // 把 AI 附在最後的【建議】那行拆出來當按鈕；泡泡裡只顯示正文
+    const [replyPart, suggestPart] = raw.split('【建議】');
+    const reply = replyPart.trim();
+    const suggestions = suggestPart
+      ? suggestPart.split('|').map(s => s.trim()).filter(Boolean).slice(0, 3)
+      : [];
     removeTyping('companion-log');
     const bubble = addBubble('companion-log', 'bot', '');
     await typeIntoBubble('companion-log', bubble, reply);
@@ -549,17 +638,23 @@ ${dbText}
       document.getElementById('companion-log').scrollTop = document.getElementById('companion-log').scrollHeight;
     }
 
-    if (companionStage === 0) {
-      companionStage = 1;
-      renderChips(['再推薦一次', '想看這款茶的介紹']);
-    }
+    companionStage = 1;
+    // AI 有給建議就用 AI 的；沒有的話退回預設按鈕
+    renderChips(suggestions.length ? suggestions : ['再推薦一次', '想看這款茶的介紹', '換一種心情']);
   } catch (e) {
     removeTyping('companion-log');
     addBubble('companion-log', 'bot', '目前連線有點問題，稍後再試試看 🙏（' + e.message + '）');
+    renderChips(['想放鬆一下', '最近外食比較多', '想喝點溫暖的']);
   }
 }
 
 renderLandingCards();
+
+// 掃 QR code 直接開到指定茶款：網址帶 ?tea=yanran / qingying / nuanyang
+(function openFromQR() {
+  const teaId = new URLSearchParams(location.search).get('tea');
+  if (teaId && TEA_DB.some(t => t.id === teaId)) openProduct(teaId);
+})();
 
 // 讓 .scroll-fade 區塊在「真正進入畫面」的當下才播放淡入動畫，
 // 不論是手動滑過去、還是按按鈕跳過去，節奏都一致

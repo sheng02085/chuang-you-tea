@@ -648,6 +648,10 @@ ${dbText}
   }
 }
 
+// 重新整理時不要沿用上次的捲動位置，一律從頁面最上方開始
+if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+window.scrollTo(0, 0);
+
 renderLandingCards();
 
 // 掃 QR code 直接開到指定茶款：網址帶 ?tea=yanran / qingying / nuanyang

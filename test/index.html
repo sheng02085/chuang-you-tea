@@ -68,6 +68,8 @@ body, html {
 .leaf-pop { animation: leafPop .35s ease; }
 @keyframes padPulse { 0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(212,175,55,.7); } 35% { transform: scale(.965); } 100% { transform: scale(1); box-shadow: 0 0 0 16px rgba(212,175,55,0); } }
 .pad-pulse { animation: padPulse .45s ease-out; }
+.yw-switch { transform: scale(1.5); margin: 8px 10px; accent-color: #D4AF37; }
+.yw-switch:disabled { opacity: 1; }
 @keyframes stampIn { 0% { opacity: 0; transform: scale(1.8) rotate(-12deg); } 60% { opacity: 1; transform: scale(.92) rotate(-12deg); } 100% { opacity: 1; transform: scale(1) rotate(-12deg); } }
 .stamp-in { animation: stampIn .5s cubic-bezier(.2,1.4,.4,1) both; }
 @media (min-width: 768px) { #ai-panel, #lab-panel { width: 100% !important; } }
@@ -1381,10 +1383,10 @@ function drawProc() {
       leafG(100, 108, 1.35 - pp * .45, 1.35 - pp * .95, -18 + (gs.roll || 0), c) +
       (pp > .5 ? `<circle cx="100" cy="106" r="${(8 + pp * 10).toFixed(1)}" fill="${c}" opacity="${((pp - .5) * 2).toFixed(2)}"/>` : '');
   } else {
-    const heat = gs.holding ? 1 : .25;
+    const heat = gs.holding ? 1 : .25 + pp * .75;
     s = `<rect x="40" y="150" width="120" height="30" rx="8" fill="#2A1C14"/>` +
       [55, 78, 100, 122, 145].map((x, i) => `<circle cx="${x}" cy="163" r="${9 + i % 2 * 2}" fill="#E0502A" opacity="${(0.25 + heat * .6).toFixed(2)}"/>`).join('') +
-      (gs.holding ? [70, 100, 130].map(x => `<path d="M${x} 140c-5-6 5-10 0-18" stroke="rgba(255,170,90,.55)" stroke-width="2.5" fill="none" stroke-linecap="round"/>`).join('') : '') +
+      (gs.holding || pp > 0 ? [70, 100, 130].map(x => `<path d="M${x} 140c-5-6 5-10 0-18" stroke="rgba(255,170,90,.55)" stroke-width="2.5" fill="none" stroke-linecap="round"/>`).join('') : '') +
       `<ellipse cx="100" cy="98" rx="68" ry="34" fill="#9C7A48" opacity=".55" stroke="#6B4F2A" stroke-width="3"/>` +
       [[80, 94], [100, 88], [120, 95], [92, 104], [112, 104]].map(p => `<circle cx="${p[0]}" cy="${p[1]}" r="9" fill="${c}" stroke="rgba(0,0,0,.2)"/>`).join('');
   }
@@ -1426,7 +1428,14 @@ function renderProcess() {
       <div id="proc-pad" oncontextmenu="return false" class="relative mx-auto mt-5 w-full max-w-[280px] aspect-square rounded-2xl bg-black/25 border border-white/10 overflow-hidden select-none" style="touch-action:none; -webkit-user-select:none; -webkit-touch-callout:none">
         <svg id="proc-svg" viewBox="0 0 200 200" class="w-full h-full"></svg>
       </div>
-      <p class="text-center text-xs text-tea-gold font-bold mt-3">👆 ${st.hint}</p>
+      ${procStep === 5 && procSwitchMode() ? `
+      <p class="text-center text-xs text-tea-gold font-bold mt-3">依序撥動下面三個開關，用炭火慢慢烘焙</p>
+      <div class="flex justify-center gap-8 mt-4">
+        ${['點火', '加火', '收火'].map((t, i) => `
+        <label class="flex flex-col items-center gap-2 text-xs text-white/75">
+          <input type="checkbox" switch class="yw-switch" data-i="${i}" onchange="procSwitch(this)">${t}
+        </label>`).join('')}
+      </div>` : `<p class="text-center text-xs text-tea-gold font-bold mt-3">👆 ${st.hint}</p>`}
       <div class="mx-auto max-w-[280px] h-1.5 rounded-full bg-white/10 mt-3 overflow-hidden"><div id="proc-bar" class="h-full rounded-full bg-tea-gold" style="width:0%; transition: width .15s linear"></div></div>
       <div class="text-center mt-3"><button onclick="procSkip()" class="text-[11px] text-white/35 underline">跳過這一步</button></div>
       ${procStep === 5 && /[?&]debug=1/.test(location.search) ? `<div class="text-center mt-3 text-[11px] text-white/60">
@@ -1451,7 +1460,7 @@ function bindProcPad() {
     gs.down = true; gs.px = p.x; gs.py = p.y; gs.ax = p.x;
     if (procStep === 0) gs.dragLeaf = Math.hypot(p.x - (gs.lx ?? 100), p.y - (gs.ly ?? 64)) < 45;
     if (procStep === 3) gs.pa = Math.atan2(p.y - 110, p.x - 100);
-    if (procStep === 5) procHoldStart();
+    if (procStep === 5 && !procSwitchMode()) procHoldStart();
   });
   pad.addEventListener('pointermove', e => {
     if (!gs.down || gs.lock) return;
@@ -1507,14 +1516,38 @@ function hapticIOS() {
   }
   hapticLabel.click();
 }
+// iPhone（沒有網頁震動功能）改用親手撥系統開關：使用者自己撥，iPhone 就會「噠」一下
+// 網址加 ?switch=1 可以在 Android／電腦上預覽這個模式
+function procSwitchMode() {
+  const ios = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  return /[?&]switch=1/.test(location.search) || (ios && typeof navigator.vibrate !== 'function');
+}
+function procSwitch(el) {
+  if (gs.lock) { el.checked = true; return; }
+  const all = [...document.querySelectorAll('.yw-switch')];
+  const i = +el.dataset.i;
+  const done = all.filter(s => s.checked).length - 1;
+  // 要照順序撥：撥錯順序就彈回去
+  if (!el.checked || i !== done) { el.checked = false; const hint = document.querySelector('#st-process .text-tea-gold.font-bold.mt-3'); if (hint) hint.innerText = `請先撥「${['點火', '加火', '收火'][done < 0 ? 0 : done]}」`; return; }
+  el.disabled = true;
+  pp = (i + 1) / 3;
+  procPulse();
+  drawProc();
+  if (i === 2) procFinish();
+}
+function procPulse() {
+  const pad = document.getElementById('proc-pad');
+  if (pad) { pad.classList.remove('pad-pulse'); void pad.offsetWidth; pad.classList.add('pad-pulse'); }
+}
 function procBuzz() {
   try {
-    if (typeof navigator.vibrate === 'function') navigator.vibrate(70); else hapticIOS();
+    if (typeof navigator.vibrate === 'function') navigator.vibrate(BUZZ_MS); else hapticIOS();
   } catch (e) { try { hapticIOS(); } catch (err) {} }
   const pad = document.getElementById('proc-pad');
   if (pad) { pad.classList.remove('pad-pulse'); void pad.offsetWidth; pad.classList.add('pad-pulse'); }
 }
 const HOLD_MS = 2400;
+const BUZZ_MS = 25;    // 每次震動的長度：極短＝清脆的「噠」（線性馬達效果最明顯）；數字越大越厚實
 function procHoldStart() {
   gs.holding = true;
   // Android：在手指按下的當下把剩下的震動節奏一次排好（按下去這一刻一定允許震動，最可靠）
@@ -1522,7 +1555,7 @@ function procHoldStart() {
     const marks = [1 / 3, 2 / 3, 1].filter(t => pp < t).map(t => Math.round((t - pp) * HOLD_MS));
     const pattern = [0];
     let at = 0;
-    marks.forEach(ms => { pattern.push(Math.max(0, ms - at), 70); at = ms + 70; });
+    marks.forEach(ms => { pattern.push(Math.max(0, ms - at), BUZZ_MS); at = ms + BUZZ_MS; });
     try { navigator.vibrate(pattern); } catch (e) {}
   }
   let last = performance.now();

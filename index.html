@@ -110,7 +110,7 @@ body > header, body > main { animation: pageIn .8s ease 2.6s both; }
 @keyframes spUp { to { opacity: 1; transform: translateY(0); } }
 @keyframes splashOut { to { opacity: 0; visibility: hidden; } }
 @keyframes pageIn { from { opacity: 0; } to { opacity: 1; } }
-/* 同一個分頁已經看過就不再播放；點畫面跳過時也走這條 */
+/* 點畫面跳過 */
 .no-splash #splash { display: none; }
 .no-splash body > header, .no-splash body > main { animation: none; }
 #splash.skip { animation: splashOut .35s ease forwards; }
@@ -120,9 +120,7 @@ body > header, body > main { animation: pageIn .8s ease 2.6s both; }
   body > header, body > main { animation: pageIn .4s ease .8s both; }
 }
 </style>
-<script>
-  try { if (sessionStorage.getItem('yw-splash')) document.documentElement.classList.add('no-splash'); } catch (e) {}
-</script>
+
 </head>
 <body class="antialiased min-h-screen flex flex-col relative">
 
@@ -170,9 +168,9 @@ body > header, body > main { animation: pageIn .8s ease 2.6s both; }
         <button onclick="showView('story')" class="bg-tea-gold text-tea-dark font-bold text-sm lg:text-base px-8 lg:px-10 py-3 lg:py-4 rounded-full shadow-[0_0_20px_rgba(212,175,55,0.3)] btn-bounce inline-block">開始探索茶款</button>
       </div>
 
-      <!-- 熱門茶款 -->
+      <!-- 特色茶飲 -->
       <div id="tea-section" style="scroll-margin-top: 96px;">
-        <h3 class="font-bold text-base lg:text-xl mb-3 lg:mb-5 flex items-center gap-2 px-1 scroll-fade"><span>🌿</span>熱門茶款</h3>
+        <h3 class="font-bold text-base lg:text-xl mb-3 lg:mb-5 flex items-center gap-2 px-1 scroll-fade"><span>🌿</span>特色茶飲</h3>
         <div id="tea-scroll" class="flex flex-col md:grid md:grid-cols-3 gap-0 md:gap-3 lg:gap-5 -mx-4 md:mx-0"></div>
 
         <!-- AI 茶飲助手：手機版接在三款茶下面，呈現方式相同 -->
@@ -830,7 +828,6 @@ function skipSplash() {
 (function initSplash() {
   const s = document.getElementById('splash');
   if (!s) return;
-  try { sessionStorage.setItem('yw-splash', '1'); } catch (e) {}
   s.addEventListener('animationend', (e) => { if (e.animationName === 'splashOut') s.remove(); });
 })();
 

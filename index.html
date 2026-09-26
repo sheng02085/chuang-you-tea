@@ -6,7 +6,6 @@
 <title>一握茶研所 | 一握・系列</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&family=Noto+Sans+TC:wght@300;400;500;700&family=Noto+Serif+TC:wght@500;700&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&text=%E8%8C%B6&display=swap" rel="stylesheet">
 
 <script>
 tailwind.config = {
@@ -67,6 +66,31 @@ body, html {
 
 @keyframes leafPop { 0% { transform: scale(1); } 40% { transform: scale(1.12) rotate(-4deg); } 100% { transform: scale(1); } }
 .leaf-pop { animation: leafPop .35s ease; }
+@keyframes padPulse { 0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(212,175,55,.7); } 35% { transform: scale(.965); } 100% { transform: scale(1); box-shadow: 0 0 0 16px rgba(212,175,55,0); } }
+.pad-pulse { animation: padPulse .45s ease-out; }
+#lab-hint:empty { display: none; }
+@keyframes modalBgIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes modalIn { from { opacity: 0; transform: translateY(18px) scale(.95); } to { opacity: 1; transform: none; } }
+#lab-modal .modal-bg { animation: modalBgIn .3s ease; }
+#lab-modal .modal-card { animation: modalIn .45s cubic-bezier(.16,1,.3,1); }
+#lab-modal.closing { opacity: 0; transition: opacity .2s ease; }
+.pour-flow { stroke-dasharray: 4 7; animation: pourFlow .35s linear infinite; }
+@keyframes pourFlow { to { stroke-dashoffset: -11; } }
+/* 關卡內容滑入 */
+@keyframes stInRight { from { opacity: 0; transform: translateX(28px); } to { opacity: 1; transform: none; } }
+@keyframes stInLeft  { from { opacity: 0; transform: translateX(-28px); } to { opacity: 1; transform: none; } }
+.st-in-right { animation: stInRight .45s cubic-bezier(.16,1,.3,1); }
+.st-in-left  { animation: stInLeft .45s cubic-bezier(.16,1,.3,1); }
+/* 步驟進度條（Uber Eats 式）：完成＝實心、進行中＝一道光持續掃過並依進度填滿 */
+.seg { position: relative; height: 6px; border-radius: 9999px; background: rgba(255,255,255,.15); overflow: hidden; }
+.seg.active { background: rgba(212,175,55,.28); }
+.seg-fill { position: absolute; left: 0; top: 0; bottom: 0; border-radius: inherit; background: #D4AF37; transition: width .3s ease; }
+.seg.active::after { content: ""; position: absolute; top: 0; bottom: 0; left: 0; width: 45%;
+  background: linear-gradient(90deg, rgba(255,255,255,0), rgba(255,240,200,.75), rgba(255,255,255,0));
+  animation: segSweep 1.3s ease-in-out infinite; }
+@keyframes segSweep { from { transform: translateX(-110%); } to { transform: translateX(240%); } }
+.yw-switch { transform: scale(1.5); margin: 8px 10px; accent-color: #D4AF37; }
+.yw-switch:disabled { opacity: 1; }
 @keyframes stampIn { 0% { opacity: 0; transform: scale(1.8) rotate(-12deg); } 60% { opacity: 1; transform: scale(.92) rotate(-12deg); } 100% { opacity: 1; transform: scale(1) rotate(-12deg); } }
 .stamp-in { animation: stampIn .5s cubic-bezier(.2,1.4,.4,1) both; }
 @media (min-width: 768px) { #ai-panel, #lab-panel { width: 100% !important; } }
@@ -147,7 +171,7 @@ body > header, body > main { animation: pageIn .8s ease 2.6s both; }
       <path class="sp-steam" pathLength="1" d="M12.5 17.5c-1.6-1.6-1.6-3.4 0-5"/>
       <circle class="sp-fill" cx="32" cy="15.5" r="2" fill="#D4AF37" stroke="none"/>
       <path class="sp-fill" d="M24 25.5a8 6.5 0 0 1 16 0z M14 30c0-3 2-4.5 5-4.5h26c3 0 5 1.5 5 4.5 0 11-8 19-18 19s-18-8-18-19z" fill="rgba(212,175,55,0.18)" stroke="none"/>
-      <text class="sp-fill" x="32" y="35.8" text-anchor="middle" dominant-baseline="central" fill="#D4AF37" stroke="none" font-size="15" style="font-family:'Ma Shan Zheng','Noto Serif TC',serif">茶</text>
+      <image class="sp-fill" x="23.5" y="27" width="17" height="17.5" preserveAspectRatio="xMidYMid meet" href="data:image/png;base64,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"/>
       <path class="sp-draw" pathLength="1" d="M24 25.5a8 6.5 0 0 1 16 0z"/>
       <path class="sp-draw" pathLength="1" d="M14 30c0-3 2-4.5 5-4.5h26c3 0 5 1.5 5 4.5 0 11-8 19-18 19s-18-8-18-19z"/>
       <path class="sp-draw" pathLength="1" d="M14.8 34 8.5 26c-1.2-1.4-3.2-.3-2.6 1.4 2 6.2 4.6 11.2 10.4 14.6"/>
@@ -166,7 +190,7 @@ body > header, body > main { animation: pageIn .8s ease 2.6s both; }
         <p id="header-sub" class="text-[10px] font-mono text-white/60 mt-0.5">一握・系列</p>
       </div>
     </button>
-    <button id="back-btn" onclick="showView('landing')" class="hidden text-white/70 hover:text-white text-xs font-mono border border-white/20 rounded-full px-3 py-1.5 btn-bounce">
+    <button id="back-btn" onclick="goBack()" class="hidden text-white/70 hover:text-white text-xs font-mono border border-white/20 rounded-full px-3 py-1.5 btn-bounce">
       <span class="mr-1">←</span>返回
     </button>
   </header>
@@ -212,7 +236,7 @@ body > header, body > main { animation: pageIn .8s ease 2.6s both; }
                 <path d="M14.8 34 8.5 26c-1.2-1.4-3.2-.3-2.6 1.4 2 6.2 4.6 11.2 10.4 14.6"/>
                 <path d="M49.6 31.5c5 0 8.4 2.8 8.4 6.6s-3.6 6.6-9.8 7"/>
                 <path d="M24.5 47.5 23 53h18l-1.5-5.5"/>
-                <text x="32" y="35.8" text-anchor="middle" dominant-baseline="central" fill="#6EE7B7" stroke="none" font-size="15" style="font-family:'Ma Shan Zheng','Noto Serif TC',serif">茶</text>
+                <image x="23.5" y="27" width="17" height="17.5" preserveAspectRatio="xMidYMid meet" href="data:image/png;base64,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"/>
               </svg>
             </div>
           </div>
@@ -298,22 +322,14 @@ body > header, body > main { animation: pageIn .8s ease 2.6s both; }
           <p class="text-xs lg:text-sm text-white/60 mt-2 leading-relaxed">像逛觀光工廠一樣，一站一站體驗佛手茶的故事。<br>每完成一站蓋一個章，集滿三個就能拿到體驗完成證。</p>
         </div>
 
-        <!-- 集章卡 -->
-        <div class="liquid-glass-dark rounded-2xl p-5 border border-white/10 fade-in-block" style="animation-delay:300ms">
-          <div class="flex justify-between items-center mb-3">
-            <h3 class="text-tea-gold font-bold text-sm">集章卡</h3>
-            <span id="stamp-count" class="text-[11px] text-white/50"></span>
-          </div>
-          <div id="stamp-row" class="grid grid-cols-3 gap-3"></div>
-          <div id="stamp-cert"></div>
-        </div>
-
         <!-- 關卡切換 -->
-        <div class="liquid-glass-dark rounded-full p-1 flex gap-1 border border-white/10 fade-in-block" style="animation-delay:600ms">
-          <button id="tab-process" onclick="labTab('process')" class="flex-1 py-2.5 text-xs font-bold rounded-full transition-all">① 製茶工序</button>
-          <button id="tab-diy" onclick="labTab('diy')" class="flex-1 py-2.5 text-xs font-bold rounded-full transition-all">② DIY 調茶</button>
-          <button id="tab-quiz" onclick="labTab('quiz')" class="flex-1 py-2.5 text-xs font-bold rounded-full transition-all">③ 茶知識問答</button>
+        <div id="lab-tabs" class="relative liquid-glass-dark rounded-full p-1 flex gap-1 border border-white/10 fade-in-block" style="animation-delay:600ms">
+          <div id="tab-ind" class="absolute top-1 bottom-1 rounded-full bg-tea-gold shadow-[0_0_14px_rgba(212,175,55,.35)]" style="--i:0; width:calc((100% - 16px) / 3); left:calc(4px + var(--i) * ((100% - 16px) / 3 + 4px)); transition:left .45s cubic-bezier(.65,0,.35,1)"></div>
+          <button id="tab-process" onclick="labTab('process')" class="relative z-10 flex-1 py-2.5 text-xs font-bold rounded-full transition-colors duration-300">① 製茶工序</button>
+          <button id="tab-diy" onclick="labTab('diy')" class="relative z-10 flex-1 py-2.5 text-xs font-bold rounded-full transition-colors duration-300">② DIY 調茶</button>
+          <button id="tab-quiz" onclick="labTab('quiz')" class="relative z-10 flex-1 py-2.5 text-xs font-bold rounded-full transition-colors duration-300">③ 茶知識問答</button>
         </div>
+        <p id="tab-hint" class="hidden text-center text-[11px] text-amber-300 -mt-2"></p>
 
         <div class="fade-in-block" style="animation-delay:900ms">
           <!-- 第一站：製茶工序 -->
@@ -321,12 +337,28 @@ body > header, body > main { animation: pageIn .8s ease 2.6s both; }
 
           <!-- 第二站：DIY 調茶 -->
           <div id="st-diy" class="space-y-4 hidden">
-            <div class="liquid-glass-dark rounded-2xl p-5 border border-white/10">
+            <div class="liquid-glass-dark rounded-2xl p-5 lg:p-7 border border-white/10">
               <h3 class="text-tea-gold font-bold text-sm mb-1">① 把配料拖進杯子裡</h3>
               <p class="text-[11px] text-white/45 mb-3">最多 3 種；拖進杯子加入，點一下已加入的配料可以拿掉</p>
-              <div class="flex justify-center py-2">
-                <svg id="lab-cup" viewBox="2 0 100 110" class="w-40 h-44" aria-hidden="true" style="overflow:visible">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-8 items-center">
+                <!-- 杯子：手機在上面，平板／電腦在右邊 -->
+                <div class="md:order-2 flex flex-col items-center pt-8">
+                <svg id="lab-cup" viewBox="2 0 100 110" class="w-40 h-44 md:w-52 md:h-56" aria-hidden="true" style="overflow:visible">
                   <defs><clipPath id="lab-clip"><path d="M19.2 22 27.2 98Q28.3 104.3 35 104.3H69Q75.7 104.3 76.8 98L84.8 22z"/></clipPath></defs>
+                  <g id="lab-stream" style="opacity:0; transition:opacity .3s ease" fill="none" stroke-linecap="round">
+                    <path d="M64.9 1.6Q56 6 53.5 20L53.5 104" stroke="rgba(255,236,200,.55)" stroke-width="3.2"/>
+                    <path class="pour-flow" d="M64.9 1.6Q56 6 53.5 20L53.5 104" stroke="rgba(255,255,255,.75)" stroke-width="1.3"/>
+                  </g>
+                  <g id="lab-kettle" style="opacity:0; transform:translate(16px,-16px); transition:transform .5s cubic-bezier(.2,.8,.3,1), opacity .4s ease">
+                    <g transform="translate(84 -6) rotate(-35) scale(.85)" fill="none" stroke="rgba(255,255,255,.88)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M-14 -2c0-4 3-7 7-7h14c4 0 7 3 7 7v6c0 8-6 13-14 13s-14-5-14-13z" fill="rgba(212,175,55,.35)"/>
+                      <path d="M-8 -9a8 5 0 0 1 16 0z" fill="rgba(212,175,55,.35)"/>
+                      <circle cx="0" cy="-15" r="2" fill="rgba(255,255,255,.88)" stroke="none"/>
+                      <path d="M14 -4c6 0 9 3 9 7s-3 7-9 7"/>
+                      <path d="M-13 6-22-6c-1-1.5-3-.8-2.6 1 1.8 6 4.8 10 9.6 12"/>
+                      <image x="-7" y="-3" width="14" height="14" preserveAspectRatio="xMidYMid meet" href="data:image/png;base64,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"/>
+                    </g>
+                  </g>
                   <g id="lab-steam" style="opacity:0; transition:opacity 1s ease">
                     <path d="M42 16c-2.4-2.4-2.4-5.2 0-7.8" stroke="rgba(255,255,255,.5)" stroke-width="2.2" fill="none" stroke-linecap="round"/>
                     <path d="M52 13c-2.4-2.4-2.4-5.2 0-7.8" stroke="rgba(255,255,255,.5)" stroke-width="2.2" fill="none" stroke-linecap="round"/>
@@ -341,37 +373,56 @@ body > header, body > main { animation: pageIn .8s ease 2.6s both; }
                   <path d="M18 22 26 98q1.2 7.5 9 7.5h34q7.8 0 9-7.5L86 22" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="2.4" stroke-linejoin="round"/>
                   <path id="lab-cup-drop" d="M18 22h68" fill="none" stroke="rgba(255,255,255,0)" stroke-width="2"/>
                 </svg>
+                  <div class="text-[11px] text-white/45 text-center mt-1">已加入：<span id="lab-picked" class="text-white/80">還沒有加入配料</span></div>
+                </div>
+                <!-- 配料與風味：平板／電腦在左邊 -->
+                <div class="md:order-1">
+                  <div class="text-[11px] text-white/45 mb-1.5">配料</div>
+                  <div id="lab-ings" class="flex flex-wrap gap-3 justify-center md:justify-start py-1"></div>
+                  <p id="lab-hint" class="text-[11px] text-amber-300 mt-1 empty:hidden"></p>
+                  <div class="text-[11px] text-white/45 mt-4 mb-2">風味預覽</div>
+                  <div id="lab-bars" class="space-y-1.5"></div>
+                </div>
               </div>
-              <div class="text-[11px] text-white/45 text-center -mt-1">已加入：<span id="lab-picked" class="text-white/80">還沒有加入配料</span></div>
             </div>
 
-            <div class="liquid-glass-dark rounded-2xl p-5 border border-white/10">
-              <h3 class="text-tea-gold font-bold text-sm mb-1">配料</h3>
-              <p id="lab-hint" class="text-[11px] text-amber-300 mb-2 h-4"></p>
-              <div id="lab-ings" class="flex flex-wrap gap-3 justify-center py-1"></div>
-              <div class="text-[11px] text-white/45 mt-3 mb-2">風味預覽</div>
-              <div id="lab-bars" class="space-y-1.5"></div>
-            </div>
-
-            <div class="liquid-glass-dark rounded-2xl p-5 border border-white/10">
+            <div id="lab-settings" class="liquid-glass-dark rounded-2xl p-5 lg:p-7 border border-white/10" style="scroll-margin-top: 96px;">
               <h3 class="text-tea-gold font-bold text-sm mb-3">② 設定沖泡</h3>
-              <div class="flex justify-between text-xs mb-1"><span class="text-white/70">水溫</span><span id="lab-temp-v" class="font-bold">90°C</span></div>
-              <input id="lab-temp" type="range" min="80" max="100" value="90" class="w-full accent-amber-400" oninput="labUpdate()">
-              <div class="flex justify-between text-xs mt-4 mb-1"><span class="text-white/70">浸泡時間</span><span id="lab-time-v" class="font-bold">3 分鐘</span></div>
-              <input id="lab-time" type="range" min="1" max="6" value="3" class="w-full accent-amber-400" oninput="labUpdate()">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
+                <div>
+                  <div class="flex justify-between text-xs mb-1"><span class="text-white/70">水溫</span><span id="lab-temp-v" class="font-bold">90°C</span></div>
+                  <input id="lab-temp" type="range" min="80" max="100" value="90" class="w-full accent-amber-400" oninput="labUpdate()">
+                </div>
+                <div>
+                  <div class="flex justify-between text-xs mb-1"><span class="text-white/70">浸泡時間</span><span id="lab-time-v" class="font-bold">3 分鐘</span></div>
+                  <input id="lab-time" type="range" min="1" max="6" value="3" class="w-full accent-amber-400" oninput="labUpdate()">
+                </div>
+              </div>
               <p id="lab-tip" class="text-[11px] text-white/55 mt-3 leading-relaxed"></p>
             </div>
 
-            <div class="text-center">
+            <div class="flex flex-wrap justify-center gap-3">
               <button id="lab-brew-btn" onclick="labBrew()" class="bg-tea-gold text-tea-dark font-bold text-sm px-10 py-3 rounded-full shadow-[0_0_20px_rgba(212,175,55,0.3)] btn-bounce">③ 開始沖泡</button>
+              <button id="lab-next" onclick="labTab('quiz'); document.getElementById('st-quiz').scrollIntoView({behavior:'smooth', block:'start'})" class="hidden border border-white/30 text-white font-bold text-sm px-8 py-3 rounded-full btn-bounce">下一站：茶知識問答 →</button>
             </div>
 
             <div id="lab-result"></div>
           </div>
 
           <!-- 第三站：茶知識問答 -->
-          <div id="st-quiz" class="space-y-4 hidden"></div>
+          <div id="st-quiz" class="space-y-4 hidden" style="scroll-margin-top: 96px;"></div>
         </div>
+
+        <!-- 集章卡：放在每一關的最下面 -->
+        <div id="stamp-card" class="liquid-glass-dark rounded-2xl p-5 border border-white/10 mt-4">
+          <div class="flex justify-between items-center mb-3">
+            <h3 class="text-tea-gold font-bold text-sm">集章卡</h3>
+            <span id="stamp-count" class="text-[11px] text-white/50"></span>
+          </div>
+          <div id="stamp-row" class="grid grid-cols-3 gap-3"></div>
+          <div id="stamp-cert"></div>
+        </div>
+
       </div>
     </section>
 
@@ -582,7 +633,7 @@ function storyMedia(tea, delay) {
   return `<video class="w-full rounded-xl bg-black" src="${v}" controls playsinline preload="metadata"></video>`;
 }
 
-function openProduct(teaId) {
+function openProduct(teaId, fromHistory) {
   currentTeaId = teaId;
   const tea = TEA_DB.find(t => t.id === teaId);
   const box = document.getElementById('product-content');
@@ -646,7 +697,7 @@ function openProduct(teaId) {
   productLogs[teaId].forEach(m => addBubble('product-chat-log', m.role, m.text));
   renderProductChips();
 
-  showView('product');
+  showView('product', fromHistory);
 }
 
 /* 快速提問按鈕：題庫比顯示數量多，每次問完就從題庫裡重新抽一批不重複的，
@@ -691,10 +742,33 @@ function forceIOSRepaint(el) {
   void el.getBoundingClientRect();
 }
 
-function showView(name) {
+// ---- 瀏覽紀錄：每換一個頁面記一筆，「返回」和手機的返回手勢都會回到上一個頁面 ----
+function goBack() {
+  if (history.state && history.state.d > 0) history.back();
+  else showView('landing');
+}
+window.addEventListener('popstate', e => {
+  labModalClose && labModalClose(true);
+  const s = e.state;
+  if (!s || !s.v) { showView('landing', true); return; }
+  if (s.v === 'product' && s.t) openProduct(s.t, true);
+  else showView(s.v, true, s.y);
+  if (s.v === 'lab' && s.modal && labLastModalHtml) setTimeout(() => labModal(labLastModalHtml), 300);
+});
+
+function showView(name, fromHistory, restoreY) {
   const views = document.querySelectorAll('.view');
   const target = document.getElementById('view-' + name);
   if (!target) return;
+  if (!fromHistory) {
+    const cur = history.state || {};
+    const same = cur.v === name && (name !== 'product' || cur.t === currentTeaId);
+    if (!same) {
+      // 先記住目前頁面捲到哪裡，返回時可以回到原位
+      history.replaceState(Object.assign({}, cur, { y: window.scrollY }), '');
+      history.pushState({ v: name, t: name === 'product' ? currentTeaId : null, d: (cur.d || 0) + 1, y: 0 }, '');
+    }
+  } else if (restoreY === undefined && history.state) restoreY = history.state.y;
 
   // 清掉上一個 view 的動畫狀態，避免 WebKit 保留舊 compositing layer。
   views.forEach(v => {
@@ -727,10 +801,12 @@ function showView(name) {
 
   // 不使用 smooth，避免 iOS 同時處理捲動動畫與 view 重繪。
   window.scrollTo(0, 0);
+  // 從返回回來的頁面，回到離開前的捲動位置
+  if (fromHistory && restoreY) setTimeout(() => window.scrollTo(0, restoreY), 40);
 
   // 回到首頁時把網址上的 ?tea= 拿掉，避免重新整理又跳回茶款頁
   if (name === 'landing' && location.search) {
-    history.replaceState(null, '', location.pathname);
+    history.replaceState(history.state, '', location.pathname);
   }
 
   // 每款茶進到產品頁時，整個頁面背景會換成那款茶的專屬色調；離開產品頁則還原
@@ -995,15 +1071,19 @@ const STAMP_DEFS = [
   { id: 'quiz',    name: '茶知識問答', icon: '<circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6v.6"/><path d="M12 17.5v.01"/>' }
 ];
 let stamps = [];
-try { stamps = JSON.parse(localStorage.getItem('yw-stamps') || '[]'); } catch (e) { stamps = []; }
+// 集章只保留在這次瀏覽期間：重新整理還在，關掉分頁再開就從零開始
+try { localStorage.removeItem('yw-stamps'); } catch (e) {}
+try { stamps = JSON.parse(sessionStorage.getItem('yw-stamps') || '[]'); } catch (e) { stamps = []; }
 
 function stampSet(id) {
   if (stamps.includes(id)) return;
   stamps.push(id);
-  try { localStorage.setItem('yw-stamps', JSON.stringify(stamps)); } catch (e) {}
+  try { sessionStorage.setItem('yw-stamps', JSON.stringify(stamps)); } catch (e) {}
   renderStamps(id);
 }
 function renderStamps(justGot) {
+  renderTabLocks();
+  if (labTabNow && !labUnlocked(labTabNow)) labTab('process');
   document.getElementById('stamp-count').innerText = `已集 ${stamps.length} / 3`;
   document.getElementById('stamp-row').innerHTML = STAMP_DEFS.map(d => {
     const got = stamps.includes(d.id);
@@ -1016,28 +1096,136 @@ function renderStamps(justGot) {
   }).join('');
   const cert = document.getElementById('stamp-cert');
   if (stamps.length === 3) {
+    certFile = null; buildCert();
     const d = new Date();
     cert.innerHTML = `<div class="mt-5 rounded-2xl border border-tea-gold/60 p-5 text-center" style="background:linear-gradient(135deg, rgba(212,175,55,.18), rgba(212,175,55,.04))">
       <div class="text-[10px] tracking-[0.3em] text-tea-gold">CERTIFICATE</div>
       <div class="font-serif text-xl font-bold mt-1">一握體驗館・體驗完成證</div>
       <p class="text-xs text-white/65 mt-2 leading-relaxed">恭喜你完成製茶工序、DIY 調茶與茶知識問答，<br>找到屬於你的那一握。</p>
       <div class="text-[11px] text-white/40 mt-3">一握茶研所　${d.getFullYear()}/${d.getMonth() + 1}/${d.getDate()}</div>
-      <p class="text-[11px] text-tea-gold mt-3">截圖分享給朋友吧！</p>
+      <button onclick="shareCert()" class="mt-4 px-5 py-2 rounded-full text-xs font-bold bg-tea-gold text-tea-dark btn-bounce">儲存證書，分享給朋友吧！</button>
+      <div id="cert-msg" class="text-[11px] text-white/50 mt-2 h-4"></div>
       <button onclick="stampReset()" class="text-[11px] text-white/40 underline mt-2">重新集章</button>
     </div>`;
   } else cert.innerHTML = '';
 }
+/* ---------- 體驗完成證：用 canvas 畫成一張圖片，手機跳出分享選單（可存到相簿或傳 LINE），電腦直接下載 ---------- */
+let certFile = null;
+function certSpaced(ctx, text, x, y, gap) {
+  const w = [...text].reduce((s, c) => s + ctx.measureText(c).width + gap, -gap);
+  let cx = x - w / 2;
+  for (const c of text) { ctx.fillText(c, cx, y); cx += ctx.measureText(c).width + gap; }
+}
+function certIcon(ctx, svg, cx, cy, size, color) {
+  const s = size / 24;
+  ctx.save(); ctx.translate(cx - size / 2, cy - size / 2); ctx.scale(s, s);
+  ctx.strokeStyle = color; ctx.lineWidth = 1.6; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  for (const m of svg.matchAll(/<path d="([^"]+)"/g)) ctx.stroke(new Path2D(m[1]));
+  for (const m of svg.matchAll(/<circle cx="([\d.]+)" cy="([\d.]+)" r="([\d.]+)"/g)) { ctx.beginPath(); ctx.arc(+m[1], +m[2], +m[3], 0, Math.PI * 2); ctx.stroke(); }
+  ctx.restore();
+}
+async function buildCert() {
+  try { await Promise.all([document.fonts.load('700 64px "Noto Serif TC"', '一握體驗館完成證'), document.fonts.load('400 36px "Noto Sans TC"', '恭喜你完成')]); } catch (e) {}
+  const W = 1080, H = 1350, GOLD = '#D4AF37';
+  const cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+  const ctx = cv.getContext('2d');
+  const bg = ctx.createLinearGradient(0, 0, W, H);
+  bg.addColorStop(0, '#0E1F15'); bg.addColorStop(.55, '#1C3A27'); bg.addColorStop(1, '#4A3A12');
+  ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
+  ctx.strokeStyle = GOLD; ctx.lineWidth = 4; ctx.beginPath(); ctx.roundRect(44, 44, W - 88, H - 88, 44); ctx.stroke();
+  ctx.globalAlpha = .45; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.roundRect(64, 64, W - 128, H - 128, 32); ctx.stroke(); ctx.globalAlpha = 1;
+  ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+  ctx.fillStyle = GOLD; ctx.font = '500 30px "Noto Sans TC", sans-serif';
+  certSpaced(ctx, 'CERTIFICATE', W / 2, 200, 14);
+  ctx.textAlign = 'center';
+  ctx.fillStyle = '#fff'; ctx.font = '700 66px "Noto Serif TC", serif';
+  ctx.fillText('一握體驗館・體驗完成證', W / 2, 300);
+  ctx.strokeStyle = 'rgba(212,175,55,.5)'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(340, 370); ctx.lineTo(740, 370); ctx.stroke();
+  STAMP_DEFS.forEach((d, i) => {
+    const x = 270 + i * 270, y = 555;
+    ctx.save(); ctx.translate(x, y); ctx.rotate(-12 * Math.PI / 180);
+    ctx.fillStyle = 'rgba(212,175,55,.15)'; ctx.strokeStyle = GOLD; ctx.lineWidth = 6;
+    ctx.beginPath(); ctx.arc(0, 0, 100, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(0, 0, 86, 0, Math.PI * 2); ctx.stroke();
+    certIcon(ctx, d.icon, 0, 0, 110, GOLD);
+    ctx.restore();
+    ctx.fillStyle = GOLD; ctx.font = '700 36px "Noto Sans TC", sans-serif';
+    ctx.fillText(d.name, x, 710);
+  });
+  ctx.fillStyle = 'rgba(255,255,255,.82)'; ctx.font = '400 38px "Noto Sans TC", sans-serif';
+  ctx.fillText('恭喜你完成製茶工序、DIY 調茶與茶知識問答，', W / 2, 850);
+  ctx.fillText('找到屬於你的那一握。', W / 2, 910);
+  const d = new Date();
+  ctx.fillStyle = 'rgba(255,255,255,.5)'; ctx.font = '400 32px "Noto Sans TC", sans-serif';
+  ctx.fillText(`一握茶研所　${d.getFullYear()}/${d.getMonth() + 1}/${d.getDate()}`, W / 2, 1070);
+  ctx.fillStyle = 'rgba(212,175,55,.8)'; ctx.font = '400 28px "Noto Sans TC", sans-serif';
+  ctx.fillText('把佛手的溫潤，留給忙碌生活裡的你', W / 2, 1180);
+  const blob = await new Promise(r => cv.toBlob(r, 'image/png'));
+  certFile = new File([blob], '一握體驗館_體驗完成證.png', { type: 'image/png' });
+  return certFile;
+}
+function certDownload(file) {
+  const url = URL.createObjectURL(file);
+  const a = document.createElement('a'); a.href = url; a.download = file.name;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 4000);
+}
+async function shareCert() {
+  const msg = document.getElementById('cert-msg');
+  if (!certFile) { if (msg) msg.innerText = '證書產生中…'; await buildCert(); }
+  const data = { files: [certFile], title: '一握體驗館・體驗完成證' };
+  if (navigator.canShare && navigator.canShare(data)) {
+    try { await navigator.share(data); if (msg) msg.innerText = ''; return; }
+    catch (e) { if (e.name === 'AbortError') { if (msg) msg.innerText = ''; return; } }
+  }
+  certDownload(certFile);
+  if (msg) msg.innerText = '證書圖片已下載';
+}
+
 function stampReset() {
   stamps = [];
-  try { localStorage.removeItem('yw-stamps'); } catch (e) {}
+  try { sessionStorage.removeItem('yw-stamps'); } catch (e) {}
   renderStamps();
 }
-function labTab(k) {
-  ['process', 'diy', 'quiz'].forEach(x => {
-    document.getElementById('st-' + x).classList.toggle('hidden', x !== k);
-    const t = document.getElementById('tab-' + x);
-    t.className = 'flex-1 py-2.5 text-xs font-bold rounded-full transition-all ' + (x === k ? 'bg-tea-gold text-tea-dark' : 'text-white/60');
+let labTabNow = null;
+const TAB_NAMES = { process: '① 製茶工序', diy: '② DIY 調茶', quiz: '③ 茶知識問答' };
+function labUnlocked(k) {
+  return k === 'process' || (k === 'diy' && stamps.includes('process')) || (k === 'quiz' && stamps.includes('diy'));
+}
+function renderTabLocks() {
+  ['process', 'diy', 'quiz'].forEach(k => {
+    const t = document.getElementById('tab-' + k);
+    if (!t) return;
+    t.innerText = labUnlocked(k) ? TAB_NAMES[k] : '🔒 ' + TAB_NAMES[k].slice(2);
+    t.style.opacity = labUnlocked(k) ? '' : '.45';
   });
+  const nx = document.getElementById('lab-next');
+  if (nx) nx.classList.toggle('hidden', !stamps.includes('diy'));
+}
+function labTab(k) {
+  if (!labUnlocked(k)) {
+    const prev = k === 'quiz' ? '② DIY 調茶' : '① 製茶工序';
+    const hint = document.getElementById('tab-hint');
+    if (hint) { hint.innerText = `請先完成「${prev}」再來喔`; hint.classList.remove('hidden'); clearTimeout(hint._t); hint._t = setTimeout(() => { hint.innerText = ''; hint.classList.add('hidden'); }, 2200); }
+    return;
+  }
+  const order = ['process', 'diy', 'quiz'];
+  const from = order.indexOf(labTabNow), to = order.indexOf(k);
+  order.forEach(x => {
+    const st = document.getElementById('st-' + x);
+    st.classList.toggle('hidden', x !== k);
+    document.getElementById('tab-' + x).classList.toggle('text-tea-dark', x === k);
+    document.getElementById('tab-' + x).classList.toggle('text-white/60', x !== k);
+  });
+  // 金色底塊滑到目前的關卡
+  document.getElementById('tab-ind').style.setProperty('--i', to);
+  // 內容依方向滑入：往右邊的關卡從右邊進來，往左從左邊進來
+  if (labTabNow && labTabNow !== k) {
+    const st = document.getElementById('st-' + k);
+    st.classList.remove('st-in-right', 'st-in-left'); void st.offsetWidth;
+    st.classList.add(to > from ? 'st-in-right' : 'st-in-left');
+  }
+  labTabNow = k;
 }
 
 /* ================= 共用拖曳工具（Pointer Events，滑鼠／觸控都適用） =================
@@ -1155,6 +1343,8 @@ function labAdd(id, xRatio) {
   labSplash(xRatio);
   labRender();
   labUpdate();
+  // 放滿三種配料：等配料掉進杯子後，自動滑到沖泡設定
+  if (labPicked.length === 3) setTimeout(() => document.getElementById('lab-settings').scrollIntoView({ behavior: 'smooth', block: 'center' }), 1100);
 }
 function labRemove(id) {
   labPicked = labPicked.filter(x => x !== id);
@@ -1215,10 +1405,13 @@ function labFloatPieces() {
     el.style.transition = 'none';
     el.style.transform = `translate(${el.dataset.x}px, ${el.dataset.rest}px)`;
     void el.getBoundingClientRect();
-    const d = (0.3 + Math.random() * 0.6).toFixed(2);
-    el.style.transition = `transform 2.2s cubic-bezier(.3,.1,.3,1) ${d}s`;
+    // 越高的位置越晚浮到，跟著茶湯水位一起慢慢上升
+    const reach = (104.3 - +el.dataset.float) / 78.3;
+    const d = Math.round(POUR_MS * 0.15 + Math.random() * 300);
+    const dur = Math.round(POUR_MS * Math.min(1, reach + 0.1));
+    el.style.transition = `transform ${dur}ms ${POUR_EASE} ${d}ms`;
     el.style.transform = `translate(${el.dataset.x}px, ${el.dataset.float}px)`;
-    setTimeout(() => el.classList.add('floating'), (2.2 + +d) * 1000);
+    setTimeout(() => el.classList.add('floating'), d + dur);
   });
 }
 function labColor() {
@@ -1243,19 +1436,36 @@ function labUpdate() {
   document.getElementById('lab-tip').innerText = labTip().text + '（建議 90～95°C、3～5 分鐘）';
   document.getElementById('lab-liquid').setAttribute('fill', labColor());
 }
+const POUR_MS = 4000;   // 倒滿一杯茶的時間
+const POUR_EASE = 'cubic-bezier(.45,.05,.55,.95)';
 function labBrew() {
   const btn = document.getElementById('lab-brew-btn');
   const liquid = document.getElementById('lab-liquid');
+  const stream = document.getElementById('lab-stream');
   btn.disabled = true; btn.innerText = '沖泡中…'; btn.classList.add('opacity-60');
+  document.getElementById('lab-cup').scrollIntoView({ behavior: 'smooth', block: 'center' });
   document.getElementById('lab-result').innerHTML = '';
+  document.getElementById('lab-steam').style.opacity = '0';
+  // 先把杯子歸零（暫時不要動畫），再明確設定 4 秒的倒茶動畫
   liquid.style.transition = 'none'; liquid.style.transform = 'scaleY(0.1)';
   void liquid.getBoundingClientRect();
-  liquid.style.transition = '';
-  liquid.style.transform = 'scaleY(1)';
-  document.getElementById('lab-steam').style.opacity = '1';
-  labBrewed = true;
-  labFloatPieces();
-  setTimeout(() => { labShowResult(); btn.disabled = false; btn.innerText = '再沖泡一次'; btn.classList.remove('opacity-60'); stampSet('diy'); }, 2500);
+  // 熱水壺先從右上方滑進來、傾斜，接著倒出熱水，茶湯慢慢升高
+  const kettle = document.getElementById('lab-kettle');
+  kettle.style.opacity = '1'; kettle.style.transform = 'translate(0,0)';
+  setTimeout(() => { stream.style.opacity = '1'; }, 450);
+  setTimeout(() => {
+    liquid.style.transition = `transform ${POUR_MS}ms ${POUR_EASE}, fill .6s ease`;
+    liquid.style.transform = 'scaleY(1)';
+    labBrewed = true;
+    labFloatPieces();
+  }, 550);
+  // 倒滿後收水流、水壺退出、冒熱氣
+  setTimeout(() => { stream.style.opacity = '0'; }, 550 + POUR_MS - 200);
+  setTimeout(() => { kettle.style.opacity = '0'; kettle.style.transform = 'translate(16px,-16px)'; document.getElementById('lab-steam').style.opacity = '1'; }, 550 + POUR_MS + 100);
+  setTimeout(() => {
+    labShowResult(); btn.disabled = false; btn.innerText = '再沖泡一次'; btn.classList.remove('opacity-60');
+    stampSet('diy');
+  }, 550 + POUR_MS + 600);
 }
 function labShowResult() {
   const v = labFlavor();
@@ -1274,26 +1484,65 @@ function labShowResult() {
     const tea = TEA_DB.find(t => t.id === best);
     const exact = bestScore === 1;
     html = `
-      <div class="mx-auto mb-3 w-14 h-14">${teaIconSVG(tea.id, tea.color, 'w-14 h-14')}</div>
+<div class="flex items-center justify-center gap-3 mb-4">
+        <div class="w-14 h-14 rounded-full border-2 border-white/25 shadow-inner" style="background:${labColor()}"></div>
+        ${best ? `<div class="w-14 h-14">${teaIconSVG(best, TEA_DB.find(t => t.id === best).color, 'w-14 h-14')}</div>` : ''}
+      </div>
       <div class="text-xs text-white/55">你調出了一杯${flavorText}</div>
       <div class="font-serif text-xl font-bold mt-2">${exact ? '跟' : '最接近'}「${tea.name}」${exact ? '的配方一模一樣！' : ''}</div>
       <p class="text-xs mt-2" style="color:${tea.color}">「${tea.slogan || tea.series}」</p>
       <p class="text-[11px] text-white/50 mt-3 leading-relaxed">${tip.good ? '沖泡條件也剛剛好，這杯茶的香氣會很漂亮。' : tip.text}</p>
       <div class="flex flex-wrap justify-center gap-2 mt-5">
-        <button onclick="openProduct('${tea.id}')" class="px-5 py-2 rounded-full text-sm font-bold btn-bounce" style="background:${tea.color}; color:#12261A">看看「${tea.name}」</button>
-        <button onclick="labReset()" class="px-5 py-2 rounded-full text-sm font-bold border border-white/30 btn-bounce">重新調一杯</button>
-      </div>`;
+        <button onclick="labOpenTea('${tea.id}')" class="px-5 py-2 rounded-full text-sm font-bold btn-bounce" style="background:${tea.color}; color:#12261A">看看「${tea.name}」</button>
+        <button onclick="labModalClose(); labReset()" class="px-5 py-2 rounded-full text-sm font-bold border border-white/30 btn-bounce">重新調一杯</button>
+      </div>
+      <button onclick="labModalClose(); labTab('quiz'); document.getElementById('st-quiz').scrollIntoView({behavior:'smooth', block:'start'})" class="mt-3 text-sm font-bold text-tea-gold btn-bounce">下一站：茶知識問答 →</button>`;
   } else {
-    html = `
+    html = `<div class="flex items-center justify-center gap-3 mb-4">
+        <div class="w-14 h-14 rounded-full border-2 border-white/25 shadow-inner" style="background:${labColor()}"></div>
+        ${best ? `<div class="w-14 h-14">${teaIconSVG(best, TEA_DB.find(t => t.id === best).color, 'w-14 h-14')}</div>` : ''}
+      </div>
       <div class="text-xs text-white/55">你調出了一杯${flavorText}</div>
       <div class="font-serif text-xl font-bold mt-2">試試加入配料，找出你的那一握</div>
       <p class="text-[11px] text-white/50 mt-3 leading-relaxed">${tip.text}</p>
-      <div class="flex justify-center mt-5"><button onclick="labReset()" class="px-5 py-2 rounded-full text-sm font-bold border border-white/30 btn-bounce">重新調一杯</button></div>`;
+      <div class="flex justify-center mt-5"><button onclick="labModalClose(); labReset()" class="px-5 py-2 rounded-full text-sm font-bold border border-white/30 btn-bounce">重新調一杯</button></div>
+      <button onclick="labModalClose(); labTab('quiz'); document.getElementById('st-quiz').scrollIntoView({behavior:'smooth', block:'start'})" class="mt-3 text-sm font-bold text-tea-gold btn-bounce">下一站：茶知識問答 →</button>`;
   }
-  const box = document.getElementById('lab-result');
-  box.innerHTML = `<div class="liquid-glass rounded-[2rem] p-6 text-center fade-in-block">${html}</div>`;
-  setTimeout(() => box.scrollIntoView({ behavior: 'smooth', block: 'center' }), 100);
+  labModal(html);
 }
+// 結果彈出視窗：點背景、右上角 ×、或按 Esc 都能關閉
+let labLastModalHtml = '';
+// 從結果視窗點「看看某款茶」：記住結果視窗是開著的，按返回時會重新打開
+function labOpenTea(id) {
+  history.replaceState(Object.assign({}, history.state, { modal: true }), '');
+  labModalClose(true);
+  openProduct(id);
+}
+function labModal(html) {
+  labLastModalHtml = html;
+  labModalClose(true);
+  const m = document.createElement('div');
+  m.id = 'lab-modal';
+  m.className = 'fixed inset-0 z-[150] flex items-center justify-center p-5';
+  m.innerHTML = `
+    <div class="modal-bg absolute inset-0 bg-black/70" onclick="labModalClose()"></div>
+    <div class="modal-card relative w-full max-w-sm rounded-[2rem] p-6 pt-8 text-center border border-tea-gold/40 shadow-2xl" style="background:linear-gradient(160deg,#1C3A27 0%,#2A3320 55%,#3A2E12 100%)">
+      <button onclick="labModalClose()" aria-label="關閉" class="absolute top-3 right-4 text-white/50 text-2xl leading-none">×</button>
+      <div class="text-[10px] tracking-[0.3em] text-tea-gold mb-3">YOUR TEA</div>
+      ${html}
+    </div>`;
+  document.body.appendChild(m);
+}
+function labModalClose(instant) {
+  const m = document.getElementById('lab-modal');
+  if (!m) return;
+  if (instant) { m.remove(); return; }
+  // 使用者自己關掉視窗：返回時就不用再打開
+  if (history.state && history.state.modal) history.replaceState(Object.assign({}, history.state, { modal: false }), '');
+  m.classList.add('closing');
+  setTimeout(() => m.remove(), 220);
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') labModalClose(); });
 function labReset() {
   labPicked = [];
   document.getElementById('lab-temp').value = 90;
@@ -1303,6 +1552,8 @@ function labReset() {
   document.getElementById('lab-ripples').innerHTML = '';
   document.getElementById('lab-bits').innerHTML = '';
   labBrewed = false;
+  document.getElementById('lab-stream').style.opacity = '0';
+  const kt = document.getElementById('lab-kettle'); kt.style.opacity = '0'; kt.style.transform = 'translate(16px,-16px)';
   const liquid = document.getElementById('lab-liquid');
   liquid.style.transition = 'none'; liquid.style.transform = 'scaleY(0.1)';
   const btn = document.getElementById('lab-brew-btn'); btn.innerText = '③ 開始沖泡';
@@ -1369,10 +1620,10 @@ function drawProc() {
       leafG(100, 108, 1.35 - pp * .45, 1.35 - pp * .95, -18 + (gs.roll || 0), c) +
       (pp > .5 ? `<circle cx="100" cy="106" r="${(8 + pp * 10).toFixed(1)}" fill="${c}" opacity="${((pp - .5) * 2).toFixed(2)}"/>` : '');
   } else {
-    const heat = gs.holding ? 1 : .25;
+    const heat = gs.holding ? 1 : .25 + pp * .75;
     s = `<rect x="40" y="150" width="120" height="30" rx="8" fill="#2A1C14"/>` +
       [55, 78, 100, 122, 145].map((x, i) => `<circle cx="${x}" cy="163" r="${9 + i % 2 * 2}" fill="#E0502A" opacity="${(0.25 + heat * .6).toFixed(2)}"/>`).join('') +
-      (gs.holding ? [70, 100, 130].map(x => `<path d="M${x} 140c-5-6 5-10 0-18" stroke="rgba(255,170,90,.55)" stroke-width="2.5" fill="none" stroke-linecap="round"/>`).join('') : '') +
+      (gs.holding || pp > 0 ? [70, 100, 130].map(x => `<path d="M${x} 140c-5-6 5-10 0-18" stroke="rgba(255,170,90,.55)" stroke-width="2.5" fill="none" stroke-linecap="round"/>`).join('') : '') +
       `<ellipse cx="100" cy="98" rx="68" ry="34" fill="#9C7A48" opacity=".55" stroke="#6B4F2A" stroke-width="3"/>` +
       [[80, 94], [100, 88], [120, 95], [92, 104], [112, 104]].map(p => `<circle cx="${p[0]}" cy="${p[1]}" r="9" fill="${c}" stroke="rgba(0,0,0,.2)"/>`).join('');
   }
@@ -1380,12 +1631,14 @@ function drawProc() {
   svg.innerHTML = s;
   const bar = document.getElementById('proc-bar');
   if (bar) bar.style.width = Math.round(Math.min(pp, 1) * 100) + '%';
+  const seg = document.getElementById('seg-now');
+  if (seg) seg.style.width = Math.round(Math.min(pp, 1) * 100) + '%';
 }
 function renderProcess() {
   const st = PROCESS_STEPS[procStep];
   const dots = PROCESS_STEPS.map((s, i) => `
     <div class="flex-1 text-center">
-      <div class="h-1.5 rounded-full ${i < procStep || procDone ? 'bg-tea-gold' : i === procStep ? 'bg-tea-gold/60' : 'bg-white/15'}"></div>
+      <div class="seg ${i === procStep && !procDone ? 'active' : ''}"><div class="seg-fill" ${i === procStep && !procDone ? 'id="seg-now"' : ''} style="width:${i < procStep || procDone ? 100 : i === procStep ? Math.round(pp * 100) : 0}%"></div></div>
       <div class="text-[10px] mt-1.5 ${i === procStep && !procDone ? 'text-tea-gold font-bold' : 'text-white/40'}">${s.name}</div>
     </div>`).join('');
   const box = document.getElementById('st-process');
@@ -1411,12 +1664,22 @@ function renderProcess() {
       <div class="text-[11px] text-white/45 text-center">第 ${procStep + 1} 步 / 共 6 步</div>
       <div class="font-serif text-2xl font-bold text-center mt-1">${st.name}</div>
       <p class="text-xs text-white/65 text-center mt-2 leading-relaxed px-2">${st.desc}</p>
-      <div id="proc-pad" class="relative mx-auto mt-5 w-full max-w-[280px] aspect-square rounded-2xl bg-black/25 border border-white/10 overflow-hidden select-none" style="touch-action:none; -webkit-user-select:none">
+      <div id="proc-pad" oncontextmenu="return false" class="relative mx-auto mt-5 w-full max-w-[280px] aspect-square rounded-2xl bg-black/25 border border-white/10 overflow-hidden select-none" style="touch-action:none; -webkit-user-select:none; -webkit-touch-callout:none">
         <svg id="proc-svg" viewBox="0 0 200 200" class="w-full h-full"></svg>
       </div>
-      <p class="text-center text-xs text-tea-gold font-bold mt-3">👆 ${st.hint}</p>
+      ${procStep === 5 && procSwitchMode() ? `
+      <p class="text-center text-xs text-tea-gold font-bold mt-3">依序撥動下面三個開關，用炭火慢慢烘焙</p>
+      <div class="flex justify-center gap-8 mt-4">
+        ${['點火', '加火', '收火'].map((t, i) => `
+        <label class="flex flex-col items-center gap-2 text-xs text-white/75">
+          <input type="checkbox" switch class="yw-switch" data-i="${i}" onchange="procSwitch(this)">${t}
+        </label>`).join('')}
+      </div>` : `<p class="text-center text-xs text-tea-gold font-bold mt-3">👆 ${st.hint}</p>`}
       <div class="mx-auto max-w-[280px] h-1.5 rounded-full bg-white/10 mt-3 overflow-hidden"><div id="proc-bar" class="h-full rounded-full bg-tea-gold" style="width:0%; transition: width .15s linear"></div></div>
       <div class="text-center mt-3"><button onclick="procSkip()" class="text-[11px] text-white/35 underline">跳過這一步</button></div>
+      ${procStep === 5 && /[?&]debug=1/.test(location.search) ? `<div class="text-center mt-3 text-[11px] text-white/60">
+        <button onclick="vibTest()" class="px-4 py-1.5 rounded-full border border-white/30">震動測試</button>
+        <div id="vib-result" class="mt-2"></div></div>` : ''}
     </div>`;
   drawProc();
   bindProcPad();
@@ -1427,6 +1690,7 @@ function procPoint(e) {
 }
 function bindProcPad() {
   const pad = document.getElementById('proc-pad');
+  pad.addEventListener('touchstart', e => e.preventDefault(), { passive: false });
   pad.addEventListener('pointerdown', e => {
     if (gs.lock) return;
     e.preventDefault();
@@ -1435,7 +1699,7 @@ function bindProcPad() {
     gs.down = true; gs.px = p.x; gs.py = p.y; gs.ax = p.x;
     if (procStep === 0) gs.dragLeaf = Math.hypot(p.x - (gs.lx ?? 100), p.y - (gs.ly ?? 64)) < 45;
     if (procStep === 3) gs.pa = Math.atan2(p.y - 110, p.x - 100);
-    if (procStep === 5) procHoldStart();
+    if (procStep === 5 && !procSwitchMode()) procHoldStart();
   });
   pad.addEventListener('pointermove', e => {
     if (!gs.down || gs.lock) return;
@@ -1461,8 +1725,9 @@ function bindProcPad() {
     drawProc();
     if (pp >= 1) procFinish();
   });
-  const up = () => {
+  const up = (e) => {
     if (!gs.down) return;
+    gs.cancelled = e && e.type === 'pointercancel';
     gs.down = false;
     if (procStep === 0 && gs.dragLeaf && !gs.lock) {
       gs.dragLeaf = false;
@@ -1475,23 +1740,87 @@ function bindProcPad() {
   pad.addEventListener('pointerup', up);
   pad.addEventListener('pointercancel', up);
 }
+// 震動回饋：Android 用標準的 navigator.vibrate；
+// iPhone 不支援它，改用「撥動隱藏的系統開關」觸發震動（iOS 17.4～26.4 有效，26.5 起被 Apple 封鎖）。
+// 不論能不能震，畫面都會有一下「咚」的視覺回饋，最新版 iPhone 也感覺得到節奏。
+let hapticLabel = null;
+function hapticIOS() {
+  if (!hapticLabel) {
+    const wrap = document.createElement('div');
+    wrap.setAttribute('aria-hidden', 'true');
+    wrap.style.cssText = 'position:fixed;left:-9999px;top:0;width:1px;height:1px;opacity:0;pointer-events:none;overflow:hidden';
+    wrap.innerHTML = '<input type="checkbox" id="yw-haptic" switch tabindex="-1"><label for="yw-haptic" id="yw-haptic-label"></label>';
+    document.body.appendChild(wrap);
+    hapticLabel = document.getElementById('yw-haptic-label');
+  }
+  hapticLabel.click();
+}
+// iPhone（沒有網頁震動功能）改用親手撥系統開關：使用者自己撥，iPhone 就會「噠」一下
+// 網址加 ?switch=1 可以在 Android／電腦上預覽這個模式
+function procSwitchMode() {
+  const ios = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  return /[?&]switch=1/.test(location.search) || (ios && typeof navigator.vibrate !== 'function');
+}
+function procSwitch(el) {
+  if (gs.lock) { el.checked = true; return; }
+  const all = [...document.querySelectorAll('.yw-switch')];
+  const i = +el.dataset.i;
+  const done = all.filter(s => s.checked).length - 1;
+  // 要照順序撥：撥錯順序就彈回去
+  if (!el.checked || i !== done) { el.checked = false; const hint = document.querySelector('#st-process .text-tea-gold.font-bold.mt-3'); if (hint) hint.innerText = `請先撥「${['點火', '加火', '收火'][done < 0 ? 0 : done]}」`; return; }
+  el.disabled = true;
+  pp = (i + 1) / 3;
+  procPulse();
+  drawProc();
+  if (i === 2) procFinish();
+}
+function procPulse() {
+  const pad = document.getElementById('proc-pad');
+  if (pad) { pad.classList.remove('pad-pulse'); void pad.offsetWidth; pad.classList.add('pad-pulse'); }
+}
+function procBuzz() {
+  try {
+    if (typeof navigator.vibrate === 'function') navigator.vibrate(BUZZ_MS); else hapticIOS();
+  } catch (e) { try { hapticIOS(); } catch (err) {} }
+  const pad = document.getElementById('proc-pad');
+  if (pad) { pad.classList.remove('pad-pulse'); void pad.offsetWidth; pad.classList.add('pad-pulse'); }
+}
+const HOLD_MS = 2400;
+const BUZZ_MS = 25;    // 每次震動的長度：極短＝清脆的「噠」（線性馬達效果最明顯）；數字越大越厚實
 function procHoldStart() {
   gs.holding = true;
+  // Android：在手指按下的當下把剩下的震動節奏一次排好（按下去這一刻一定允許震動，最可靠）
+  if (typeof navigator.vibrate === 'function') {
+    const marks = [1 / 3, 2 / 3, 1].filter(t => pp < t).map(t => Math.round((t - pp) * HOLD_MS));
+    const pattern = [0];
+    let at = 0;
+    marks.forEach(ms => { pattern.push(Math.max(0, ms - at), BUZZ_MS); at = ms + BUZZ_MS; });
+    try { navigator.vibrate(pattern); } catch (e) {}
+  }
   let last = performance.now();
   const tick = now => {
     if (!gs.holding || gs.lock) return;
-    pp = Math.min(1, pp + (now - last) / 2400); last = now;
+    const before = pp;
+    pp = Math.min(1, pp + (now - last) / HOLD_MS); last = now;
+    // 火候到三分之一、三分之二、完成時各震一下（Android 支援；iPhone 瀏覽器不支援震動）
+    [1 / 3, 2 / 3, 1].forEach(t => { if (before < t && pp >= t) procBuzz(); });
     drawProc();
     if (pp >= 1) { gs.holding = false; procFinish(); return; }
     requestAnimationFrame(tick);
   };
   requestAnimationFrame(tick);
 }
-function procHoldStop() { gs.holding = false; drawProc(); }
+function procHoldStop() { gs.holding = false; try { if (!gs.lock && !gs.cancelled && navigator.vibrate) navigator.vibrate(0); } catch (e) {} drawProc(); }
 function procFinish() {
   if (gs.lock) return;
   gs.lock = true; gs.holding = false; pp = 1; drawProc();
   setTimeout(procAdvance, 750);
+}
+function vibTest() {
+  const out = document.getElementById('vib-result');
+  if (typeof navigator.vibrate !== 'function') { out.innerText = '這個瀏覽器沒有震動功能（iPhone 或部分 App 內建瀏覽器）'; return; }
+  const ok = navigator.vibrate([300, 150, 300]);
+  out.innerText = ok ? '已送出震動指令：如果手機沒震，代表是手機設定、App 或裝置本身擋掉' : '瀏覽器拒絕了震動指令';
 }
 function procSkip() { if (!gs.lock) procFinish(); }
 function procAdvance() {
@@ -1551,9 +1880,12 @@ function quizPick(i) {
   document.getElementById('quiz-exp').innerHTML = `
     <div class="mt-4 text-xs leading-relaxed ${right ? 'text-emerald-300' : 'text-rose-300'} font-bold">${right ? '答對了！' : '差一點！'}</div>
     <p class="text-xs text-white/65 mt-1 leading-relaxed">${item.exp}</p>
-    <div class="text-right mt-4"><button onclick="quizNext()" class="px-5 py-2 rounded-full text-sm font-bold bg-tea-gold text-tea-dark btn-bounce">${quizI === QUIZ.length - 1 ? '看成績' : '下一題'}</button></div>`;
+    <div class="text-right mt-4"><button id="quiz-next-btn" onclick="quizNext()" class="px-5 py-2 rounded-full text-sm font-bold bg-tea-gold text-tea-dark btn-bounce">${quizI === QUIZ.length - 1 ? '看成績' : '下一題'}</button></div>`;
+  // 答完自動捲到解說和「下一題」按鈕
+  setTimeout(() => document.getElementById('quiz-next-btn').scrollIntoView({ behavior: 'smooth', block: 'center' }), 80);
 }
-function quizNext() { quizI++; renderQuiz(); }
+// 換題後自動捲回新題目的開頭
+function quizNext() { quizI++; renderQuiz(); document.getElementById('st-quiz').scrollIntoView({ behavior: 'smooth', block: 'start' }); }
 function quizReset() { quizI = 0; quizScore = 0; renderQuiz(); }
 
 renderStamps(); renderProcess(); renderQuiz(); labRender(); labUpdate(); labTab('process');
@@ -1561,6 +1893,7 @@ renderStamps(); renderProcess(); renderQuiz(); labRender(); labUpdate(); labTab(
 renderLandingCards();
 
 // 掃 QR code 直接開到指定茶款：網址帶 ?tea=yanran / qingying / nuanyang
+history.replaceState({ v: 'landing', t: null, d: 0, y: 0 }, '');
 (function openFromQR() {
   const teaId = new URLSearchParams(location.search).get('tea');
   if (teaId && TEA_DB.some(t => t.id === teaId)) openProduct(teaId);

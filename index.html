@@ -6,6 +6,7 @@
 <title>一握茶研所 | 一握・系列</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&family=Noto+Sans+TC:wght@300;400;500;700&family=Noto+Serif+TC:wght@500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&text=%E8%8C%B6&display=swap" rel="stylesheet">
 
 <script>
 tailwind.config = {
@@ -53,7 +54,22 @@ body, html {
 .chip:active { transform: scale(.95); }
 
 #tea-scroll::-webkit-scrollbar { display: none; }
-@media (min-width: 768px) { #tea-section > button { width: 100% !important; } }
+
+.drag-ghost { position:fixed; z-index:999; pointer-events:none; touch-action:none; transform:translate(-50%,-50%) scale(1.15); filter:drop-shadow(0 6px 10px rgba(0,0,0,.4)); transition: transform .15s ease; }
+.drop-target-hot { outline:2px solid #D4AF37; outline-offset:3px; }
+@keyframes ripple { 0% { r:2; opacity:.8; } 100% { r:16; opacity:0; } }
+.leaf-shake { animation: leafShake .4s ease; }
+@keyframes leafShake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
+@keyframes bitBob { 0%,100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-2.5px) rotate(6deg); } }
+.lab-piece.floating .lab-bob { animation: bitBob 2.6s ease-in-out infinite; }
+@keyframes rippleOut { 0% { opacity: .8; transform: scale(.3); } 100% { opacity: 0; transform: scale(1.8); } }
+.lab-ripple { transform-box: fill-box; transform-origin: center; animation: rippleOut .65s ease-out forwards; }
+
+@keyframes leafPop { 0% { transform: scale(1); } 40% { transform: scale(1.12) rotate(-4deg); } 100% { transform: scale(1); } }
+.leaf-pop { animation: leafPop .35s ease; }
+@keyframes stampIn { 0% { opacity: 0; transform: scale(1.8) rotate(-12deg); } 60% { opacity: 1; transform: scale(.92) rotate(-12deg); } 100% { opacity: 1; transform: scale(1) rotate(-12deg); } }
+.stamp-in { animation: stampIn .5s cubic-bezier(.2,1.4,.4,1) both; }
+@media (min-width: 768px) { #ai-panel, #lab-panel { width: 100% !important; } }
 
 @keyframes fadeInUp {
   0% { opacity: 0; transform: translateY(10px); }
@@ -131,6 +147,7 @@ body > header, body > main { animation: pageIn .8s ease 2.6s both; }
       <path class="sp-steam" pathLength="1" d="M12.5 17.5c-1.6-1.6-1.6-3.4 0-5"/>
       <circle class="sp-fill" cx="32" cy="15.5" r="2" fill="#D4AF37" stroke="none"/>
       <path class="sp-fill" d="M24 25.5a8 6.5 0 0 1 16 0z M14 30c0-3 2-4.5 5-4.5h26c3 0 5 1.5 5 4.5 0 11-8 19-18 19s-18-8-18-19z" fill="rgba(212,175,55,0.18)" stroke="none"/>
+      <text class="sp-fill" x="32" y="35.8" text-anchor="middle" dominant-baseline="central" fill="#D4AF37" stroke="none" font-size="15" style="font-family:'Ma Shan Zheng','Noto Serif TC',serif">茶</text>
       <path class="sp-draw" pathLength="1" d="M24 25.5a8 6.5 0 0 1 16 0z"/>
       <path class="sp-draw" pathLength="1" d="M14 30c0-3 2-4.5 5-4.5h26c3 0 5 1.5 5 4.5 0 11-8 19-18 19s-18-8-18-19z"/>
       <path class="sp-draw" pathLength="1" d="M14.8 34 8.5 26c-1.2-1.4-3.2-.3-2.6 1.4 2 6.2 4.6 11.2 10.4 14.6"/>
@@ -154,27 +171,32 @@ body > header, body > main { animation: pageIn .8s ease 2.6s both; }
     </button>
   </header>
 
-  <main class="flex-1 pt-24 pb-10 px-4 max-w-2xl lg:max-w-4xl mx-auto w-full relative z-10">
+  <main class="flex-1 pt-24 md:pt-20 pb-10 px-4 max-w-2xl lg:max-w-4xl mx-auto w-full relative z-10">
 
     <!-- ============ 入口頁 ============ -->
     <section id="view-landing" class="view active node-reveal space-y-6">
 
+      <!-- 第一屏：主視覺＋特色茶飲（電腦版剛好一個螢幕高、內容垂直置中） -->
+      <div class="space-y-6 md:min-h-[calc(100vh-5rem)] md:flex md:flex-col md:justify-center md:pb-6">
+
       <!-- 品牌 + 主視覺 -->
-      <div class="text-center pt-4 pb-2 lg:pt-10 lg:pb-6 space-y-4 lg:space-y-6 fade-in-block" style="animation-delay:0ms">
+      <div class="text-center pt-4 pb-2 lg:pt-4 lg:pb-2 space-y-4 fade-in-block" style="animation-delay:0ms">
         <div>
           <h2 class="font-serif text-3xl lg:text-5xl font-bold drop-shadow-md">一握茶研所</h2>
-          <p class="text-white/60 text-sm lg:text-lg mt-3 lg:mt-4 leading-relaxed">找到適合你的茶<br>探索每一杯茶的故事</p>
+          <p class="text-white/60 text-sm lg:text-lg mt-3 leading-relaxed">找到適合你的茶<span class="hidden md:inline">，</span><br class="md:hidden">探索每一杯茶的故事</p>
         </div>
-        <button onclick="showView('story')" class="bg-tea-gold text-tea-dark font-bold text-sm lg:text-base px-8 lg:px-10 py-3 lg:py-4 rounded-full shadow-[0_0_20px_rgba(212,175,55,0.3)] btn-bounce inline-block">開始探索茶款</button>
+        <button onclick="showView('story')" class="bg-tea-gold text-tea-dark font-bold text-sm lg:text-base px-8 lg:px-10 py-3 rounded-full shadow-[0_0_20px_rgba(212,175,55,0.3)] btn-bounce inline-block">開始探索茶款</button>
       </div>
 
       <!-- 特色茶飲 -->
       <div id="tea-section" style="scroll-margin-top: 96px;">
-        <h3 class="font-bold text-base lg:text-xl mb-3 lg:mb-5 flex items-center gap-2 px-1 scroll-fade"><span>🌿</span>特色茶飲</h3>
+        <h3 class="font-bold text-base lg:text-xl mb-3 lg:mb-4 flex items-center gap-2 px-1 scroll-fade"><span>🌿</span>特色茶飲</h3>
         <div id="tea-scroll" class="flex flex-col md:grid md:grid-cols-3 gap-0 md:gap-3 lg:gap-5 -mx-4 md:mx-0"></div>
+      </div>
+      </div>
 
-        <!-- AI 茶飲助手：手機版接在三款茶下面，呈現方式相同 -->
-        <button onclick="showView('companion')" class="scroll-fade relative overflow-hidden block w-full -mx-4 md:mx-0 md:mt-6 -mb-10 md:mb-0 text-center px-6 pt-10 pb-10 lg:p-12 md:rounded-[2rem] md:border border-emerald-400/30 btn-bounce" style="width:calc(100% + 2rem)">
+        <!-- AI 茶飲助手：手機版緊接在三款茶下面，電腦版在第二屏 -->
+        <button id="ai-panel" onclick="showView('companion')" class="scroll-fade relative overflow-hidden block w-full -mx-4 md:mx-0 !mt-0 md:!mt-6 text-center px-6 pt-10 pb-12 lg:p-12 md:rounded-[2rem] md:border border-emerald-400/30 btn-bounce" style="width:calc(100% + 2rem)">
           <div class="absolute inset-0 pointer-events-none" style="background-image:linear-gradient(-45deg, #0A1712, #123A2C, #1E5A45, #0D2219); background-size:400% 400%; animation: fluidBackground 18s ease infinite; animation-delay:-4s"></div>
           <div class="relative">
             <div class="font-serif font-bold text-3xl md:text-xl lg:text-2xl">AI 茶伴</div>
@@ -190,12 +212,34 @@ body > header, body > main { animation: pageIn .8s ease 2.6s both; }
                 <path d="M14.8 34 8.5 26c-1.2-1.4-3.2-.3-2.6 1.4 2 6.2 4.6 11.2 10.4 14.6"/>
                 <path d="M49.6 31.5c5 0 8.4 2.8 8.4 6.6s-3.6 6.6-9.8 7"/>
                 <path d="M24.5 47.5 23 53h18l-1.5-5.5"/>
+                <text x="32" y="35.8" text-anchor="middle" dominant-baseline="central" fill="#6EE7B7" stroke="none" font-size="15" style="font-family:'Ma Shan Zheng','Noto Serif TC',serif">茶</text>
+              </svg>
+            </div>
+          </div>
+        </button>
+
+        <!-- 一握調茶室：觀光工廠式 DIY 互動體驗 -->
+        <button id="lab-panel" onclick="showView('lab')" class="scroll-fade relative overflow-hidden block w-full -mx-4 md:mx-0 !mt-0 md:!mt-6 -mb-10 md:mb-0 text-center px-6 pt-10 pb-10 lg:p-12 md:rounded-[2rem] md:border border-amber-300/30 btn-bounce" style="width:calc(100% + 2rem)">
+          <div class="absolute inset-0 pointer-events-none" style="background-image:linear-gradient(-45deg, #140F08, #3A2A12, #5C4415, #1E160A); background-size:400% 400%; animation: fluidBackground 18s ease infinite; animation-delay:-9s"></div>
+          <div class="relative">
+            <div class="font-serif font-bold text-3xl md:text-xl lg:text-2xl">一握體驗館</div>
+            <div class="text-sm md:text-xs lg:text-base text-white/75 mt-2">像逛觀光工廠一樣，一站一站玩</div>
+            <div class="text-xs lg:text-sm text-white/45 mt-1">製茶工序・DIY 調茶・茶知識問答，集滿三個章</div>
+            <span class="inline-block mt-5 px-6 py-2 rounded-full text-sm font-bold bg-tea-gold text-tea-dark">開始體驗</span>
+            <div class="mt-8 md:mt-6 drop-shadow-lg">
+              <svg class="mx-auto w-28 h-28 md:w-20 md:h-20 lg:w-24 lg:h-24" viewBox="0 0 64 64" fill="none" stroke="#E6C35C" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M26 12c-1.6-1.6-1.6-3.4 0-5"/><path d="M32 11c-1.6-1.6-1.6-3.4 0-5"/><path d="M38 12c-1.6-1.6-1.6-3.4 0-5"/>
+                <path d="M17 33.5h30l-2.6 15.2A4 4 0 0 1 40.5 52h-17a4 4 0 0 1-3.9-3.3z" fill="rgba(212,175,55,0.25)" stroke="none"/>
+                <path d="M15 18h34l-4.6 30.7A4 4 0 0 1 40.5 52h-17a4 4 0 0 1-3.9-3.3z"/>
+                <path d="M17 33.5h30"/>
+                <path d="M33 26.5c2.5-3.5 6.5-4.5 10-3-1.5 3.8-5.5 5.2-10 3z" fill="rgba(212,175,55,0.35)"/>
+                <path d="M33 26.5l6-2.4"/>
+                <path d="M21 57h22"/>
               </svg>
             </div>
             <p class="text-white/30 text-[11px] italic mt-14 md:mt-8">一握茶研所——把佛手的溫潤，留給忙碌生活裡的你。</p>
           </div>
         </button>
-      </div>
 
     </section>
 
@@ -241,6 +285,92 @@ body > header, body > main { animation: pageIn .8s ease 2.6s both; }
         <div class="text-center pt-4 pb-2 space-y-3 fade-in-block" style="animation-delay:3000ms">
           <button onclick="goToTeas()" class="bg-tea-gold text-tea-dark font-bold text-sm lg:text-base px-8 lg:px-10 py-3 lg:py-4 rounded-full shadow-[0_0_20px_rgba(212,175,55,0.3)] btn-bounce inline-block">開始探索茶款</button>
           <div><button onclick="showView('companion')" class="text-emerald-300 text-xs lg:text-sm font-bold btn-bounce">🫖 不知道喝哪一杯？問問 AI 茶伴 →</button></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 一握體驗館（觀光工廠式互動區） ============ -->
+    <section id="view-lab" class="view">
+      <div class="space-y-4">
+        <div class="liquid-glass rounded-[2rem] p-6 lg:p-8 text-center fade-in-block" style="animation-delay:0ms">
+          <span class="text-[10px] font-mono bg-tea-gold text-tea-dark font-bold px-2 py-1 rounded">互動體驗</span>
+          <h2 class="font-serif text-3xl font-bold mt-3">一握體驗館</h2>
+          <p class="text-xs lg:text-sm text-white/60 mt-2 leading-relaxed">像逛觀光工廠一樣，一站一站體驗佛手茶的故事。<br>每完成一站蓋一個章，集滿三個就能拿到體驗完成證。</p>
+        </div>
+
+        <!-- 集章卡 -->
+        <div class="liquid-glass-dark rounded-2xl p-5 border border-white/10 fade-in-block" style="animation-delay:300ms">
+          <div class="flex justify-between items-center mb-3">
+            <h3 class="text-tea-gold font-bold text-sm">集章卡</h3>
+            <span id="stamp-count" class="text-[11px] text-white/50"></span>
+          </div>
+          <div id="stamp-row" class="grid grid-cols-3 gap-3"></div>
+          <div id="stamp-cert"></div>
+        </div>
+
+        <!-- 關卡切換 -->
+        <div class="liquid-glass-dark rounded-full p-1 flex gap-1 border border-white/10 fade-in-block" style="animation-delay:600ms">
+          <button id="tab-process" onclick="labTab('process')" class="flex-1 py-2.5 text-xs font-bold rounded-full transition-all">① 製茶工序</button>
+          <button id="tab-diy" onclick="labTab('diy')" class="flex-1 py-2.5 text-xs font-bold rounded-full transition-all">② DIY 調茶</button>
+          <button id="tab-quiz" onclick="labTab('quiz')" class="flex-1 py-2.5 text-xs font-bold rounded-full transition-all">③ 茶知識問答</button>
+        </div>
+
+        <div class="fade-in-block" style="animation-delay:900ms">
+          <!-- 第一站：製茶工序 -->
+          <div id="st-process" class="space-y-4"></div>
+
+          <!-- 第二站：DIY 調茶 -->
+          <div id="st-diy" class="space-y-4 hidden">
+            <div class="liquid-glass-dark rounded-2xl p-5 border border-white/10">
+              <h3 class="text-tea-gold font-bold text-sm mb-1">① 把配料拖進杯子裡</h3>
+              <p class="text-[11px] text-white/45 mb-3">最多 3 種；拖進杯子加入，點一下已加入的配料可以拿掉</p>
+              <div class="flex justify-center py-2">
+                <svg id="lab-cup" viewBox="2 0 100 110" class="w-40 h-44" aria-hidden="true" style="overflow:visible">
+                  <defs><clipPath id="lab-clip"><path d="M19.2 22 27.2 98Q28.3 104.3 35 104.3H69Q75.7 104.3 76.8 98L84.8 22z"/></clipPath></defs>
+                  <g id="lab-steam" style="opacity:0; transition:opacity 1s ease">
+                    <path d="M42 16c-2.4-2.4-2.4-5.2 0-7.8" stroke="rgba(255,255,255,.5)" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+                    <path d="M52 13c-2.4-2.4-2.4-5.2 0-7.8" stroke="rgba(255,255,255,.5)" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+                    <path d="M62 16c-2.4-2.4-2.4-5.2 0-7.8" stroke="rgba(255,255,255,.5)" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+                  </g>
+                  <g clip-path="url(#lab-clip)">
+                    <rect id="lab-liquid" x="0" y="26" width="104" height="78.3" fill="#C8872E"
+                      style="transform-box:fill-box; transform-origin:bottom; transform:scaleY(0.1); transition:transform 2.4s cubic-bezier(.45,0,.2,1), fill .6s ease"/>
+                    <g id="lab-bits"></g>
+                    <g id="lab-ripples"></g>
+                  </g>
+                  <path d="M18 22 26 98q1.2 7.5 9 7.5h34q7.8 0 9-7.5L86 22" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="2.4" stroke-linejoin="round"/>
+                  <path id="lab-cup-drop" d="M18 22h68" fill="none" stroke="rgba(255,255,255,0)" stroke-width="2"/>
+                </svg>
+              </div>
+              <div class="text-[11px] text-white/45 text-center -mt-1">已加入：<span id="lab-picked" class="text-white/80">還沒有加入配料</span></div>
+            </div>
+
+            <div class="liquid-glass-dark rounded-2xl p-5 border border-white/10">
+              <h3 class="text-tea-gold font-bold text-sm mb-1">配料</h3>
+              <p id="lab-hint" class="text-[11px] text-amber-300 mb-2 h-4"></p>
+              <div id="lab-ings" class="flex flex-wrap gap-3 justify-center py-1"></div>
+              <div class="text-[11px] text-white/45 mt-3 mb-2">風味預覽</div>
+              <div id="lab-bars" class="space-y-1.5"></div>
+            </div>
+
+            <div class="liquid-glass-dark rounded-2xl p-5 border border-white/10">
+              <h3 class="text-tea-gold font-bold text-sm mb-3">② 設定沖泡</h3>
+              <div class="flex justify-between text-xs mb-1"><span class="text-white/70">水溫</span><span id="lab-temp-v" class="font-bold">90°C</span></div>
+              <input id="lab-temp" type="range" min="80" max="100" value="90" class="w-full accent-amber-400" oninput="labUpdate()">
+              <div class="flex justify-between text-xs mt-4 mb-1"><span class="text-white/70">浸泡時間</span><span id="lab-time-v" class="font-bold">3 分鐘</span></div>
+              <input id="lab-time" type="range" min="1" max="6" value="3" class="w-full accent-amber-400" oninput="labUpdate()">
+              <p id="lab-tip" class="text-[11px] text-white/55 mt-3 leading-relaxed"></p>
+            </div>
+
+            <div class="text-center">
+              <button id="lab-brew-btn" onclick="labBrew()" class="bg-tea-gold text-tea-dark font-bold text-sm px-10 py-3 rounded-full shadow-[0_0_20px_rgba(212,175,55,0.3)] btn-bounce">③ 開始沖泡</button>
+            </div>
+
+            <div id="lab-result"></div>
+          </div>
+
+          <!-- 第三站：茶知識問答 -->
+          <div id="st-quiz" class="space-y-4 hidden"></div>
         </div>
       </div>
     </section>
@@ -416,7 +546,7 @@ function renderLandingCards() {
   box.innerHTML = '';
   TEA_DB.forEach((tea, idx) => {
     const card = document.createElement('button');
-    card.className = "scroll-fade relative overflow-hidden w-full text-center px-6 pt-10 pb-12 md:px-4 md:pt-8 md:pb-8 md:rounded-2xl md:border border-white/10 transition-all btn-bounce";
+    card.className = "scroll-fade relative overflow-hidden w-full text-center px-6 pt-10 pb-12 md:px-4 md:pt-6 md:pb-6 md:rounded-2xl md:border border-white/10 transition-all btn-bounce";
     card.onmouseenter = () => { card.style.borderColor = tea.color; };
     card.onmouseleave = () => { card.style.borderColor = ''; };
     card.onclick = () => openProduct(tea.id);
@@ -424,12 +554,12 @@ function renderLandingCards() {
     // 卡片本身的淡入動畫不受影響。三塊錯開起始時間，不會同步變色。
     card.innerHTML = `
       <div class="absolute inset-0 pointer-events-none" style="background-image:${tea.bg}; background-size:400% 400%; animation: fluidBackground 18s ease infinite; animation-delay:-${idx * 6}s"></div>
-      <div class="relative">
+      <div class="relative flex flex-col items-center">
       <div class="font-serif font-bold text-3xl md:text-xl lg:text-2xl">${tea.name}</div>
       <div class="text-sm md:text-xs lg:text-sm text-white/75 mt-2">${tea.slogan || tea.series}</div>
       <div class="text-xs text-white/45 mt-1">${tea.tag}</div>
-      <span class="inline-block mt-5 px-6 py-2 rounded-full text-sm font-bold" style="background:${tea.color}; color:#12261A">查看介紹</span>
-      <div class="mt-8 md:mt-6 drop-shadow-lg">${teaIconSVG(tea.id, tea.color, "mx-auto w-28 h-28 md:w-20 md:h-20 lg:w-24 lg:h-24")}</div>
+      <span class="inline-block mt-5 md:mt-4 px-6 py-2 rounded-full text-sm font-bold" style="background:${tea.color}; color:#12261A">查看介紹</span>
+      <div class="order-last md:order-first mt-8 md:mt-0 md:mb-3 drop-shadow-lg">${teaIconSVG(tea.id, tea.color, "mx-auto w-28 h-28 md:w-14 md:h-14 lg:w-16 lg:h-16")}</div>
       </div>`;
     box.appendChild(card);
   });
@@ -591,7 +721,7 @@ function showView(name) {
     ? '一握・系列'
     : (name === 'product'
         ? TEA_DB.find(t => t.id === currentTeaId)?.name || '產品介紹'
-        : (name === 'story' ? '品牌故事' : 'AI 茶伴'));
+        : (name === 'story' ? '品牌故事' : (name === 'lab' ? '一握體驗館' : 'AI 茶伴')));
 
   document.getElementById('header-sub').innerText = sub;
 
@@ -830,6 +960,603 @@ function skipSplash() {
   if (!s) return;
   s.addEventListener('animationend', (e) => { if (e.animationName === 'splashOut') s.remove(); });
 })();
+
+/* ================= 一握調茶室 ================= */
+const LAB_INGS = [
+  { id: 'rose',     name: '玫瑰', color: '#D9607A', f: { 花香: 3, 甜香: 1 } },
+  { id: 'jujube',   name: '紅棗', color: '#A8322D', f: { 甜香: 3, 暖意: 1 } },
+  { id: 'goji',     name: '枸杞', color: '#E0502A', f: { 甜香: 2, 果香: 1 } },
+  { id: 'chenpi',   name: '陳皮', color: '#E89A3C', f: { 果香: 2, 清爽: 2 } },
+  { id: 'hawthorn', name: '山楂', color: '#C8403A', f: { 果香: 2, 清爽: 2 } },
+  { id: 'longan',   name: '桂圓', color: '#8A5A2B', f: { 甜香: 3, 暖意: 1 } },
+  { id: 'ginger',   name: '薑',   color: '#E0B84A', f: { 暖意: 3 } }
+];
+const LAB_DIMS = ['茶香', '花香', '果香', '甜香', '清爽', '暖意'];
+// 三款「一握」的配料，用來比對使用者調出來的茶
+const LAB_RECIPES = { yanran: ['rose', 'jujube', 'goji'], qingying: ['chenpi', 'hawthorn'], nuanyang: ['jujube', 'longan', 'ginger'] };
+let labPicked = [];
+
+function labMix(hexes) {
+  const rgb = hexes.map(h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16)));
+  const avg = [0, 1, 2].map(k => Math.round(rgb.reduce((s, c) => s + c[k], 0) / rgb.length));
+  return '#' + avg.map(v => v.toString(16).padStart(2, '0')).join('');
+}
+function labFlavor() {
+  const v = { 茶香: 3, 花香: 0, 果香: 0, 甜香: 0, 清爽: 0, 暖意: 0 };
+  labPicked.forEach(id => { const g = LAB_INGS.find(x => x.id === id); for (const k in g.f) v[k] += g.f[k]; });
+  return v;
+}
+
+
+/* ================= 集章卡 ＋ 關卡切換 ================= */
+const STAMP_DEFS = [
+  { id: 'process', name: '製茶工序', icon: '<path d="M12 3c6 2.5 8.5 8.5 6 15-1.6 3.6-4.6 5-6 5s-4.4-1.4-6-5C3.5 11.5 6 5.5 12 3z"/><path d="M12 7v15"/>' },
+  { id: 'diy',     name: 'DIY 調茶', icon: '<path d="M5 8h14l-2 12a2 2 0 0 1-2 1.7H9A2 2 0 0 1 7 20z"/><path d="M6 13h12"/><path d="M10 5c-.8-.8-.8-1.7 0-2.5M14 5c-.8-.8-.8-1.7 0-2.5"/>' },
+  { id: 'quiz',    name: '茶知識問答', icon: '<circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6v.6"/><path d="M12 17.5v.01"/>' }
+];
+let stamps = [];
+try { stamps = JSON.parse(localStorage.getItem('yw-stamps') || '[]'); } catch (e) { stamps = []; }
+
+function stampSet(id) {
+  if (stamps.includes(id)) return;
+  stamps.push(id);
+  try { localStorage.setItem('yw-stamps', JSON.stringify(stamps)); } catch (e) {}
+  renderStamps(id);
+}
+function renderStamps(justGot) {
+  document.getElementById('stamp-count').innerText = `已集 ${stamps.length} / 3`;
+  document.getElementById('stamp-row').innerHTML = STAMP_DEFS.map(d => {
+    const got = stamps.includes(d.id);
+    return `<div class="text-center">
+      <div class="mx-auto w-16 h-16 rounded-full flex items-center justify-center ${got ? 'border-2 border-tea-gold bg-tea-gold/15' : 'border-2 border-dashed border-white/25'} ${d.id === justGot ? 'stamp-in' : ''}" style="${got ? 'transform:rotate(-12deg)' : ''}">
+        <svg viewBox="0 0 24 24" class="w-7 h-7" fill="none" stroke="${got ? '#D4AF37' : 'rgba(255,255,255,.25)'}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">${d.icon}</svg>
+      </div>
+      <div class="text-[11px] mt-2 ${got ? 'text-tea-gold font-bold' : 'text-white/40'}">${d.name}</div>
+    </div>`;
+  }).join('');
+  const cert = document.getElementById('stamp-cert');
+  if (stamps.length === 3) {
+    const d = new Date();
+    cert.innerHTML = `<div class="mt-5 rounded-2xl border border-tea-gold/60 p-5 text-center" style="background:linear-gradient(135deg, rgba(212,175,55,.18), rgba(212,175,55,.04))">
+      <div class="text-[10px] tracking-[0.3em] text-tea-gold">CERTIFICATE</div>
+      <div class="font-serif text-xl font-bold mt-1">一握體驗館・體驗完成證</div>
+      <p class="text-xs text-white/65 mt-2 leading-relaxed">恭喜你完成製茶工序、DIY 調茶與茶知識問答，<br>找到屬於你的那一握。</p>
+      <div class="text-[11px] text-white/40 mt-3">一握茶研所　${d.getFullYear()}/${d.getMonth() + 1}/${d.getDate()}</div>
+      <p class="text-[11px] text-tea-gold mt-3">截圖分享給朋友吧！</p>
+      <button onclick="stampReset()" class="text-[11px] text-white/40 underline mt-2">重新集章</button>
+    </div>`;
+  } else cert.innerHTML = '';
+}
+function stampReset() {
+  stamps = [];
+  try { localStorage.removeItem('yw-stamps'); } catch (e) {}
+  renderStamps();
+}
+function labTab(k) {
+  ['process', 'diy', 'quiz'].forEach(x => {
+    document.getElementById('st-' + x).classList.toggle('hidden', x !== k);
+    const t = document.getElementById('tab-' + x);
+    t.className = 'flex-1 py-2.5 text-xs font-bold rounded-full transition-all ' + (x === k ? 'bg-tea-gold text-tea-dark' : 'text-white/60');
+  });
+}
+
+/* ================= 共用拖曳工具（Pointer Events，滑鼠／觸控都適用） =================
+   拖動距離超過門檻才算「拖曳」，沒超過就當作「點一下」，兩種操作互不干擾。 */
+function bindDrag(handleEl, opts) {
+  handleEl.style.touchAction = 'none';
+  let sx = 0, sy = 0, moved = false, dragging = false, ghost = null;
+  handleEl.addEventListener('pointerdown', e => {
+    if (opts.disabled && opts.disabled()) return;
+    dragging = true; moved = false; sx = e.clientX; sy = e.clientY;
+    try { handleEl.setPointerCapture(e.pointerId); } catch (err) {}
+  });
+  handleEl.addEventListener('pointermove', e => {
+    if (!dragging) return;
+    const dx = e.clientX - sx, dy = e.clientY - sy;
+    if (!moved && Math.hypot(dx, dy) > 8) {
+      moved = true;
+      ghost = (opts.makeGhost ? opts.makeGhost() : handleEl.cloneNode(true));
+      ghost.classList.add('drag-ghost');
+      document.body.appendChild(ghost);
+      opts.onStart && opts.onStart();
+    }
+    if (moved) {
+      ghost.style.left = e.clientX + 'px';
+      ghost.style.top = e.clientY + 'px';
+      opts.onMove && opts.onMove(e.clientX, e.clientY);
+    }
+  });
+  const end = e => {
+    if (!dragging) return;
+    dragging = false;
+    if (moved) {
+      if (ghost) ghost.remove();
+      ghost = null;
+      opts.onEnd && opts.onEnd(e.clientX, e.clientY);
+    } else {
+      opts.onTap && opts.onTap();
+    }
+  };
+  handleEl.addEventListener('pointerup', end);
+  handleEl.addEventListener('pointercancel', () => { dragging = false; if (ghost) ghost.remove(); ghost = null; });
+}
+function pointInRect(x, y, rect) { return x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom; }
+
+/* ================= 第二站：DIY 調茶 —— 把配料真的拖進杯子裡 ================= */
+function labRender() {
+  const box = document.getElementById('lab-ings');
+  box.innerHTML = '';
+  LAB_INGS.forEach(g => {
+    const on = labPicked.includes(g.id);
+    const wrap = document.createElement('div');
+    wrap.className = 'flex flex-col items-center gap-1';
+    const b = document.createElement('button');
+    b.className = 'w-14 h-14 rounded-full flex items-center justify-center border-2 transition-all ' + (on ? '' : 'liquid-glass-dark border-white/20');
+    if (on) { b.style.background = g.color + '33'; b.style.borderColor = g.color; }
+    b.innerHTML = labBitSVG(g.id, g.color, 26);
+    wrap.appendChild(b);
+    const label = document.createElement('div');
+    label.className = 'text-[11px] ' + (on ? 'font-bold' : 'text-white/60');
+    if (on) label.style.color = g.color;
+    label.innerText = g.name;
+    wrap.appendChild(label);
+    box.appendChild(wrap);
+
+    if (on) {
+      // 已在杯中：點一下拿掉
+      b.onclick = () => labRemove(g.id);
+    } else {
+      // 不在杯中：可以拖進杯子，也可以點一下（給不方便拖曳的人用）加入
+      bindDrag(b, {
+        makeGhost: () => { const d = document.createElement('div'); d.innerHTML = labBitSVG(g.id, g.color, 34); d.style.width = d.style.height = '34px'; return d; },
+        onStart: () => document.getElementById('lab-cup').classList.add('drop-target-hot'),
+        onMove: (x, y) => {
+          const cup = document.getElementById('lab-cup').getBoundingClientRect();
+          document.getElementById('lab-cup').style.transform = pointInRect(x, y, cup) ? 'scale(1.04)' : '';
+        },
+        onEnd: (x, y) => {
+          const cupEl = document.getElementById('lab-cup');
+          cupEl.classList.remove('drop-target-hot'); cupEl.style.transform = '';
+          const cup = cupEl.getBoundingClientRect();
+          if (pointInRect(x, y, cup)) labAdd(g.id, (x - cup.left) / cup.width);
+        },
+        onTap: () => labAdd(g.id, 0.5)
+      });
+    }
+  });
+  document.getElementById('lab-picked').innerText = labPicked.length
+    ? labPicked.map(id => LAB_INGS.find(x => x.id === id).name).join('、') : '還沒有加入配料';
+  const v = labFlavor();
+  document.getElementById('lab-bars').innerHTML = LAB_DIMS.map(k => `
+    <div class="flex items-center gap-2 text-[11px]">
+      <span class="w-8 text-white/60 flex-shrink-0">${k}</span>
+      <div class="flex-1 h-1.5 rounded-full bg-white/10 overflow-hidden"><div class="h-full rounded-full bg-tea-gold transition-all duration-500" style="width:${Math.min(v[k] / 6, 1) * 100}%"></div></div>
+    </div>`).join('');
+}
+// 每種配料的杯中顆粒圖案（不是單純一個點）
+function labBitSVG(id, color, size) {
+  const shapes = {
+    rose:     `<path d="M12 3c3 1.5 4 4 3 7-2 .7-4-.2-5-2.5" fill="${color}"/><path d="M12 3c-3 1.5-4 4-3 7 2 .7 4-.2 5-2.5" fill="${color}" opacity=".8"/><circle cx="12" cy="8" r="2" fill="${color}"/>`,
+    jujube:   `<ellipse cx="12" cy="12" rx="6" ry="5" fill="${color}"/><path d="M9 12h6M12 9v6" stroke="rgba(0,0,0,.15)" stroke-width="1"/>`,
+    goji:     `<ellipse cx="12" cy="12" rx="4.5" ry="6" fill="${color}"/>`,
+    chenpi:   `<path d="M5 8c6-3 12-1 14 4-6 3-12 1-14-4z" fill="${color}"/><path d="M6 9c5-2 9-.5 11 3" stroke="rgba(0,0,0,.2)" stroke-width="1" fill="none"/>`,
+    hawthorn: `<circle cx="12" cy="12" r="6" fill="${color}"/><circle cx="12" cy="12" r="2" fill="rgba(0,0,0,.2)"/>`,
+    longan:   `<circle cx="12" cy="12" r="6" fill="${color}"/><circle cx="10" cy="10" r="1.6" fill="rgba(255,255,255,.5)"/>`,
+    ginger:   `<path d="M4 14c1-5 5-9 10-9 4 4 1 9-4 10-3 .7-5-.3-6-1z" fill="${color}"/>`
+  };
+  return `<svg viewBox="0 0 24 24" width="${size}" height="${size}">${shapes[id] || `<circle cx="12" cy="12" r="6" fill="${color}"/>`}</svg>`;
+}
+function labAdd(id, xRatio) {
+  const hint = document.getElementById('lab-hint');
+  if (labPicked.includes(id)) return;
+  if (labPicked.length >= 3) { hint.innerText = '最多只能選 3 種配料喔'; return; }
+  hint.innerText = '';
+  labPicked.push(id);
+  labSplash(xRatio);
+  labRender();
+  labUpdate();
+}
+function labRemove(id) {
+  labPicked = labPicked.filter(x => x !== id);
+  labRemovePieces(id);
+  document.getElementById('lab-hint').innerText = '';
+  labRender(); labUpdate();
+}
+// ---- 杯中配料：每種 3 片，從杯口掉進杯底；沖泡後隨熱水浮起、輕輕晃動 ----
+// 位置（外層）和晃動動畫（內層）分開兩層，動畫才不會把位置蓋掉
+let labBrewed = false;
+const LAB_SURFACE_DRY = 97, LAB_SURFACE_FULL = 30;
+function labPiece(id, x, restY, floatY, rot) {
+  const g = LAB_INGS.find(v => v.id === id);
+  const outer = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+  outer.setAttribute('class', 'lab-piece');
+  outer.dataset.ing = id; outer.dataset.x = x; outer.dataset.rest = restY; outer.dataset.float = floatY;
+  outer.style.transform = `translate(${x}px, -14px)`;
+  outer.innerHTML = `<g class="lab-bob" style="animation-delay:-${(Math.random() * 2.5).toFixed(2)}s"><g transform="rotate(${rot})">${labBitSVG(id, g.color, 19).replace('<svg', '<svg x="-9.5" y="-9.5" overflow="visible"')}</g></g>`;
+  return outer;
+}
+function labRipple(x, y) {
+  const ring = document.createElementNS('http://www.w3.org/2000/svg', 'ellipse');
+  ring.setAttribute('cx', x); ring.setAttribute('cy', y); ring.setAttribute('rx', 7); ring.setAttribute('ry', 2);
+  ring.setAttribute('fill', 'none'); ring.setAttribute('stroke', 'rgba(255,255,255,.7)'); ring.setAttribute('stroke-width', '1.2');
+  ring.setAttribute('class', 'lab-ripple');
+  document.getElementById('lab-ripples').appendChild(ring);
+  setTimeout(() => ring.remove(), 700);
+}
+function labSplash(xRatio) {
+  const id = labPicked[labPicked.length - 1];
+  const gi = labPicked.length - 1;
+  const box = document.getElementById('lab-bits');
+  const cx = Math.max(38, Math.min(66, 20 + xRatio * 64));
+  [-9, 0, 9].forEach((off, k) => {
+    const x = cx + off + (Math.random() * 4 - 2);
+    const restY = 94 + Math.random() * 5;
+    const floatY = 40 + gi * 15 + k * 5 + Math.random() * 6;
+    const el = labPiece(id, x, restY, floatY, Math.round(Math.random() * 360));
+    box.appendChild(el);
+    void el.getBoundingClientRect();
+    const target = labBrewed ? floatY : restY;
+    const delay = k * 0.12;
+    el.style.transition = `transform .75s cubic-bezier(.45,0,.6,1.3) ${delay}s`;
+    el.style.transform = `translate(${x}px, ${target}px)`;
+    setTimeout(() => labRipple(x, labBrewed ? LAB_SURFACE_FULL : LAB_SURFACE_DRY), (delay + (labBrewed ? 0.25 : 0.55)) * 1000);
+    if (labBrewed) setTimeout(() => el.classList.add('floating'), (delay + 0.8) * 1000);
+  });
+}
+function labRemovePieces(id) {
+  document.querySelectorAll(`#lab-bits .lab-piece[data-ing="${id}"]`).forEach(el => {
+    el.style.transition = 'opacity .3s ease'; el.style.opacity = '0';
+    setTimeout(() => el.remove(), 320);
+  });
+}
+function labFloatPieces() {
+  document.querySelectorAll('#lab-bits .lab-piece').forEach(el => {
+    el.classList.remove('floating');
+    el.style.transition = 'none';
+    el.style.transform = `translate(${el.dataset.x}px, ${el.dataset.rest}px)`;
+    void el.getBoundingClientRect();
+    const d = (0.3 + Math.random() * 0.6).toFixed(2);
+    el.style.transition = `transform 2.2s cubic-bezier(.3,.1,.3,1) ${d}s`;
+    el.style.transform = `translate(${el.dataset.x}px, ${el.dataset.float}px)`;
+    setTimeout(() => el.classList.add('floating'), (2.2 + +d) * 1000);
+  });
+}
+function labColor() {
+  const t = +document.getElementById('lab-temp').value, m = +document.getElementById('lab-time').value;
+  const base = labMix(['#C8872E', '#C8872E', ...labPicked.map(id => LAB_INGS.find(x => x.id === id).color)]);
+  const k = Math.max(-0.4, Math.min(0.45, (m - 3) * 0.08 + (t - 90) * 0.012));
+  const toward = k >= 0 ? '#2A1506' : '#F2DCA0';
+  const w = Math.abs(k);
+  const a = [1, 3, 5].map(i => parseInt(base.slice(i, i + 2), 16));
+  const b = [1, 3, 5].map(i => parseInt(toward.slice(i, i + 2), 16));
+  return '#' + a.map((v, i) => Math.round(v * (1 - w) + b[i] * w).toString(16).padStart(2, '0')).join('');
+}
+function labTip() {
+  const t = +document.getElementById('lab-temp').value, m = +document.getElementById('lab-time').value;
+  const a = t < 88 ? '水溫偏低，佛手烏龍的香氣比較出不來' : t > 97 ? '水溫偏高，茶湯容易變澀' : '水溫剛好，香氣最能釋放';
+  const b = m < 3 ? '浸泡時間短，茶湯會比較清淡' : m > 5 ? '浸泡比較久，茶湯會偏濃' : '浸泡時間適中，濃淡剛好';
+  return { text: `${a}；${b}。`, good: t >= 88 && t <= 97 && m >= 3 && m <= 5 };
+}
+function labUpdate() {
+  document.getElementById('lab-temp-v').innerText = document.getElementById('lab-temp').value + '°C';
+  document.getElementById('lab-time-v').innerText = document.getElementById('lab-time').value + ' 分鐘';
+  document.getElementById('lab-tip').innerText = labTip().text + '（建議 90～95°C、3～5 分鐘）';
+  document.getElementById('lab-liquid').setAttribute('fill', labColor());
+}
+function labBrew() {
+  const btn = document.getElementById('lab-brew-btn');
+  const liquid = document.getElementById('lab-liquid');
+  btn.disabled = true; btn.innerText = '沖泡中…'; btn.classList.add('opacity-60');
+  document.getElementById('lab-result').innerHTML = '';
+  liquid.style.transition = 'none'; liquid.style.transform = 'scaleY(0.1)';
+  void liquid.getBoundingClientRect();
+  liquid.style.transition = '';
+  liquid.style.transform = 'scaleY(1)';
+  document.getElementById('lab-steam').style.opacity = '1';
+  labBrewed = true;
+  labFloatPieces();
+  setTimeout(() => { labShowResult(); btn.disabled = false; btn.innerText = '再沖泡一次'; btn.classList.remove('opacity-60'); stampSet('diy'); }, 2500);
+}
+function labShowResult() {
+  const v = labFlavor();
+  const top = LAB_DIMS.filter(k => k !== '茶香' && v[k] > 0).sort((a, b) => v[b] - v[a]).slice(0, 2);
+  const flavorText = top.length ? `帶有${top.join('與')}的佛手烏龍` : '純粹的佛手烏龍';
+  let best = null, bestScore = 0;
+  for (const id in LAB_RECIPES) {
+    const r = LAB_RECIPES[id];
+    const inter = r.filter(x => labPicked.includes(x)).length;
+    const score = inter / new Set([...r, ...labPicked]).size;
+    if (score > bestScore) { bestScore = score; best = id; }
+  }
+  const tip = labTip();
+  let html;
+  if (best) {
+    const tea = TEA_DB.find(t => t.id === best);
+    const exact = bestScore === 1;
+    html = `
+      <div class="mx-auto mb-3 w-14 h-14">${teaIconSVG(tea.id, tea.color, 'w-14 h-14')}</div>
+      <div class="text-xs text-white/55">你調出了一杯${flavorText}</div>
+      <div class="font-serif text-xl font-bold mt-2">${exact ? '跟' : '最接近'}「${tea.name}」${exact ? '的配方一模一樣！' : ''}</div>
+      <p class="text-xs mt-2" style="color:${tea.color}">「${tea.slogan || tea.series}」</p>
+      <p class="text-[11px] text-white/50 mt-3 leading-relaxed">${tip.good ? '沖泡條件也剛剛好，這杯茶的香氣會很漂亮。' : tip.text}</p>
+      <div class="flex flex-wrap justify-center gap-2 mt-5">
+        <button onclick="openProduct('${tea.id}')" class="px-5 py-2 rounded-full text-sm font-bold btn-bounce" style="background:${tea.color}; color:#12261A">看看「${tea.name}」</button>
+        <button onclick="labReset()" class="px-5 py-2 rounded-full text-sm font-bold border border-white/30 btn-bounce">重新調一杯</button>
+      </div>`;
+  } else {
+    html = `
+      <div class="text-xs text-white/55">你調出了一杯${flavorText}</div>
+      <div class="font-serif text-xl font-bold mt-2">試試加入配料，找出你的那一握</div>
+      <p class="text-[11px] text-white/50 mt-3 leading-relaxed">${tip.text}</p>
+      <div class="flex justify-center mt-5"><button onclick="labReset()" class="px-5 py-2 rounded-full text-sm font-bold border border-white/30 btn-bounce">重新調一杯</button></div>`;
+  }
+  const box = document.getElementById('lab-result');
+  box.innerHTML = `<div class="liquid-glass rounded-[2rem] p-6 text-center fade-in-block">${html}</div>`;
+  setTimeout(() => box.scrollIntoView({ behavior: 'smooth', block: 'center' }), 100);
+}
+function labReset() {
+  labPicked = [];
+  document.getElementById('lab-temp').value = 90;
+  document.getElementById('lab-time').value = 3;
+  document.getElementById('lab-result').innerHTML = '';
+  document.getElementById('lab-steam').style.opacity = '0';
+  document.getElementById('lab-ripples').innerHTML = '';
+  document.getElementById('lab-bits').innerHTML = '';
+  labBrewed = false;
+  const liquid = document.getElementById('lab-liquid');
+  liquid.style.transition = 'none'; liquid.style.transform = 'scaleY(0.1)';
+  const btn = document.getElementById('lab-brew-btn'); btn.innerText = '③ 開始沖泡';
+  labRender(); labUpdate();
+  document.getElementById('st-diy').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+/* ================= 第一站：製茶工序 —— 每一步用不同的手勢完成 =================
+   採摘＝拖曳、萎凋＝左右滑、浪菁＝來回快速滑、殺青＝畫圈、揉捻＝上下搓、焙火＝按住不放 */
+const PROCESS_STEPS = [
+  { name: '採摘',     color: '#6FBF4A', hint: '用手指把茶葉從枝頭拖進下面的竹籃', desc: '清晨採下佛手茶樹的嫩葉。佛手茶的葉片寬大肥厚，是它香氣飽滿的開始。' },
+  { name: '萎凋',     color: '#8DB84A', hint: '在竹篩上左右滑動，把茶葉攤開',     desc: '把茶菁攤開，讓水分慢慢散失，葉子變得柔軟，青草味漸漸轉成清香。' },
+  { name: '浪菁',     color: '#A9A844', hint: '左右快速來回滑動，搖一搖竹篩',     desc: '輕輕翻動、搖晃茶葉，讓葉緣互相摩擦，慢慢發酵出烏龍茶特有的花果香。' },
+  { name: '殺青',     color: '#9C8A3A', hint: '用手指在鍋子裡畫圈翻炒',           desc: '用高溫炒茶，停止發酵，把剛剛培養出來的香氣固定下來。' },
+  { name: '揉捻',     color: '#7A5A2A', hint: '上下來回搓揉，把茶葉揉成球狀',     desc: '把茶葉揉捲成球狀，讓茶汁附著在表面，沖泡時風味更容易釋放。' },
+  { name: '乾燥焙火', color: '#5A3A1A', hint: '按住畫面不放，用炭火慢慢烘焙',     desc: '烘乾水分，再依風味慢慢焙火，茶湯就會變得溫潤醇厚。' }
+];
+let procStep = 0, procDone = false, pp = 0, gs = {};
+
+function lerpColor(a, b, t) {
+  const A = [1, 3, 5].map(i => parseInt(a.slice(i, i + 2), 16)), B = [1, 3, 5].map(i => parseInt(b.slice(i, i + 2), 16));
+  return '#' + A.map((v, i) => Math.round(v + (B[i] - v) * t).toString(16).padStart(2, '0')).join('');
+}
+function leafG(x, y, sx, sy, rot, color) {
+  return `<g transform="translate(${x} ${y}) rotate(${rot}) scale(${sx} ${sy})">
+    <path d="M0 -26c12 5 17 17 12 30-3.3 8.6-9.8 12-12 12s-8.7-3.4-12-12C-17 -9 -12 -21 0 -26z" fill="${color}"/>
+    <path d="M0 -21v36M0 -11l-6-4M0 -11l6-4M0 -2l-8-5M0 -2l8-5M0 7l-7-4M0 7l7-4" stroke="rgba(255,255,255,.35)" stroke-width="1.2" fill="none" stroke-linecap="round"/></g>`;
+}
+function procColor() {
+  const st = PROCESS_STEPS[procStep];
+  const next = procStep < 5 ? PROCESS_STEPS[procStep + 1].color : '#3E2612';
+  return lerpColor(st.color, next, pp);
+}
+function drawProc() {
+  const svg = document.getElementById('proc-svg');
+  if (!svg) return;
+  const c = procColor();
+  let s = '';
+  if (procStep === 0) {
+    const lx = gs.lx ?? 100, ly = gs.ly ?? 64;
+    s = `<path d="M-5 34 Q60 18 120 30 T205 26" stroke="#7A5A33" stroke-width="5" fill="none" stroke-linecap="round"/>
+      ${leafG(40, 44, .55, .55, -30, '#5FA83C')}${leafG(165, 40, .55, .55, 25, '#5FA83C')}
+      <g opacity=".95"><path d="M52 150h96l-11 40H63z" fill="#8B6A3E" stroke="#5A4225" stroke-width="2"/>
+      <path d="M58 162h84M61 174h78M55 150v0M80 150l-4 40M100 150v40M120 150l4 40" stroke="#5A4225" stroke-width="1.5"/></g>
+      ${leafG(lx, ly, 1.1, 1.1, gs.dragLeaf ? -12 : 8, c)}`;
+  } else if (procStep === 1) {
+    const A = [[100, 118], [93, 112], [107, 113], [97, 122], [104, 121]], B = [[52, 108], [148, 108], [100, 84], [70, 145], [130, 145]];
+    s = `<ellipse cx="100" cy="118" rx="88" ry="60" fill="#A07A45" opacity=".55" stroke="#6B4F2A" stroke-width="3"/>
+      <ellipse cx="100" cy="118" rx="70" ry="45" fill="none" stroke="#6B4F2A" stroke-width="1" opacity=".5"/>` +
+      A.map((a, i) => leafG(a[0] + (B[i][0] - a[0]) * pp, a[1] + (B[i][1] - a[1]) * pp, .7, .7, i * 70 + pp * 40, c)).join('');
+  } else if (procStep === 2) {
+    const t = gs.tilt || 0;
+    s = `<g transform="rotate(${t} 100 118)"><ellipse cx="100" cy="118" rx="88" ry="60" fill="#A07A45" opacity=".55" stroke="#6B4F2A" stroke-width="3"/>` +
+      [[62, 110], [138, 110], [100, 90], [80, 142], [122, 142]].map((a, i) => leafG(a[0] + t * 1.6, a[1] - Math.abs(t) * (i % 2 ? .8 : .3), .68, .68, i * 70 + t * 3, c)).join('') + '</g>' +
+      `<path d="M18 60l-10 8 10 8M182 60l10 8-10 8" stroke="rgba(255,255,255,.35)" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`;
+  } else if (procStep === 3) {
+    const a = gs.angle || 0;
+    s = `<circle cx="100" cy="110" r="82" fill="#2A2522" stroke="#5B524B" stroke-width="7"/>
+      <circle cx="100" cy="110" r="70" fill="#E0702A" opacity="${(0.12 + pp * 0.3).toFixed(2)}"/>` +
+      [0, 1, 2, 3].map(i => { const r = a + i * Math.PI / 2; return leafG(100 + Math.cos(r) * 36, 110 + Math.sin(r) * 36, .65, .65, r * 57 + 90, c); }).join('');
+  } else if (procStep === 4) {
+    s = `<rect x="28" y="36" width="144" height="140" rx="14" fill="#6B5A3A" opacity=".5"/>` +
+      [0, 1, 2, 3, 4, 5].map(i => `<path d="M${40 + i * 24} 44v124" stroke="#4A3D26" stroke-width="2" opacity=".6"/>`).join('') +
+      leafG(100, 108, 1.35 - pp * .45, 1.35 - pp * .95, -18 + (gs.roll || 0), c) +
+      (pp > .5 ? `<circle cx="100" cy="106" r="${(8 + pp * 10).toFixed(1)}" fill="${c}" opacity="${((pp - .5) * 2).toFixed(2)}"/>` : '');
+  } else {
+    const heat = gs.holding ? 1 : .25;
+    s = `<rect x="40" y="150" width="120" height="30" rx="8" fill="#2A1C14"/>` +
+      [55, 78, 100, 122, 145].map((x, i) => `<circle cx="${x}" cy="163" r="${9 + i % 2 * 2}" fill="#E0502A" opacity="${(0.25 + heat * .6).toFixed(2)}"/>`).join('') +
+      (gs.holding ? [70, 100, 130].map(x => `<path d="M${x} 140c-5-6 5-10 0-18" stroke="rgba(255,170,90,.55)" stroke-width="2.5" fill="none" stroke-linecap="round"/>`).join('') : '') +
+      `<ellipse cx="100" cy="98" rx="68" ry="34" fill="#9C7A48" opacity=".55" stroke="#6B4F2A" stroke-width="3"/>` +
+      [[80, 94], [100, 88], [120, 95], [92, 104], [112, 104]].map(p => `<circle cx="${p[0]}" cy="${p[1]}" r="9" fill="${c}" stroke="rgba(0,0,0,.2)"/>`).join('');
+  }
+  if (pp >= 1) s += `<g><circle cx="100" cy="100" r="30" fill="rgba(212,175,55,.92)"/><path d="M86 100l10 10 18-20" stroke="#12261A" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></g>`;
+  svg.innerHTML = s;
+  const bar = document.getElementById('proc-bar');
+  if (bar) bar.style.width = Math.round(Math.min(pp, 1) * 100) + '%';
+}
+function renderProcess() {
+  const st = PROCESS_STEPS[procStep];
+  const dots = PROCESS_STEPS.map((s, i) => `
+    <div class="flex-1 text-center">
+      <div class="h-1.5 rounded-full ${i < procStep || procDone ? 'bg-tea-gold' : i === procStep ? 'bg-tea-gold/60' : 'bg-white/15'}"></div>
+      <div class="text-[10px] mt-1.5 ${i === procStep && !procDone ? 'text-tea-gold font-bold' : 'text-white/40'}">${s.name}</div>
+    </div>`).join('');
+  const box = document.getElementById('st-process');
+  if (procDone) {
+    box.innerHTML = `
+      <div class="liquid-glass-dark rounded-2xl p-5 border border-white/10">
+        <div class="flex gap-1.5 mb-5">${dots}</div>
+        <div class="text-center py-2">
+          <svg viewBox="0 0 64 64" class="mx-auto w-20 h-20"><circle cx="24" cy="36" r="9" fill="#5A3A1A"/><circle cx="40" cy="36" r="9" fill="#4E3216"/><circle cx="32" cy="24" r="9" fill="#62401E"/></svg>
+          <div class="font-serif text-xl font-bold mt-2">一片茶葉的旅程完成了</div>
+          <p class="text-xs text-white/60 mt-2 leading-relaxed">從採摘到焙火，一片佛手茶葉要經過六道工序，<br>才會成為你杯中的那一握。</p>
+          <div class="flex justify-center gap-2 mt-5">
+            <button onclick="labTab('diy')" class="px-5 py-2 rounded-full text-sm font-bold bg-tea-gold text-tea-dark btn-bounce">下一站：DIY 調茶</button>
+            <button onclick="procReset()" class="px-5 py-2 rounded-full text-sm font-bold border border-white/30 btn-bounce">再做一次</button>
+          </div>
+        </div>
+      </div>`;
+    return;
+  }
+  box.innerHTML = `
+    <div class="liquid-glass-dark rounded-2xl p-5 border border-white/10">
+      <div class="flex gap-1.5 mb-5">${dots}</div>
+      <div class="text-[11px] text-white/45 text-center">第 ${procStep + 1} 步 / 共 6 步</div>
+      <div class="font-serif text-2xl font-bold text-center mt-1">${st.name}</div>
+      <p class="text-xs text-white/65 text-center mt-2 leading-relaxed px-2">${st.desc}</p>
+      <div id="proc-pad" class="relative mx-auto mt-5 w-full max-w-[280px] aspect-square rounded-2xl bg-black/25 border border-white/10 overflow-hidden select-none" style="touch-action:none; -webkit-user-select:none">
+        <svg id="proc-svg" viewBox="0 0 200 200" class="w-full h-full"></svg>
+      </div>
+      <p class="text-center text-xs text-tea-gold font-bold mt-3">👆 ${st.hint}</p>
+      <div class="mx-auto max-w-[280px] h-1.5 rounded-full bg-white/10 mt-3 overflow-hidden"><div id="proc-bar" class="h-full rounded-full bg-tea-gold" style="width:0%; transition: width .15s linear"></div></div>
+      <div class="text-center mt-3"><button onclick="procSkip()" class="text-[11px] text-white/35 underline">跳過這一步</button></div>
+    </div>`;
+  drawProc();
+  bindProcPad();
+}
+function procPoint(e) {
+  const r = document.getElementById('proc-pad').getBoundingClientRect();
+  return { x: (e.clientX - r.left) / r.width * 200, y: (e.clientY - r.top) / r.height * 200 };
+}
+function bindProcPad() {
+  const pad = document.getElementById('proc-pad');
+  pad.addEventListener('pointerdown', e => {
+    if (gs.lock) return;
+    e.preventDefault();
+    try { pad.setPointerCapture(e.pointerId); } catch (err) {}
+    const p = procPoint(e);
+    gs.down = true; gs.px = p.x; gs.py = p.y; gs.ax = p.x;
+    if (procStep === 0) gs.dragLeaf = Math.hypot(p.x - (gs.lx ?? 100), p.y - (gs.ly ?? 64)) < 45;
+    if (procStep === 3) gs.pa = Math.atan2(p.y - 110, p.x - 100);
+    if (procStep === 5) procHoldStart();
+  });
+  pad.addEventListener('pointermove', e => {
+    if (!gs.down || gs.lock) return;
+    const p = procPoint(e), dx = p.x - gs.px, dy = p.y - gs.py;
+    if (procStep === 0 && gs.dragLeaf) {
+      gs.lx = Math.max(20, Math.min(180, p.x)); gs.ly = Math.max(50, Math.min(172, p.y));
+      pp = Math.max(0, Math.min(.95, (gs.ly - 64) / (150 - 64)));
+    } else if (procStep === 1) {
+      pp += Math.abs(dx) / 650;
+    } else if (procStep === 2) {
+      const off = p.x - gs.ax;
+      if (Math.abs(off) > 22) { const d = Math.sign(off); if (d !== gs.dir) { if (gs.dir) pp += 1 / 8; gs.dir = d; } gs.ax = p.x; }
+      gs.tilt = Math.max(-12, Math.min(12, (p.x - 100) / 5));
+    } else if (procStep === 3) {
+      const a = Math.atan2(p.y - 110, p.x - 100);
+      let da = a - gs.pa; if (da > Math.PI) da -= 2 * Math.PI; if (da < -Math.PI) da += 2 * Math.PI;
+      gs.angle = (gs.angle || 0) + da; gs.pa = a; pp += Math.abs(da) / (4 * Math.PI);
+    } else if (procStep === 4) {
+      pp += Math.abs(dy) / 750; gs.roll = (gs.roll || 0) + dy * .4;
+    }
+    gs.px = p.x; gs.py = p.y;
+    pp = Math.min(pp, 1);
+    drawProc();
+    if (pp >= 1) procFinish();
+  });
+  const up = () => {
+    if (!gs.down) return;
+    gs.down = false;
+    if (procStep === 0 && gs.dragLeaf && !gs.lock) {
+      gs.dragLeaf = false;
+      if ((gs.ly ?? 0) >= 136 && Math.abs((gs.lx ?? 100) - 100) < 55) { pp = 1; drawProc(); procFinish(); }
+      else { gs.lx = 100; gs.ly = 64; pp = 0; drawProc(); }
+    }
+    if (procStep === 2) { gs.tilt = 0; drawProc(); }
+    if (procStep === 5) procHoldStop();
+  };
+  pad.addEventListener('pointerup', up);
+  pad.addEventListener('pointercancel', up);
+}
+function procHoldStart() {
+  gs.holding = true;
+  let last = performance.now();
+  const tick = now => {
+    if (!gs.holding || gs.lock) return;
+    pp = Math.min(1, pp + (now - last) / 2400); last = now;
+    drawProc();
+    if (pp >= 1) { gs.holding = false; procFinish(); return; }
+    requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
+}
+function procHoldStop() { gs.holding = false; drawProc(); }
+function procFinish() {
+  if (gs.lock) return;
+  gs.lock = true; gs.holding = false; pp = 1; drawProc();
+  setTimeout(procAdvance, 750);
+}
+function procSkip() { if (!gs.lock) procFinish(); }
+function procAdvance() {
+  pp = 0; gs = {};
+  if (procStep === PROCESS_STEPS.length - 1) { procDone = true; renderProcess(); stampSet('process'); }
+  else { procStep++; renderProcess(); }
+}
+function procReset() { procStep = 0; procDone = false; pp = 0; gs = {}; renderProcess(); }
+
+
+/* ----- 第三站：茶知識問答 ----- */
+const QUIZ = [
+  { q: '「一握・嫣然」優雅的花香，主要來自哪一種配料？', a: ['玫瑰', '山楂', '薑'], exp: '嫣然以佛手烏龍搭配玫瑰、紅棗與枸杞，玫瑰帶來主要的花香。' },
+  { q: '陳皮是用什麼做成的？', a: ['乾燥陳放的柑橘果皮', '曬乾的老茶葉', '橘子樹的花'], exp: '陳皮是柑橘果皮經過長時間乾燥陳放而成，常用來入菜、入茶。' },
+  { q: '製作烏龍茶時，「殺青」的目的是什麼？', a: ['用高溫停止發酵、固定香氣', '把茶葉染成青綠色', '讓茶葉長得更大'], exp: '殺青是用高溫炒茶，讓發酵停下來，把香氣留住。' },
+  { q: '傳統的糖葫蘆，最常用哪一種水果？', a: ['山楂', '桂圓', '枸杞'], exp: '山楂酸甜，是糖葫蘆最經典的材料，也是「一握・輕盈」的配料之一。' },
+  { q: '「一握・暖陽」裡帶來溫暖辛香的是哪一種配料？', a: ['薑', '玫瑰', '陳皮'], exp: '暖陽以紅棗、桂圓的甜香搭配薑的溫暖香氣，適合秋冬飲用。' }
+];
+let quizI = 0, quizScore = 0, quizOpts = [];
+
+function renderQuiz() {
+  const box = document.getElementById('st-quiz');
+  if (quizI >= QUIZ.length) {
+    const msg = quizScore === 5 ? '全對！你是真正的懂茶人' : quizScore >= 3 ? '很不錯！你已經很認識佛手茶了' : '沒關係，逛逛三款茶的介紹再來挑戰吧';
+    box.innerHTML = `<div class="liquid-glass-dark rounded-2xl p-6 border border-white/10 text-center">
+      <div class="text-[11px] text-white/45">你的成績</div>
+      <div class="font-serif text-4xl font-bold text-tea-gold mt-1">${quizScore} / ${QUIZ.length}</div>
+      <p class="text-sm text-white/75 mt-2">${msg}</p>
+      <div class="flex justify-center gap-2 mt-5">
+        <button onclick="quizReset()" class="px-5 py-2 rounded-full text-sm font-bold border border-white/30 btn-bounce">再玩一次</button>
+      </div>
+    </div>`;
+    stampSet('quiz');
+    return;
+  }
+  const item = QUIZ[quizI];
+  quizOpts = [...item.a].sort(() => Math.random() - 0.5);
+  box.innerHTML = `<div class="liquid-glass-dark rounded-2xl p-5 border border-white/10">
+    <div class="flex justify-between text-[11px] text-white/45"><span>第 ${quizI + 1} 題 / 共 ${QUIZ.length} 題</span><span>答對 ${quizScore} 題</span></div>
+    <div class="h-1 rounded-full bg-white/10 mt-2 overflow-hidden"><div class="h-full bg-tea-gold" style="width:${quizI / QUIZ.length * 100}%"></div></div>
+    <div class="font-bold text-base mt-4 leading-relaxed">${item.q}</div>
+    <div id="quiz-opts" class="space-y-2 mt-4">${quizOpts.map((o, i) => `
+      <button onclick="quizPick(${i})" class="w-full text-left text-sm px-4 py-3 rounded-xl liquid-glass-dark border border-white/15 btn-bounce">${o}</button>`).join('')}
+    </div>
+    <div id="quiz-exp"></div>
+  </div>`;
+}
+function quizPick(i) {
+  const item = QUIZ[quizI];
+  const right = quizOpts[i] === item.a[0];
+  if (right) quizScore++;
+  document.querySelectorAll('#quiz-opts button').forEach((b, k) => {
+    b.disabled = true;
+    if (quizOpts[k] === item.a[0]) { b.style.background = 'rgba(52,211,153,.25)'; b.style.borderColor = '#34D399'; }
+    else if (k === i) { b.style.background = 'rgba(248,113,113,.2)'; b.style.borderColor = '#F87171'; }
+  });
+  document.getElementById('quiz-exp').innerHTML = `
+    <div class="mt-4 text-xs leading-relaxed ${right ? 'text-emerald-300' : 'text-rose-300'} font-bold">${right ? '答對了！' : '差一點！'}</div>
+    <p class="text-xs text-white/65 mt-1 leading-relaxed">${item.exp}</p>
+    <div class="text-right mt-4"><button onclick="quizNext()" class="px-5 py-2 rounded-full text-sm font-bold bg-tea-gold text-tea-dark btn-bounce">${quizI === QUIZ.length - 1 ? '看成績' : '下一題'}</button></div>`;
+}
+function quizNext() { quizI++; renderQuiz(); }
+function quizReset() { quizI = 0; quizScore = 0; renderQuiz(); }
+
+renderStamps(); renderProcess(); renderQuiz(); labRender(); labUpdate(); labTab('process');
 
 renderLandingCards();
 

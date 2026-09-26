@@ -53,6 +53,7 @@ body, html {
 .chip:active { transform: scale(.95); }
 
 #tea-scroll::-webkit-scrollbar { display: none; }
+@media (min-width: 768px) { #tea-section > button { width: 100% !important; } }
 
 @keyframes fadeInUp {
   0% { opacity: 0; transform: translateY(10px); }
@@ -114,21 +115,25 @@ body, html {
           <h2 class="font-serif text-3xl lg:text-5xl font-bold drop-shadow-md">一握茶研所</h2>
           <p class="text-white/60 text-sm lg:text-lg mt-3 lg:mt-4 leading-relaxed">找到適合你的茶<br>探索每一杯茶的故事</p>
         </div>
-        <button onclick="document.getElementById('tea-section').scrollIntoView({behavior:'smooth'})" class="bg-tea-gold text-tea-dark font-bold text-sm lg:text-base px-8 lg:px-10 py-3 lg:py-4 rounded-full shadow-[0_0_20px_rgba(212,175,55,0.3)] btn-bounce inline-block">開始探索茶款</button>
+        <button onclick="showView('story')" class="bg-tea-gold text-tea-dark font-bold text-sm lg:text-base px-8 lg:px-10 py-3 lg:py-4 rounded-full shadow-[0_0_20px_rgba(212,175,55,0.3)] btn-bounce inline-block">開始探索茶款</button>
       </div>
 
       <!-- 熱門茶款 -->
-      <div id="tea-section" class="scroll-fade" style="scroll-margin-top: 96px;">
-        <h3 class="font-bold text-base lg:text-xl mb-3 lg:mb-5 flex items-center gap-2 px-1"><span>🌿</span>熱門茶款</h3>
-        <div id="tea-scroll" class="flex md:grid md:grid-cols-3 gap-3 lg:gap-5 overflow-x-auto md:overflow-visible pb-3 -mx-4 px-4 md:mx-0 md:px-0 snap-x snap-mandatory" style="scrollbar-width:none;"></div>
-      </div>
+      <div id="tea-section" style="scroll-margin-top: 96px;">
+        <h3 class="font-bold text-base lg:text-xl mb-3 lg:mb-5 flex items-center gap-2 px-1 scroll-fade"><span>🌿</span>熱門茶款</h3>
+        <div id="tea-scroll" class="flex flex-col md:grid md:grid-cols-3 gap-0 md:gap-3 lg:gap-5 -mx-4 md:mx-0"></div>
 
-      <!-- AI 茶飲助手 -->
-      <div class="liquid-glass-dark border border-emerald-400/30 rounded-[2rem] p-8 lg:p-12 text-center space-y-3 lg:space-y-4 scroll-fade">
-        <div class="text-3xl lg:text-5xl">🤖</div>
-        <p class="font-bold text-base lg:text-2xl">不知道喝哪一杯？</p>
-        <p class="text-white/50 text-xs lg:text-base">跟 AI 聊聊今天的心情，讓它幫你挑一款</p>
-        <button onclick="showView('companion')" class="bg-emerald-400 text-tea-dark font-bold text-sm lg:text-base px-8 lg:px-10 py-3 lg:py-4 rounded-full btn-bounce inline-block mt-1">問問 AI</button>
+        <!-- AI 茶飲助手：手機版接在三款茶下面，呈現方式相同 -->
+        <button onclick="showView('companion')" class="scroll-fade relative overflow-hidden block w-full -mx-4 md:mx-0 md:mt-6 text-center px-6 pt-10 pb-12 lg:p-12 md:rounded-[2rem] md:border border-emerald-400/30 btn-bounce" style="width:calc(100% + 2rem)">
+          <div class="absolute inset-0 pointer-events-none" style="background-image:linear-gradient(-45deg, #0A1712, #123A2C, #1E5A45, #0D2219); background-size:400% 400%; animation: fluidBackground 18s ease infinite; animation-delay:-4s"></div>
+          <div class="relative">
+            <div class="font-serif font-bold text-3xl md:text-xl lg:text-2xl">AI 茶伴</div>
+            <div class="text-sm md:text-xs lg:text-base text-white/75 mt-2">不知道喝哪一杯？</div>
+            <div class="text-xs lg:text-sm text-white/45 mt-1">跟 AI 聊聊今天的心情，讓它幫你挑一款</div>
+            <span class="inline-block mt-5 px-6 py-2 rounded-full text-sm font-bold bg-emerald-400 text-tea-dark">問問 AI</span>
+            <div class="text-8xl md:text-6xl lg:text-7xl mt-8 md:mt-6 drop-shadow-lg">🫖</div>
+          </div>
+        </button>
       </div>
 
       <p class="text-white/30 text-[11px] italic text-center pt-2 scroll-fade">一握茶研所——把佛手的溫潤，留給忙碌生活裡的你。</p>
@@ -139,11 +144,52 @@ body, html {
       <div id="product-content" class="space-y-4"></div>
     </section>
 
+    <!-- ============ 品牌故事 ============ -->
+    <section id="view-story" class="view">
+      <div class="space-y-4">
+        <div class="liquid-glass rounded-[2rem] p-6 lg:p-10 text-center fade-in-block" style="animation-delay:0ms">
+          <span class="text-[10px] font-mono bg-tea-gold text-tea-dark font-bold px-2 py-1 rounded">品牌故事</span>
+          <h2 class="font-serif text-3xl lg:text-4xl font-bold mt-4">一握茶研所</h2>
+          <p class="text-sm text-white/60 mt-3">一握佛手，一茶一故事</p>
+        </div>
+
+        <div class="liquid-glass-dark rounded-2xl p-5 lg:p-7 border border-white/10 fade-in-block" style="animation-delay:500ms">
+          <h3 class="text-tea-gold font-bold text-sm lg:text-base mb-2"><span class="mr-1.5">🍵</span>我們在做什麼</h3>
+          <p class="text-xs lg:text-sm text-white/70 leading-relaxed">一握茶研所以臺灣特色「佛手烏龍茶」為核心，結合藥食同源素材與現代生活情境，開發「一握」系列茶飲。我們希望讓茶不只是一種飲品，而是陪伴日常生活的一段小時光。</p>
+        </div>
+
+        <div class="liquid-glass-dark rounded-2xl p-5 lg:p-7 border border-white/10 fade-in-block" style="animation-delay:1000ms">
+          <h3 class="text-tea-gold font-bold text-sm lg:text-base mb-2"><span class="mr-1.5">🤲</span>為什麼是「一握」</h3>
+          <p class="text-xs lg:text-sm text-white/70 leading-relaxed">一握，是雙手捧起一杯茶的溫度，也是在忙碌生活裡，留給自己的一小段時間。不需要特別的茶具或場合，只要一杯茶，就能讓自己停下來喘口氣。</p>
+        </div>
+
+        <div class="liquid-glass-dark rounded-2xl p-5 lg:p-7 border border-white/10 fade-in-block" style="animation-delay:1500ms">
+          <h3 class="text-tea-gold font-bold text-sm lg:text-base mb-2"><span class="mr-1.5">🌿</span>依生活狀態選茶</h3>
+          <p class="text-xs lg:text-sm text-white/70 leading-relaxed">不同於傳統以單一功效分類的養生茶，我們把茶飲與現代人的生活狀態連結，依照女性日常、外食聚餐、秋冬暖飲等情境設計茶款。每一款茶都有自己的風味與故事，讓每個人在不同的生活狀態中，都能找到屬於自己的那一握。</p>
+        </div>
+
+        <div class="liquid-glass-dark rounded-2xl p-5 lg:p-7 border border-white/10 fade-in-block" style="animation-delay:2000ms">
+          <h3 class="text-tea-gold font-bold text-sm lg:text-base mb-2"><span class="mr-1.5">📱</span>一茶一故事，一掃就懂</h3>
+          <p class="text-xs lg:text-sm text-white/70 leading-relaxed">每款茶都附有專屬 QR Code，掃描後就能了解茶款故事、配方與文化背景；不知道喝哪一杯時，也可以和 AI 茶伴聊聊今天的心情，讓它幫你挑一款。</p>
+        </div>
+
+        <div class="liquid-glass-dark rounded-2xl p-5 lg:p-7 border border-white/10 fade-in-block" style="animation-delay:2500ms">
+          <h3 class="text-tea-gold font-bold text-sm lg:text-base mb-2"><span class="mr-1.5">♻️</span>永續的一杯茶</h3>
+          <p class="text-xs lg:text-sm text-white/70 leading-relaxed">我們將減量包裝、可回收材質與 QR Code 數位資訊融入產品設計，用數位內容取代紙本說明，讓品嚐一杯茶的同時，也對環境溫柔一點。</p>
+        </div>
+
+        <div class="text-center pt-4 pb-2 space-y-3 fade-in-block" style="animation-delay:3000ms">
+          <button onclick="goToTeas()" class="bg-tea-gold text-tea-dark font-bold text-sm lg:text-base px-8 lg:px-10 py-3 lg:py-4 rounded-full shadow-[0_0_20px_rgba(212,175,55,0.3)] btn-bounce inline-block">開始探索茶款</button>
+          <div><button onclick="showView('companion')" class="text-emerald-300 text-xs lg:text-sm font-bold btn-bounce">🫖 不知道喝哪一杯？問問 AI 茶伴 →</button></div>
+        </div>
+      </div>
+    </section>
+
     <!-- ============ AI 茶伴 ============ -->
     <section id="view-companion" class="view">
       <div class="liquid-glass rounded-[2rem] overflow-hidden fade-in-block flex flex-col" style="min-height: 480px; animation-delay:0ms">
         <div class="p-4 border-b border-white/10 flex items-center gap-2">
-          <span class="text-emerald-300">🤖</span>
+          <span class="text-emerald-300">🫖</span>
           <span class="text-sm font-bold">AI 茶伴</span>
         </div>
         <div id="companion-log" class="flex-1 p-4 space-y-3 overflow-y-auto text-xs"></div>
@@ -173,6 +219,7 @@ const GEMINI_MODEL = "gemini-3.5-flash-lite";
 const TEA_DB = [
   {
     id: "yanran",
+    video: "",   // 茶款故事影片：填 mp4 路徑或 YouTube 連結，留空則顯示文字故事
     culture: "佛手烏龍是臺灣特色烏龍茶，茶樹葉片寬大、形似佛手柑的葉子而得名。玫瑰自古就是入茶、入點心的花草素材；紅棗與枸杞則是華人飲食中常見的藥食同源食材，經常出現在家常湯品與茶飲裡。",
     drinkInfo: [
       { label: "原料", text: "佛手烏龍茶、玫瑰、紅棗、枸杞" },
@@ -202,6 +249,7 @@ const TEA_DB = [
   },
   {
     id: "qingying",
+    video: "",   // 茶款故事影片：填 mp4 路徑或 YouTube 連結，留空則顯示文字故事
     culture: "佛手烏龍是臺灣特色烏龍茶，茶樹葉片寬大、形似佛手柑的葉子而得名。陳皮是柑橘果皮經長時間乾燥陳放而成，是廣東飲食中常見的入菜、入茶材料；山楂則常見於傳統點心，像是山楂餅和糖葫蘆。",
     drinkInfo: [
       { label: "原料", text: "佛手烏龍茶、陳皮、山楂" },
@@ -231,6 +279,7 @@ const TEA_DB = [
   },
   {
     id: "nuanyang",
+    video: "",   // 茶款故事影片：填 mp4 路徑或 YouTube 連結，留空則顯示文字故事
     culture: "佛手烏龍是臺灣特色烏龍茶，茶樹葉片寬大、形似佛手柑的葉子而得名。紅棗桂圓茶是許多臺灣家庭冬天常見的暖飲；薑在華人飲食中也常用於冬季料理與熱飲，帶來溫暖的香氣。",
     drinkInfo: [
       { label: "原料", text: "佛手烏龍茶、紅棗、桂圓、薑" },
@@ -276,22 +325,43 @@ function fadeText(text, baseDelayMs, stepMs = 110) {
 function renderLandingCards() {
   const box = document.getElementById('tea-scroll');
   box.innerHTML = '';
-  TEA_DB.forEach(tea => {
+  TEA_DB.forEach((tea, idx) => {
     const card = document.createElement('button');
-    card.className = "liquid-glass-dark border border-white/20 rounded-2xl p-4 lg:p-6 flex-shrink-0 w-36 md:w-auto snap-start transition-all btn-bounce text-left";
+    card.className = "scroll-fade relative overflow-hidden w-full text-center px-6 pt-10 pb-12 md:px-4 md:pt-8 md:pb-8 md:rounded-2xl md:border border-white/10 transition-all btn-bounce";
     card.onmouseenter = () => { card.style.borderColor = tea.color; };
     card.onmouseleave = () => { card.style.borderColor = ''; };
     card.onclick = () => openProduct(tea.id);
+    // 底色放在獨立的一層，用跟整頁背景相同的慢慢流動動畫；
+    // 卡片本身的淡入動畫不受影響。三塊錯開起始時間，不會同步變色。
     card.innerHTML = `
-      <div class="w-full aspect-square rounded-xl flex items-center justify-center text-4xl lg:text-6xl" style="background:${tea.color}22; border:1px solid ${tea.color}55">${tea.emoji}</div>
-      <div class="font-bold text-sm lg:text-lg text-center mt-3 lg:mt-4">${tea.name}</div>
-      <div class="text-[10px] lg:text-sm text-white/50 text-center mt-1">${tea.tag}</div>
-      <div class="w-full mt-3 text-[11px] lg:text-sm font-bold text-center" style="color:${tea.color}">查看介紹 →</div>`;
+      <div class="absolute inset-0 pointer-events-none" style="background-image:${tea.bg}; background-size:400% 400%; animation: fluidBackground 18s ease infinite; animation-delay:-${idx * 6}s"></div>
+      <div class="relative">
+      <div class="font-serif font-bold text-3xl md:text-xl lg:text-2xl">${tea.name}</div>
+      <div class="text-sm md:text-xs lg:text-sm text-white/75 mt-2">${tea.slogan || tea.series}</div>
+      <div class="text-xs text-white/45 mt-1">${tea.tag}</div>
+      <span class="inline-block mt-5 px-6 py-2 rounded-full text-sm font-bold" style="background:${tea.color}; color:#12261A">查看介紹</span>
+      <div class="text-8xl md:text-6xl lg:text-7xl mt-8 md:mt-6 drop-shadow-lg">${tea.emoji}</div>
+      </div>`;
     box.appendChild(card);
   });
 }
 
 const DEFAULT_BG = "linear-gradient(-45deg, #0A140E, #1C3A27, #664d14, #12261A)";
+
+// 茶款故事影片：TEA_DB 裡填了 video 就顯示影片，沒填就顯示原本的故事文字
+// 支援兩種：放在 GitHub 上的 mp4 檔，或 YouTube 連結
+function storyMedia(tea, delay) {
+  const v = (tea.video || '').trim();
+  if (!v) return `<p class="text-xs text-white/70 leading-relaxed">${fadeText(tea.story, delay)}</p>`;
+  const yt = v.match(/(?:youtu\.be\/|v=|shorts\/|embed\/)([\w-]{11})/);
+  if (yt) {
+    return `<div class="relative w-full rounded-xl overflow-hidden bg-black" style="aspect-ratio:16/9">
+      <iframe class="absolute inset-0 w-full h-full" src="https://www.youtube-nocookie.com/embed/${yt[1]}?playsinline=1&rel=0"
+        title="${tea.name} 茶款故事" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    </div>`;
+  }
+  return `<video class="w-full rounded-xl bg-black" src="${v}" controls playsinline preload="metadata"></video>`;
+}
 
 function openProduct(teaId) {
   currentTeaId = teaId;
@@ -308,7 +378,7 @@ function openProduct(teaId) {
     </div>
     <div class="liquid-glass-dark rounded-2xl p-5 border border-white/10 fade-in-block" style="animation-delay:${D(1)}ms">
       <h3 class="font-bold text-sm mb-2" style="color:${tea.color}"><span class="mr-1.5">🪶</span>茶款故事</h3>
-      <p class="text-xs text-white/70 leading-relaxed">${fadeText(tea.story, D(1) + 150)}</p>
+      ${storyMedia(tea, D(1) + 150)}
       <p class="text-xs text-white/70 leading-relaxed mt-2">${fadeText(tea.philosophy, D(1) + 600)}</p>
     </div>
     <div class="liquid-glass-dark rounded-2xl p-5 border border-white/10 fade-in-block" style="animation-delay:${D(2)}ms">
@@ -389,6 +459,13 @@ function renderProductChips(suggestions) {
   });
 }
 
+function goToTeas() {
+  showView('landing');
+  setTimeout(() => {
+    document.getElementById('tea-section').scrollIntoView({ behavior: 'smooth' });
+  }, 350);
+}
+
 function forceIOSRepaint(el) {
   // 輕量 layout flush，讓 iOS WebKit 在 view 切換後重新提交畫面。
   if (!el) return;
@@ -425,7 +502,7 @@ function showView(name) {
     ? '一握・系列'
     : (name === 'product'
         ? TEA_DB.find(t => t.id === currentTeaId)?.name || '產品介紹'
-        : 'AI 茶伴');
+        : (name === 'story' ? '品牌故事' : 'AI 茶伴'));
 
   document.getElementById('header-sub').innerText = sub;
 

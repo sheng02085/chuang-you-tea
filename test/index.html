@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>一握茶研所(Beta) | 一握・系列</title>
+<title>一握茶研所 | 一握・系列</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&family=Noto+Sans+TC:wght@300;400;500;700&family=Noto+Serif+TC:wght@500;700&display=swap" rel="stylesheet">
 
@@ -54,6 +54,24 @@ body, html {
 
 #tea-scroll::-webkit-scrollbar { display: none; }
 
+.drag-ghost { position:fixed; z-index:999; pointer-events:none; touch-action:none; transform:translate(-50%,-50%) scale(1.15); filter:drop-shadow(0 6px 10px rgba(0,0,0,.4)); transition: transform .15s ease; }
+.drop-target-hot { outline:2px solid #D4AF37; outline-offset:3px; }
+@keyframes ripple { 0% { r:2; opacity:.8; } 100% { r:16; opacity:0; } }
+.leaf-shake { animation: leafShake .4s ease; }
+@keyframes leafShake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
+@keyframes bitBob { 0%,100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-2.5px) rotate(6deg); } }
+.lab-piece.floating .lab-bob { animation: bitBob 2.6s ease-in-out infinite; }
+@keyframes rippleOut { 0% { opacity: .8; transform: scale(.3); } 100% { opacity: 0; transform: scale(1.8); } }
+.lab-ripple { transform-box: fill-box; transform-origin: center; animation: rippleOut .65s ease-out forwards; }
+
+@keyframes leafPop { 0% { transform: scale(1); } 40% { transform: scale(1.12) rotate(-4deg); } 100% { transform: scale(1); } }
+.leaf-pop { animation: leafPop .35s ease; }
+@keyframes padPulse { 0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(212,175,55,.7); } 35% { transform: scale(.965); } 100% { transform: scale(1); box-shadow: 0 0 0 16px rgba(212,175,55,0); } }
+.pad-pulse { animation: padPulse .45s ease-out; }
+@keyframes stampIn { 0% { opacity: 0; transform: scale(1.8) rotate(-12deg); } 60% { opacity: 1; transform: scale(.92) rotate(-12deg); } 100% { opacity: 1; transform: scale(1) rotate(-12deg); } }
+.stamp-in { animation: stampIn .5s cubic-bezier(.2,1.4,.4,1) both; }
+@media (min-width: 768px) { #ai-panel, #lab-panel { width: 100% !important; } }
+
 @keyframes fadeInUp {
   0% { opacity: 0; transform: translateY(10px); }
   100% { opacity: 1; transform: translateY(0); }
@@ -86,15 +104,66 @@ body, html {
     filter: none !important;
   }
 }
+
+/* ===== 迎賓動畫 =====
+   全部用 CSS 控制時間軸：就算 JS 出錯，約 3.4 秒後也一定會自己消失，不會卡住畫面。
+   只用 opacity / transform / 線條描繪，不用 blur，iOS 也順暢。 */
+#splash {
+  position: fixed; inset: 0; z-index: 200;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  background: linear-gradient(-45deg, #0A140E, #1C3A27, #664d14, #12261A);
+  background-size: 400% 400%;
+  animation: fluidBackground 18s ease infinite, splashOut .8s ease 2.6s forwards;
+  cursor: pointer;
+}
+#splash .sp-draw { stroke-dasharray: 1; stroke-dashoffset: 1; animation: spDraw 1.3s cubic-bezier(.65,0,.35,1) .15s forwards; }
+#splash .sp-fill { opacity: 0; animation: spFade .6s ease 1.1s forwards; }
+#splash .sp-steam { stroke-dasharray: 1; stroke-dashoffset: 1; animation: spDraw .9s ease 1.2s forwards; }
+#splash .sp-name { opacity: 0; transform: translateY(12px); animation: spUp .9s cubic-bezier(.16,1,.3,1) 1.0s forwards; }
+#splash .sp-tag  { opacity: 0; transform: translateY(8px);  animation: spUp .9s cubic-bezier(.16,1,.3,1) 1.4s forwards; }
+body > header, body > main { animation: pageIn .8s ease 2.6s both; }
+@keyframes spDraw { to { stroke-dashoffset: 0; } }
+@keyframes spFade { to { opacity: 1; } }
+@keyframes spUp { to { opacity: 1; transform: translateY(0); } }
+@keyframes splashOut { to { opacity: 0; visibility: hidden; } }
+@keyframes pageIn { from { opacity: 0; } to { opacity: 1; } }
+/* 點畫面跳過 */
+.no-splash #splash { display: none; }
+.no-splash body > header, .no-splash body > main { animation: none; }
+#splash.skip { animation: splashOut .35s ease forwards; }
+@media (prefers-reduced-motion: reduce) {
+  #splash { animation: splashOut .4s ease .8s forwards; }
+  #splash * { animation-duration: .01s !important; animation-delay: 0s !important; }
+  body > header, body > main { animation: pageIn .4s ease .8s both; }
+}
 </style>
+
 </head>
 <body class="antialiased min-h-screen flex flex-col relative">
+
+  <!-- ============ 迎賓畫面 ============ -->
+  <div id="splash" onclick="skipSplash()" aria-hidden="true">
+    <svg width="112" height="112" viewBox="0 0 64 64" fill="none" stroke="#D4AF37" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path class="sp-steam" pathLength="1" d="M8 19.5c-1.6-1.6-1.6-3.4 0-5"/>
+      <path class="sp-steam" pathLength="1" d="M12.5 17.5c-1.6-1.6-1.6-3.4 0-5"/>
+      <circle class="sp-fill" cx="32" cy="15.5" r="2" fill="#D4AF37" stroke="none"/>
+      <path class="sp-fill" d="M24 25.5a8 6.5 0 0 1 16 0z M14 30c0-3 2-4.5 5-4.5h26c3 0 5 1.5 5 4.5 0 11-8 19-18 19s-18-8-18-19z" fill="rgba(212,175,55,0.18)" stroke="none"/>
+      <image class="sp-fill" x="23.5" y="27" width="17" height="17.5" preserveAspectRatio="xMidYMid meet" href="data:image/png;base64,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"/>
+      <path class="sp-draw" pathLength="1" d="M24 25.5a8 6.5 0 0 1 16 0z"/>
+      <path class="sp-draw" pathLength="1" d="M14 30c0-3 2-4.5 5-4.5h26c3 0 5 1.5 5 4.5 0 11-8 19-18 19s-18-8-18-19z"/>
+      <path class="sp-draw" pathLength="1" d="M14.8 34 8.5 26c-1.2-1.4-3.2-.3-2.6 1.4 2 6.2 4.6 11.2 10.4 14.6"/>
+      <path class="sp-draw" pathLength="1" d="M49.6 31.5c5 0 8.4 2.8 8.4 6.6s-3.6 6.6-9.8 7"/>
+      <path class="sp-draw" pathLength="1" d="M24.5 47.5 23 53h18l-1.5-5.5"/>
+    </svg>
+    <div class="sp-name font-serif" style="font-size:30px;font-weight:700;letter-spacing:.3em;margin-top:22px;padding-left:.3em;color:#fff">一握茶研所</div>
+    <div class="sp-tag" style="font-size:13px;letter-spacing:.15em;margin-top:12px;color:rgba(255,255,255,.55)">把佛手的溫潤，留給忙碌生活裡的你</div>
+  </div>
 
   <header class="fixed top-0 w-full z-50 liquid-glass border-b border-white/20 px-6 py-3 flex justify-between items-center">
     <button onclick="showView('landing')" class="flex items-center gap-3.5 btn-bounce text-left">
       <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-tea-gold to-yellow-200 text-tea-dark flex items-center justify-center font-serif font-bold text-lg shadow-[0_0_15px_rgba(212,175,55,0.5)]">茶</div>
       <div>
-        <h1 class="font-bold tracking-widest text-lg text-white drop-shadow-md">一握茶研所(Beta)</h1>
+        <h1 class="font-bold tracking-widest text-lg text-white drop-shadow-md">一握茶研所</h1>
         <p id="header-sub" class="text-[10px] font-mono text-white/60 mt-0.5">一握・系列</p>
       </div>
     </button>
@@ -103,35 +172,76 @@ body, html {
     </button>
   </header>
 
-  <main class="flex-1 pt-24 pb-10 px-4 max-w-2xl lg:max-w-4xl mx-auto w-full relative z-10">
+  <main class="flex-1 pt-24 md:pt-20 pb-10 px-4 max-w-2xl lg:max-w-4xl mx-auto w-full relative z-10">
 
     <!-- ============ 入口頁 ============ -->
     <section id="view-landing" class="view active node-reveal space-y-6">
 
+      <!-- 第一屏：主視覺＋特色茶飲（電腦版剛好一個螢幕高、內容垂直置中） -->
+      <div class="space-y-6 md:min-h-[calc(100vh-5rem)] md:flex md:flex-col md:justify-center md:pb-6">
+
       <!-- 品牌 + 主視覺 -->
-      <div class="text-center pt-4 pb-2 lg:pt-10 lg:pb-6 space-y-4 lg:space-y-6 fade-in-block" style="animation-delay:0ms">
+      <div class="text-center pt-4 pb-2 lg:pt-4 lg:pb-2 space-y-4 fade-in-block" style="animation-delay:0ms">
         <div>
-          <h2 class="font-serif text-3xl lg:text-5xl font-bold drop-shadow-md">一握茶研所(Beta)</h2>
-          <p class="text-white/60 text-sm lg:text-lg mt-3 lg:mt-4 leading-relaxed">找到適合你的茶<br>探索每一杯茶的故事</p>
+          <h2 class="font-serif text-3xl lg:text-5xl font-bold drop-shadow-md">一握茶研所</h2>
+          <p class="text-white/60 text-sm lg:text-lg mt-3 leading-relaxed">找到適合你的茶<span class="hidden md:inline">，</span><br class="md:hidden">探索每一杯茶的故事</p>
         </div>
-        <button onclick="document.getElementById('tea-section').scrollIntoView({behavior:'smooth'})" class="bg-tea-gold text-tea-dark font-bold text-sm lg:text-base px-8 lg:px-10 py-3 lg:py-4 rounded-full shadow-[0_0_20px_rgba(212,175,55,0.3)] btn-bounce inline-block">開始探索茶款</button>
+        <button onclick="showView('story')" class="bg-tea-gold text-tea-dark font-bold text-sm lg:text-base px-8 lg:px-10 py-3 rounded-full shadow-[0_0_20px_rgba(212,175,55,0.3)] btn-bounce inline-block">開始探索茶款</button>
       </div>
 
-      <!-- 熱門茶款 -->
-      <div id="tea-section" class="scroll-fade">
-        <h3 class="font-bold text-base lg:text-xl mb-3 lg:mb-5 flex items-center gap-2 px-1"><span>🌿</span>熱門茶款</h3>
-        <div id="tea-scroll" class="flex md:grid md:grid-cols-3 gap-3 lg:gap-5 overflow-x-auto md:overflow-visible pb-3 -mx-4 px-4 md:mx-0 md:px-0 snap-x snap-mandatory" style="scrollbar-width:none;"></div>
+      <!-- 特色茶飲 -->
+      <div id="tea-section" style="scroll-margin-top: 96px;">
+        <h3 class="font-bold text-base lg:text-xl mb-3 lg:mb-4 flex items-center gap-2 px-1 scroll-fade"><span>🌿</span>特色茶飲</h3>
+        <div id="tea-scroll" class="flex flex-col md:grid md:grid-cols-3 gap-0 md:gap-3 lg:gap-5 -mx-4 md:mx-0"></div>
+      </div>
       </div>
 
-      <!-- AI 茶飲助手 -->
-      <div class="liquid-glass-dark border border-emerald-400/30 rounded-[2rem] p-8 lg:p-12 text-center space-y-3 lg:space-y-4 scroll-fade">
-        <div class="text-3xl lg:text-5xl">🤖</div>
-        <p class="font-bold text-base lg:text-2xl">不知道喝哪一杯？</p>
-        <p class="text-white/50 text-xs lg:text-base">跟 AI 聊聊今天的心情，讓它幫你挑一款</p>
-        <button onclick="showView('companion')" class="bg-emerald-400 text-tea-dark font-bold text-sm lg:text-base px-8 lg:px-10 py-3 lg:py-4 rounded-full btn-bounce inline-block mt-1">問問 AI</button>
-      </div>
+        <!-- AI 茶飲助手：手機版緊接在三款茶下面，電腦版在第二屏 -->
+        <button id="ai-panel" onclick="showView('companion')" class="scroll-fade relative overflow-hidden block w-full -mx-4 md:mx-0 !mt-0 md:!mt-6 text-center px-6 pt-10 pb-12 lg:p-12 md:rounded-[2rem] md:border border-emerald-400/30 btn-bounce" style="width:calc(100% + 2rem)">
+          <div class="absolute inset-0 pointer-events-none" style="background-image:linear-gradient(-45deg, #0A1712, #123A2C, #1E5A45, #0D2219); background-size:400% 400%; animation: fluidBackground 18s ease infinite; animation-delay:-4s"></div>
+          <div class="relative">
+            <div class="font-serif font-bold text-3xl md:text-xl lg:text-2xl">AI 茶伴</div>
+            <div class="text-sm md:text-xs lg:text-base text-white/75 mt-2">不知道喝哪一杯？</div>
+            <div class="text-xs lg:text-sm text-white/45 mt-1">跟 AI 聊聊今天的心情，讓它幫你挑一款</div>
+            <span class="inline-block mt-5 px-6 py-2 rounded-full text-sm font-bold bg-emerald-400 text-tea-dark">問問 AI</span>
+            <div class="mt-8 md:mt-6 drop-shadow-lg">
+              <svg class="mx-auto w-28 h-28 md:w-20 md:h-20 lg:w-24 lg:h-24" viewBox="0 0 64 64" fill="none" stroke="#6EE7B7" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M8 19.5c-1.6-1.6-1.6-3.4 0-5"/><path d="M12.5 17.5c-1.6-1.6-1.6-3.4 0-5"/>
+                <circle cx="32" cy="15.5" r="2" fill="#6EE7B7"/>
+                <path d="M24 25.5a8 6.5 0 0 1 16 0z" fill="rgba(52,211,153,0.25)"/>
+                <path d="M14 30c0-3 2-4.5 5-4.5h26c3 0 5 1.5 5 4.5 0 11-8 19-18 19s-18-8-18-19z" fill="rgba(52,211,153,0.25)"/>
+                <path d="M14.8 34 8.5 26c-1.2-1.4-3.2-.3-2.6 1.4 2 6.2 4.6 11.2 10.4 14.6"/>
+                <path d="M49.6 31.5c5 0 8.4 2.8 8.4 6.6s-3.6 6.6-9.8 7"/>
+                <path d="M24.5 47.5 23 53h18l-1.5-5.5"/>
+                <image x="23.5" y="27" width="17" height="17.5" preserveAspectRatio="xMidYMid meet" href="data:image/png;base64,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"/>
+              </svg>
+            </div>
+          </div>
+        </button>
 
-      <p class="text-white/30 text-[11px] italic text-center pt-2 scroll-fade">一握茶研所——把佛手的溫潤，留給忙碌生活裡的你。</p>
+        <!-- 一握調茶室：觀光工廠式 DIY 互動體驗 -->
+        <button id="lab-panel" onclick="showView('lab')" class="scroll-fade relative overflow-hidden block w-full -mx-4 md:mx-0 !mt-0 md:!mt-6 -mb-10 md:mb-0 text-center px-6 pt-10 pb-10 lg:p-12 md:rounded-[2rem] md:border border-amber-300/30 btn-bounce" style="width:calc(100% + 2rem)">
+          <div class="absolute inset-0 pointer-events-none" style="background-image:linear-gradient(-45deg, #140F08, #3A2A12, #5C4415, #1E160A); background-size:400% 400%; animation: fluidBackground 18s ease infinite; animation-delay:-9s"></div>
+          <div class="relative">
+            <div class="font-serif font-bold text-3xl md:text-xl lg:text-2xl">一握體驗館</div>
+            <div class="text-sm md:text-xs lg:text-base text-white/75 mt-2">像逛觀光工廠一樣，一站一站玩</div>
+            <div class="text-xs lg:text-sm text-white/45 mt-1">製茶工序・DIY 調茶・茶知識問答，集滿三個章</div>
+            <span class="inline-block mt-5 px-6 py-2 rounded-full text-sm font-bold bg-tea-gold text-tea-dark">開始體驗</span>
+            <div class="mt-8 md:mt-6 drop-shadow-lg">
+              <svg class="mx-auto w-28 h-28 md:w-20 md:h-20 lg:w-24 lg:h-24" viewBox="0 0 64 64" fill="none" stroke="#E6C35C" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M26 12c-1.6-1.6-1.6-3.4 0-5"/><path d="M32 11c-1.6-1.6-1.6-3.4 0-5"/><path d="M38 12c-1.6-1.6-1.6-3.4 0-5"/>
+                <path d="M17 33.5h30l-2.6 15.2A4 4 0 0 1 40.5 52h-17a4 4 0 0 1-3.9-3.3z" fill="rgba(212,175,55,0.25)" stroke="none"/>
+                <path d="M15 18h34l-4.6 30.7A4 4 0 0 1 40.5 52h-17a4 4 0 0 1-3.9-3.3z"/>
+                <path d="M17 33.5h30"/>
+                <path d="M33 26.5c2.5-3.5 6.5-4.5 10-3-1.5 3.8-5.5 5.2-10 3z" fill="rgba(212,175,55,0.35)"/>
+                <path d="M33 26.5l6-2.4"/>
+                <path d="M21 57h22"/>
+              </svg>
+            </div>
+            <p class="text-white/30 text-[11px] italic mt-14 md:mt-8">一握茶研所——把佛手的溫潤，留給忙碌生活裡的你。</p>
+          </div>
+        </button>
+
     </section>
 
     <!-- ============ 產品介紹頁（內容用 JS 動態帶入） ============ -->
@@ -139,11 +249,148 @@ body, html {
       <div id="product-content" class="space-y-4"></div>
     </section>
 
+    <!-- ============ 品牌故事 ============ -->
+    <section id="view-story" class="view">
+      <div class="space-y-4">
+        <div class="liquid-glass rounded-[2rem] p-6 lg:p-10 text-center fade-in-block" style="animation-delay:0ms">
+          <span class="text-[10px] font-mono bg-tea-gold text-tea-dark font-bold px-2 py-1 rounded">品牌故事</span>
+          <h2 class="font-serif text-3xl lg:text-4xl font-bold mt-4">一握茶研所</h2>
+          <p class="text-sm text-white/60 mt-3">一握佛手，一茶一故事</p>
+        </div>
+
+        <div class="liquid-glass-dark rounded-2xl p-5 lg:p-7 border border-white/10 fade-in-block" style="animation-delay:500ms">
+          <h3 class="text-tea-gold font-bold text-sm lg:text-base mb-2"><span class="mr-1.5">🍵</span>我們在做什麼</h3>
+          <p class="text-xs lg:text-sm text-white/70 leading-relaxed">一握茶研所以臺灣特色「佛手烏龍茶」為核心，結合藥食同源素材與現代生活情境，開發「一握」系列茶飲。我們希望讓茶不只是一種飲品，而是陪伴日常生活的一段小時光。</p>
+        </div>
+
+        <div class="liquid-glass-dark rounded-2xl p-5 lg:p-7 border border-white/10 fade-in-block" style="animation-delay:1000ms">
+          <h3 class="text-tea-gold font-bold text-sm lg:text-base mb-2"><span class="mr-1.5">🤲</span>為什麼是「一握」</h3>
+          <p class="text-xs lg:text-sm text-white/70 leading-relaxed">一握，是雙手捧起一杯茶的溫度，也是在忙碌生活裡，留給自己的一小段時間。不需要特別的茶具或場合，只要一杯茶，就能讓自己停下來喘口氣。</p>
+        </div>
+
+        <div class="liquid-glass-dark rounded-2xl p-5 lg:p-7 border border-white/10 fade-in-block" style="animation-delay:1500ms">
+          <h3 class="text-tea-gold font-bold text-sm lg:text-base mb-2"><span class="mr-1.5">🌿</span>依生活狀態選茶</h3>
+          <p class="text-xs lg:text-sm text-white/70 leading-relaxed">不同於傳統以單一功效分類的養生茶，我們把茶飲與現代人的生活狀態連結，依照女性日常、外食聚餐、秋冬暖飲等情境設計茶款。每一款茶都有自己的風味與故事，讓每個人在不同的生活狀態中，都能找到屬於自己的那一握。</p>
+        </div>
+
+        <div class="liquid-glass-dark rounded-2xl p-5 lg:p-7 border border-white/10 fade-in-block" style="animation-delay:2000ms">
+          <h3 class="text-tea-gold font-bold text-sm lg:text-base mb-2"><span class="mr-1.5">📱</span>一茶一故事，一掃就懂</h3>
+          <p class="text-xs lg:text-sm text-white/70 leading-relaxed">每款茶都附有專屬 QR Code，掃描後就能了解茶款故事、配方與文化背景；不知道喝哪一杯時，也可以和 AI 茶伴聊聊今天的心情，讓它幫你挑一款。</p>
+        </div>
+
+        <div class="liquid-glass-dark rounded-2xl p-5 lg:p-7 border border-white/10 fade-in-block" style="animation-delay:2500ms">
+          <h3 class="text-tea-gold font-bold text-sm lg:text-base mb-2"><span class="mr-1.5">♻️</span>永續的一杯茶</h3>
+          <p class="text-xs lg:text-sm text-white/70 leading-relaxed">我們將減量包裝、可回收材質與 QR Code 數位資訊融入產品設計，用數位內容取代紙本說明，讓品嚐一杯茶的同時，也對環境溫柔一點。</p>
+        </div>
+
+        <div class="text-center pt-4 pb-2 space-y-3 fade-in-block" style="animation-delay:3000ms">
+          <button onclick="goToTeas()" class="bg-tea-gold text-tea-dark font-bold text-sm lg:text-base px-8 lg:px-10 py-3 lg:py-4 rounded-full shadow-[0_0_20px_rgba(212,175,55,0.3)] btn-bounce inline-block">開始探索茶款</button>
+          <div><button onclick="showView('companion')" class="text-emerald-300 text-xs lg:text-sm font-bold btn-bounce">🫖 不知道喝哪一杯？問問 AI 茶伴 →</button></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 一握體驗館（觀光工廠式互動區） ============ -->
+    <section id="view-lab" class="view">
+      <div class="space-y-4">
+        <div class="liquid-glass rounded-[2rem] p-6 lg:p-8 text-center fade-in-block" style="animation-delay:0ms">
+          <span class="text-[10px] font-mono bg-tea-gold text-tea-dark font-bold px-2 py-1 rounded">互動體驗</span>
+          <h2 class="font-serif text-3xl font-bold mt-3">一握體驗館</h2>
+          <p class="text-xs lg:text-sm text-white/60 mt-2 leading-relaxed">像逛觀光工廠一樣，一站一站體驗佛手茶的故事。<br>每完成一站蓋一個章，集滿三個就能拿到體驗完成證。</p>
+        </div>
+
+        <!-- 集章卡 -->
+        <div class="liquid-glass-dark rounded-2xl p-5 border border-white/10 fade-in-block" style="animation-delay:300ms">
+          <div class="flex justify-between items-center mb-3">
+            <h3 class="text-tea-gold font-bold text-sm">集章卡</h3>
+            <span id="stamp-count" class="text-[11px] text-white/50"></span>
+          </div>
+          <div id="stamp-row" class="grid grid-cols-3 gap-3"></div>
+          <div id="stamp-cert"></div>
+        </div>
+
+        <!-- 關卡切換 -->
+        <div class="liquid-glass-dark rounded-full p-1 flex gap-1 border border-white/10 fade-in-block" style="animation-delay:600ms">
+          <button id="tab-process" onclick="labTab('process')" class="flex-1 py-2.5 text-xs font-bold rounded-full transition-all">① 製茶工序</button>
+          <button id="tab-diy" onclick="labTab('diy')" class="flex-1 py-2.5 text-xs font-bold rounded-full transition-all">② DIY 調茶</button>
+          <button id="tab-quiz" onclick="labTab('quiz')" class="flex-1 py-2.5 text-xs font-bold rounded-full transition-all">③ 茶知識問答</button>
+        </div>
+
+        <div class="fade-in-block" style="animation-delay:900ms">
+          <!-- 第一站：製茶工序 -->
+          <div id="st-process" class="space-y-4"></div>
+
+          <!-- 第二站：DIY 調茶 -->
+          <div id="st-diy" class="space-y-4 hidden">
+            <div class="liquid-glass-dark rounded-2xl p-5 lg:p-7 border border-white/10">
+              <h3 class="text-tea-gold font-bold text-sm mb-1">① 把配料拖進杯子裡</h3>
+              <p class="text-[11px] text-white/45 mb-3">最多 3 種；拖進杯子加入，點一下已加入的配料可以拿掉</p>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-8 items-center">
+                <!-- 杯子：手機在上面，平板／電腦在右邊 -->
+                <div class="md:order-2 flex flex-col items-center">
+                <svg id="lab-cup" viewBox="2 0 100 110" class="w-40 h-44 md:w-52 md:h-56" aria-hidden="true" style="overflow:visible">
+                  <defs><clipPath id="lab-clip"><path d="M19.2 22 27.2 98Q28.3 104.3 35 104.3H69Q75.7 104.3 76.8 98L84.8 22z"/></clipPath></defs>
+                  <g id="lab-steam" style="opacity:0; transition:opacity 1s ease">
+                    <path d="M42 16c-2.4-2.4-2.4-5.2 0-7.8" stroke="rgba(255,255,255,.5)" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+                    <path d="M52 13c-2.4-2.4-2.4-5.2 0-7.8" stroke="rgba(255,255,255,.5)" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+                    <path d="M62 16c-2.4-2.4-2.4-5.2 0-7.8" stroke="rgba(255,255,255,.5)" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+                  </g>
+                  <g clip-path="url(#lab-clip)">
+                    <rect id="lab-liquid" x="0" y="26" width="104" height="78.3" fill="#C8872E"
+                      style="transform-box:fill-box; transform-origin:bottom; transform:scaleY(0.1); transition:transform 2.4s cubic-bezier(.45,0,.2,1), fill .6s ease"/>
+                    <g id="lab-bits"></g>
+                    <g id="lab-ripples"></g>
+                  </g>
+                  <path d="M18 22 26 98q1.2 7.5 9 7.5h34q7.8 0 9-7.5L86 22" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="2.4" stroke-linejoin="round"/>
+                  <path id="lab-cup-drop" d="M18 22h68" fill="none" stroke="rgba(255,255,255,0)" stroke-width="2"/>
+                </svg>
+                  <div class="text-[11px] text-white/45 text-center mt-1">已加入：<span id="lab-picked" class="text-white/80">還沒有加入配料</span></div>
+                </div>
+                <!-- 配料與風味：平板／電腦在左邊 -->
+                <div class="md:order-1">
+                  <div class="text-[11px] text-white/45 mb-2">配料</div>
+                  <p id="lab-hint" class="text-[11px] text-amber-300 mb-1 h-4"></p>
+                  <div id="lab-ings" class="flex flex-wrap gap-3 justify-center md:justify-start py-1"></div>
+                  <div class="text-[11px] text-white/45 mt-4 mb-2">風味預覽</div>
+                  <div id="lab-bars" class="space-y-1.5"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="liquid-glass-dark rounded-2xl p-5 lg:p-7 border border-white/10">
+              <h3 class="text-tea-gold font-bold text-sm mb-3">② 設定沖泡</h3>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
+                <div>
+                  <div class="flex justify-between text-xs mb-1"><span class="text-white/70">水溫</span><span id="lab-temp-v" class="font-bold">90°C</span></div>
+                  <input id="lab-temp" type="range" min="80" max="100" value="90" class="w-full accent-amber-400" oninput="labUpdate()">
+                </div>
+                <div>
+                  <div class="flex justify-between text-xs mb-1"><span class="text-white/70">浸泡時間</span><span id="lab-time-v" class="font-bold">3 分鐘</span></div>
+                  <input id="lab-time" type="range" min="1" max="6" value="3" class="w-full accent-amber-400" oninput="labUpdate()">
+                </div>
+              </div>
+              <p id="lab-tip" class="text-[11px] text-white/55 mt-3 leading-relaxed"></p>
+            </div>
+
+            <div class="flex flex-wrap justify-center gap-3">
+              <button id="lab-brew-btn" onclick="labBrew()" class="bg-tea-gold text-tea-dark font-bold text-sm px-10 py-3 rounded-full shadow-[0_0_20px_rgba(212,175,55,0.3)] btn-bounce">③ 開始沖泡</button>
+              <button onclick="labTab('quiz'); document.getElementById('st-quiz').scrollIntoView({behavior:'smooth', block:'start'})" class="border border-white/30 text-white font-bold text-sm px-8 py-3 rounded-full btn-bounce">下一站：茶知識問答 →</button>
+            </div>
+
+            <div id="lab-result"></div>
+          </div>
+
+          <!-- 第三站：茶知識問答 -->
+          <div id="st-quiz" class="space-y-4 hidden"></div>
+        </div>
+      </div>
+    </section>
+
     <!-- ============ AI 茶伴 ============ -->
     <section id="view-companion" class="view">
       <div class="liquid-glass rounded-[2rem] overflow-hidden fade-in-block flex flex-col" style="min-height: 480px; animation-delay:0ms">
         <div class="p-4 border-b border-white/10 flex items-center gap-2">
-          <span class="text-emerald-300">🤖</span>
+          <span class="text-emerald-300">🫖</span>
           <span class="text-sm font-bold">AI 茶伴</span>
         </div>
         <div id="companion-log" class="flex-1 p-4 space-y-3 overflow-y-auto text-xs"></div>
@@ -164,7 +411,7 @@ body, html {
    Cloudflare 後台的加密變數裡，安全多了）
    ========================================================= */
 const WORKER_URL = "https://tea.arp21760208.workers.dev/";
-const GEMINI_MODEL = "gemini-2.5-flash-lite";
+const GEMINI_MODEL = "gemini-3.5-flash-lite";
 
 /* =========================================================
    茶款資料庫 —— 之後要加其他款，照同樣格式加進這個陣列，
@@ -173,11 +420,21 @@ const GEMINI_MODEL = "gemini-2.5-flash-lite";
 const TEA_DB = [
   {
     id: "yanran",
+    video: "",   // 茶款故事影片：填 mp4 路徑或 YouTube 連結，留空則顯示文字故事
+    culture: "佛手烏龍是臺灣特色烏龍茶，茶樹葉片寬大、形似佛手柑的葉子而得名。玫瑰自古就是入茶、入點心的花草素材；紅棗與枸杞則是華人飲食中常見的藥食同源食材，經常出現在家常湯品與茶飲裡。",
+    drinkInfo: [
+      { label: "原料", text: "佛手烏龍茶、玫瑰、紅棗、枸杞" },
+      { label: "沖泡", text: "1 包茶包加約 300ml、90～95°C 熱水，浸泡 3～5 分鐘，可依口味調整濃淡" },
+      { label: "咖啡因", text: "含茶葉，含咖啡因，睡前飲用請斟酌份量" },
+      { label: "保存", text: "開封後請密封，存放於陰涼乾燥處" },
+      { label: "注意", text: "對上述原料過敏者請避免飲用；本產品為一般茶飲，非藥品，不具醫療效果" }
+    ],
     color: "#E8829B",
     bg: "linear-gradient(-45deg, #170D12, #3A1C2A, #66142D, #260F1A)",
     emoji: "🌹",
     name: "一握・嫣然",
-    series: "女性日常系列",
+    series: "女性日常茶飲",
+    slogan: "照顧生活，也別忘了照顧自己。",
     tag: "花香｜回甘",
     formula: "佛手烏龍 70% ・ 玫瑰 10% ・ 紅棗 10% ・ 枸杞 10%",
     flavor: "烏龍茶香、優雅花香、微甜果香",
@@ -193,11 +450,21 @@ const TEA_DB = [
   },
   {
     id: "qingying",
+    video: "",   // 茶款故事影片：填 mp4 路徑或 YouTube 連結，留空則顯示文字故事
+    culture: "佛手烏龍是臺灣特色烏龍茶，茶樹葉片寬大、形似佛手柑的葉子而得名。陳皮是柑橘果皮經長時間乾燥陳放而成，是廣東飲食中常見的入菜、入茶材料；山楂則常見於傳統點心，像是山楂餅和糖葫蘆。",
+    drinkInfo: [
+      { label: "原料", text: "佛手烏龍茶、陳皮、山楂" },
+      { label: "沖泡", text: "1 包茶包加約 300ml、90～95°C 熱水，浸泡 3～5 分鐘，可依口味調整濃淡" },
+      { label: "咖啡因", text: "含茶葉，含咖啡因，睡前飲用請斟酌份量" },
+      { label: "保存", text: "開封後請密封，存放於陰涼乾燥處" },
+      { label: "注意", text: "對上述原料過敏者請避免飲用；本產品為一般茶飲，非藥品，不具醫療效果" }
+    ],
     color: "#F0A04B",
     bg: "linear-gradient(-45deg, #17110A, #3A2A1C, #664014, #26170F)",
     emoji: "🍊",
     name: "一握・輕盈",
-    series: "外食族／聚餐後系列",
+    series: "外食及聚餐族群",
+    slogan: "吃得盡興，回到剛剛好的清爽。",
     tag: "柑橘｜清爽",
     formula: "佛手烏龍 70% ・ 陳皮 15% ・ 山楂 15%",
     flavor: "茶香、柑橘、果酸",
@@ -213,11 +480,21 @@ const TEA_DB = [
   },
   {
     id: "nuanyang",
+    video: "",   // 茶款故事影片：填 mp4 路徑或 YouTube 連結，留空則顯示文字故事
+    culture: "佛手烏龍是臺灣特色烏龍茶，茶樹葉片寬大、形似佛手柑的葉子而得名。紅棗桂圓茶是許多臺灣家庭冬天常見的暖飲；薑在華人飲食中也常用於冬季料理與熱飲，帶來溫暖的香氣。",
+    drinkInfo: [
+      { label: "原料", text: "佛手烏龍茶、紅棗、桂圓、薑" },
+      { label: "沖泡", text: "1 包茶包加約 300ml、90～95°C 熱水，浸泡 3～5 分鐘，可依口味調整濃淡" },
+      { label: "咖啡因", text: "含茶葉，含咖啡因，睡前飲用請斟酌份量" },
+      { label: "保存", text: "開封後請密封，存放於陰涼乾燥處" },
+      { label: "注意", text: "對上述原料過敏者請避免飲用；本產品為一般茶飲，非藥品，不具醫療效果" }
+    ],
     color: "#E2703A",
     bg: "linear-gradient(-45deg, #170D0A, #3A1F1C, #661F14, #260F0D)",
     emoji: "🔥",
     name: "一握・暖陽",
-    series: "秋冬暖飲系列",
+    series: "秋冬暖飲",
+    slogan: "把陽光泡進茶裡，把溫暖握在手中。",
     tag: "暖香｜回甘",
     formula: "佛手烏龍 65% ・ 紅棗 15% ・ 桂圓 15% ・ 薑 5%",
     flavor: "醇厚茶感、紅棗桂圓甜香、輕微薑香",
@@ -246,25 +523,75 @@ function fadeText(text, baseDelayMs, stepMs = 110) {
     .join('');
 }
 
+// 三款茶的線條圖示（跟 AI 茶伴的茶壺同一種畫法）：嫣然＝玫瑰、輕盈＝柑橘切片、暖陽＝日出
+function teaIconSVG(id, color, cls) {
+  const f = color + '40';
+  const a = `fill="none" stroke="${color}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"`;
+  let p = '';
+  if (id === 'yanran') {        // 玫瑰
+    p = `<path d="M32 40v16"/>
+      <path d="M32 51c-1.4-5.2-5.4-8-11-8 1 5.2 5 8 11 8z" fill="${f}"/>
+      <path d="M32 47c1.8-3.4 5-5.2 9-5.2-.9 3.6-4 5.4-9 5.2z" fill="${f}"/>
+      <path d="M21.5 23c-1.2-6.5 3.5-11 10.5-11s11.7 4.5 10.5 11" fill="${f}"/>
+      <path d="M18 24c3.5 1.8 7.5 1 10.5-2.2 1.2 1.6 2.2 2.2 3.5 2.2s2.3-.6 3.5-2.2c3 3.2 7 4 10.5 2.2 0 9.5-6.2 16-14 16s-14-6.5-14-16z" fill="${f}"/>
+      <path d="M32.4 16.4c-3.2.2-5.1 2.5-4.8 5.1.3 2.4 2.5 3.8 4.8 3.4 2-.4 3.1-2.1 2.8-3.7-.3-1.5-1.7-2.2-3-1.8"/>`;
+  } else if (id === 'qingying') { // 柑橘切片
+    const segs = [0,45,90,135,180,225,270,315].map(d => {
+      const r = d * Math.PI / 180;
+      return `<path d="M${(32+3.5*Math.cos(r)).toFixed(1)} ${(32+3.5*Math.sin(r)).toFixed(1)}L${(32+14.5*Math.cos(r)).toFixed(1)} ${(32+14.5*Math.sin(r)).toFixed(1)}"/>`;
+    }).join('');
+    p = `<circle cx="32" cy="32" r="21" fill="${f}"/><circle cx="32" cy="32" r="16.5"/>${segs}`;
+  } else {                        // 暖陽：日出
+    const rays = [-150,-120,-90,-60,-30].map(d => {
+      const r = d * Math.PI / 180;
+      return `<path d="M${(32+16*Math.cos(r)).toFixed(1)} ${(42+16*Math.sin(r)).toFixed(1)}L${(32+22*Math.cos(r)).toFixed(1)} ${(42+22*Math.sin(r)).toFixed(1)}"/>`;
+    }).join('');
+    p = `<path d="M20 42a12 12 0 0 1 24 0z" fill="${f}"/>${rays}
+      <path d="M10 42h44"/><path d="M17 49h30"/><path d="M24 56h16"/>`;
+  }
+  return `<svg class="${cls}" viewBox="0 0 64 64" ${a} aria-hidden="true">${p}</svg>`;
+}
+
 function renderLandingCards() {
   const box = document.getElementById('tea-scroll');
   box.innerHTML = '';
-  TEA_DB.forEach(tea => {
+  TEA_DB.forEach((tea, idx) => {
     const card = document.createElement('button');
-    card.className = "liquid-glass-dark border border-white/20 rounded-2xl p-4 lg:p-6 flex-shrink-0 w-36 md:w-auto snap-start transition-all btn-bounce text-left";
+    card.className = "scroll-fade relative overflow-hidden w-full text-center px-6 pt-10 pb-12 md:px-4 md:pt-6 md:pb-6 md:rounded-2xl md:border border-white/10 transition-all btn-bounce";
     card.onmouseenter = () => { card.style.borderColor = tea.color; };
     card.onmouseleave = () => { card.style.borderColor = ''; };
     card.onclick = () => openProduct(tea.id);
+    // 底色放在獨立的一層，用跟整頁背景相同的慢慢流動動畫；
+    // 卡片本身的淡入動畫不受影響。三塊錯開起始時間，不會同步變色。
     card.innerHTML = `
-      <div class="w-full aspect-square rounded-xl flex items-center justify-center text-4xl lg:text-6xl" style="background:${tea.color}22; border:1px solid ${tea.color}55">${tea.emoji}</div>
-      <div class="font-bold text-sm lg:text-lg text-center mt-3 lg:mt-4">${tea.name}</div>
-      <div class="text-[10px] lg:text-sm text-white/50 text-center mt-1">${tea.tag}</div>
-      <div class="w-full mt-3 text-[11px] lg:text-sm font-bold text-center" style="color:${tea.color}">查看介紹 →</div>`;
+      <div class="absolute inset-0 pointer-events-none" style="background-image:${tea.bg}; background-size:400% 400%; animation: fluidBackground 18s ease infinite; animation-delay:-${idx * 6}s"></div>
+      <div class="relative flex flex-col items-center">
+      <div class="font-serif font-bold text-3xl md:text-xl lg:text-2xl">${tea.name}</div>
+      <div class="text-sm md:text-xs lg:text-sm text-white/75 mt-2">${tea.slogan || tea.series}</div>
+      <div class="text-xs text-white/45 mt-1">${tea.tag}</div>
+      <span class="inline-block mt-5 md:mt-4 px-6 py-2 rounded-full text-sm font-bold" style="background:${tea.color}; color:#12261A">查看介紹</span>
+      <div class="order-last md:order-first mt-8 md:mt-0 md:mb-3 drop-shadow-lg">${teaIconSVG(tea.id, tea.color, "mx-auto w-28 h-28 md:w-14 md:h-14 lg:w-16 lg:h-16")}</div>
+      </div>`;
     box.appendChild(card);
   });
 }
 
 const DEFAULT_BG = "linear-gradient(-45deg, #0A140E, #1C3A27, #664d14, #12261A)";
+
+// 茶款故事影片：TEA_DB 裡填了 video 就顯示影片，沒填就顯示原本的故事文字
+// 支援兩種：放在 GitHub 上的 mp4 檔，或 YouTube 連結
+function storyMedia(tea, delay) {
+  const v = (tea.video || '').trim();
+  if (!v) return `<p class="text-xs text-white/70 leading-relaxed">${fadeText(tea.story, delay)}</p>`;
+  const yt = v.match(/(?:youtu\.be\/|v=|shorts\/|embed\/)([\w-]{11})/);
+  if (yt) {
+    return `<div class="relative w-full rounded-xl overflow-hidden bg-black" style="aspect-ratio:16/9">
+      <iframe class="absolute inset-0 w-full h-full" src="https://www.youtube-nocookie.com/embed/${yt[1]}?playsinline=1&rel=0"
+        title="${tea.name} 茶款故事" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    </div>`;
+  }
+  return `<video class="w-full rounded-xl bg-black" src="${v}" controls playsinline preload="metadata"></video>`;
+}
 
 function openProduct(teaId) {
   currentTeaId = teaId;
@@ -275,12 +602,14 @@ function openProduct(teaId) {
   box.innerHTML = `
     <div class="liquid-glass rounded-[2rem] p-6 fade-in-block" style="animation-delay:${D(0)}ms">
       <span class="text-[10px] font-mono font-bold px-2 py-1 rounded" style="background:${tea.color}; color:#12261A">${tea.series}</span>
-      <h2 class="font-serif text-2xl font-bold mt-3">${tea.emoji} ${tea.name}</h2>
-      <p class="text-xs text-white/50 mt-1">${tea.formula}</p>
+      <h2 class="font-serif text-2xl font-bold mt-3 flex items-center gap-2">${teaIconSVG(tea.id, tea.color, "w-9 h-9 flex-shrink-0")}${tea.name}</h2>
+      <p class="font-serif text-sm mt-2" style="color:${tea.color}">「${tea.slogan}」</p>
+      <p class="text-xs text-white/50 mt-2">${tea.formula}</p>
     </div>
     <div class="liquid-glass-dark rounded-2xl p-5 border border-white/10 fade-in-block" style="animation-delay:${D(1)}ms">
-      <h3 class="font-bold text-sm mb-2" style="color:${tea.color}"><span class="mr-1.5">🪶</span>故事</h3>
-      <p class="text-xs text-white/70 leading-relaxed">${fadeText(tea.story, D(1) + 150)}</p>
+      <h3 class="font-bold text-sm mb-2" style="color:${tea.color}"><span class="mr-1.5">🪶</span>茶款故事</h3>
+      ${storyMedia(tea, D(1) + 150)}
+      <p class="text-xs text-white/70 leading-relaxed mt-2">${fadeText(tea.philosophy, D(1) + 600)}</p>
     </div>
     <div class="liquid-glass-dark rounded-2xl p-5 border border-white/10 fade-in-block" style="animation-delay:${D(2)}ms">
       <h3 class="font-bold text-sm mb-3" style="color:${tea.color}"><span class="mr-1.5">🌿</span>配方特色</h3>
@@ -292,24 +621,28 @@ function openProduct(teaId) {
         </div>`).join('')}</div>
     </div>
     <div class="liquid-glass-dark rounded-2xl p-5 border border-white/10 fade-in-block" style="animation-delay:${D(3)}ms">
-      <h3 class="font-bold text-sm mb-2" style="color:${tea.color}"><span class="mr-1.5">☕</span>生活情境</h3>
-      <p class="text-xs text-white/70 leading-relaxed">${fadeText(tea.scenario, D(3) + 150)}</p>
+      <h3 class="font-bold text-sm mb-2" style="color:${tea.color}"><span class="mr-1.5">📜</span>文化背景</h3>
+      <p class="text-xs text-white/70 leading-relaxed">${fadeText(tea.culture, D(3) + 150)}</p>
     </div>
     <div class="liquid-glass-dark rounded-2xl p-5 border border-white/10 fade-in-block" style="animation-delay:${D(4)}ms">
-      <h3 class="font-bold text-sm mb-2" style="color:${tea.color}"><span class="mr-1.5">💛</span>想傳達的理念</h3>
-      <p class="text-xs text-white/70 leading-relaxed">${fadeText(tea.philosophy, D(4) + 150)}</p>
+      <h3 class="font-bold text-sm mb-2" style="color:${tea.color}"><span class="mr-1.5">☕</span>生活情境</h3>
+      <p class="text-xs text-white/70 leading-relaxed">${fadeText(tea.scenario, D(4) + 150)}</p>
     </div>
-    <div class="liquid-glass rounded-[2rem] overflow-hidden fade-in-block" style="animation-delay:${D(5)}ms; border-top:2px solid ${tea.color}">
+    <div class="liquid-glass-dark rounded-2xl p-5 border border-white/10 fade-in-block" style="animation-delay:${D(5)}ms">
+      <h3 class="font-bold text-sm mb-3" style="color:${tea.color}"><span class="mr-1.5">🫖</span>飲用資訊</h3>
+      <div class="space-y-2">${tea.drinkInfo.map((r, i) => `
+        <div class="flex gap-3 text-xs fade-in-block" style="animation-delay:${D(5) + 150 + i * 120}ms">
+          <span class="font-bold flex-shrink-0 w-12" style="color:${tea.color}">${r.label}</span>
+          <span class="text-white/70 leading-relaxed">${r.text}</span>
+        </div>`).join('')}</div>
+    </div>
+    <div class="liquid-glass rounded-[2rem] overflow-hidden fade-in-block" style="animation-delay:${D(6)}ms; border-top:2px solid ${tea.color}">
       <div class="p-4 border-b border-white/10 flex items-center gap-2">
         <span style="color:${tea.color}">💬</span>
         <span class="text-sm font-bold">問問關於這款茶的任何事</span>
       </div>
       <div id="product-chat-log" class="p-4 space-y-3 max-h-[340px] overflow-y-auto text-xs"></div>
-      <div class="p-3 border-t border-white/10 flex flex-wrap gap-2">
-        <button class="chip text-[10px] liquid-glass-dark border border-white/20 rounded-full px-3 py-1.5" onclick="askProduct('這款茶為什麼會有這樣的配方組合？')">為什麼這樣配？</button>
-        <button class="chip text-[10px] liquid-glass-dark border border-white/20 rounded-full px-3 py-1.5" onclick="askProduct('佛手茶是什麼？')">佛手茶是什麼？</button>
-        <button class="chip text-[10px] liquid-glass-dark border border-white/20 rounded-full px-3 py-1.5" onclick="askProduct('這些材料在傳統飲食文化中有什麼特色？')">傳統飲食文化特色？</button>
-      </div>
+      <div id="product-chips" class="p-3 border-t border-white/10 flex flex-wrap gap-2"></div>
       <div class="p-3 border-t border-white/10 flex gap-2">
         <input id="product-chat-input" type="text" placeholder="輸入你的問題…" class="flex-1 liquid-glass-dark rounded-full px-4 py-2.5 text-xs outline-none placeholder:text-white/30" onkeydown="if(event.key==='Enter') askProduct()">
         <button onclick="askProduct()" class="w-10 h-10 rounded-full flex items-center justify-center btn-bounce" style="background:${tea.color}; color:#12261A"><span class="text-xs">➤</span></button>
@@ -322,8 +655,45 @@ function openProduct(teaId) {
     productLogs[teaId] = [{ role: 'bot', text: `你好，我是「${tea.name}」的專屬茶伴，關於這款茶或佛手茶的任何問題都可以問我 ${tea.emoji}` }];
   }
   productLogs[teaId].forEach(m => addBubble('product-chat-log', m.role, m.text));
+  renderProductChips();
 
   showView('product');
+}
+
+/* 快速提問按鈕：題庫比顯示數量多，每次問完就從題庫裡重新抽一批不重複的，
+   不會一直卡在同三個問題 */
+const PRODUCT_QUESTION_POOL = [
+  '這款茶為什麼會有這樣的配方組合？',
+  '佛手茶是什麼？',
+  '這些材料在傳統飲食文化中有什麼特色？',
+  '這款茶適合什麼時候喝？',
+  '這款茶會苦嗎？',
+  '要怎麼沖泡才好喝？',
+  '可以冷泡嗎？',
+  '跟一般烏龍茶有什麼不同？'
+];
+// suggestions：AI 產生的建議問題；沒有（或解析失敗）時，退回從題庫隨機抽
+function renderProductChips(suggestions) {
+  const box = document.getElementById('product-chips');
+  if (!box) return;
+  const picks = (suggestions && suggestions.length)
+    ? suggestions.slice(0, 3)
+    : [...PRODUCT_QUESTION_POOL].sort(() => Math.random() - 0.5).slice(0, 3);
+  box.innerHTML = '';
+  picks.forEach(q => {
+    const btn = document.createElement('button');
+    btn.className = 'chip text-[10px] liquid-glass-dark border border-white/20 rounded-full px-3 py-1.5';
+    btn.innerText = q;
+    btn.onclick = () => askProduct(q);
+    box.appendChild(btn);
+  });
+}
+
+function goToTeas() {
+  showView('landing');
+  setTimeout(() => {
+    document.getElementById('tea-section').scrollIntoView({ behavior: 'smooth' });
+  }, 350);
 }
 
 function forceIOSRepaint(el) {
@@ -362,12 +732,17 @@ function showView(name) {
     ? '一握・系列'
     : (name === 'product'
         ? TEA_DB.find(t => t.id === currentTeaId)?.name || '產品介紹'
-        : 'AI 茶伴');
+        : (name === 'story' ? '品牌故事' : (name === 'lab' ? '一握體驗館' : 'AI 茶伴')));
 
   document.getElementById('header-sub').innerText = sub;
 
   // 不使用 smooth，避免 iOS 同時處理捲動動畫與 view 重繪。
   window.scrollTo(0, 0);
+
+  // 回到首頁時把網址上的 ?tea= 拿掉，避免重新整理又跳回茶款頁
+  if (name === 'landing' && location.search) {
+    history.replaceState(null, '', location.pathname);
+  }
 
   // 每款茶進到產品頁時，整個頁面背景會換成那款茶的專屬色調；離開產品頁則還原
   if (name === 'product') {
@@ -461,6 +836,7 @@ async function askProduct(presetText) {
   const text = presetText || input.value.trim();
   if (!text) return;
   input.value = '';
+  document.getElementById('product-chips').innerHTML = '';
   addBubble('product-chat-log', 'user', text);
   productLogs[currentTeaId].push({ role: 'user', text });
   addTyping('product-chat-log');
@@ -470,19 +846,30 @@ async function askProduct(presetText) {
 請以溫暖、口語、像懂茶的朋友的語氣回答使用者關於這款茶、佛手茶本身、茶葉配方材料、或傳統飲食茶文化的問題。
 使用者前面說過的話你都記得，遇到「這款茶」「剛剛那個」之類的指涉，直接依對話紀錄判斷指的是什麼，不要反問。
 【重要規範】絕對不能使用「燃脂」「排油」「減肥」「瘦身」「代謝」「消脂」等暗示醫療或減重功效的字眼，即使使用者主動問「這款茶能減肥嗎」也一樣。遇到這類問題，只回答茶本身的風味、傳統飲食文化中的角色與感受（例如「讓人餐後感覺清爽舒服」），並清楚說明這是茶飲不是保健品或藥品，不具有醫療或減重功效，不要用任何轉折語氣暗示它「還是有幫助」。
-回答控制在 100 字以內，不要條列，不要使用「首先/其次」這類生硬詞，不要提及你是語言模型。若問題與茶完全無關，禮貌引導回到茶的話題。`;
+回答控制在 100 字以內，不要條列，不要使用「首先/其次」這類生硬詞，不要提及你是語言模型。若問題與茶完全無關，禮貌引導回到茶的話題。
+【輸出格式】回答結束後，另起一行，固定用這個格式列出 3 個使用者可能想接著問的問題：
+【建議】問題一|問題二|問題三
+規則：問題一必須直接延續使用者剛剛問的內容或你剛剛的回答（追問細節）；問題二、三可以帶到這款茶的其他面向（沖泡方式、風味、適合時機、佛手茶文化等）。每個問題 15 字以內，用使用者的口吻，不要跟對話中已經問過的重複，也不要出現上面禁止的功效字眼。`;
 
   try {
     const contents = toGeminiContents(productLogs[currentTeaId]);
-    const reply = await callGemini(systemPrompt, contents);
+    const raw = await callGemini(systemPrompt, contents);
+    // 把 AI 附在最後的【建議】那行拆出來，當作按鈕；泡泡裡只顯示正文
+    const [replyPart, suggestPart] = raw.split('【建議】');
+    const reply = replyPart.trim();
+    const suggestions = suggestPart
+      ? suggestPart.split('|').map(s => s.trim()).filter(Boolean)
+      : [];
     removeTyping('product-chat-log');
     const bubble = addBubble('product-chat-log', 'bot', '');
     await typeIntoBubble('product-chat-log', bubble, reply);
     productLogs[currentTeaId].push({ role: 'bot', text: reply });
+    renderProductChips(suggestions);
   } catch (e) {
     removeTyping('product-chat-log');
     const errMsg = '目前連線有點問題，稍後再試試看 🙏（' + e.message + '）';
     addBubble('product-chat-log', 'bot', errMsg);
+    renderProductChips();
   }
 }
 
@@ -492,13 +879,13 @@ let companionHistory = [];
 
 function startCompanion() {
   addBubble('companion-log', 'bot', '嗨，今天想喝一杯什麼樣的茶呢？可以跟我說說你今天的狀態或心情 🍃');
-  renderChips(['想放鬆一下', '最近外食比較多', '想喝點溫暖的', '想來點花香']);
+  renderChips(['想放鬆一下', '最近外食比較多', '想喝點溫暖的']);
 }
 
 function renderChips(options) {
   const box = document.getElementById('companion-chips');
   box.innerHTML = '';
-  options.forEach(opt => {
+  options.slice(0, 3).forEach(opt => {
     const btn = document.createElement('button');
     btn.className = 'chip text-[10px] liquid-glass-dark border border-white/20 rounded-full px-3 py-1.5';
     btn.innerText = opt;
@@ -525,11 +912,20 @@ ${dbText}
 請以專業、簡潔、像品茶師介紹茶葉的語氣回覆，格式參考：「今天的你可以試試『茶名』，用一句話說明為什麼適合、能帶來什麼感受。」
 只推薦清單裡的一款，不要編造清單以外的茶。控制在 80 字以內，不要條列。
 使用者前面說過的話你都記得，如果使用者接著問「這款茶的介紹」「為什麼推薦這款」之類的問題，直接針對你剛剛推薦的那一款回答，不要反問使用者是指哪一款。
-【重要規範】絕對不能使用「燃脂」「排油」「減肥」「瘦身」「代謝」「消脂」等暗示醫療或減重功效的字眼，即使使用者主動問也一樣。只能描述風味與情境上的舒適感（例如餐後清爽），並清楚說明茶飲不具醫療或減重功效，不要用任何轉折語氣暗示它「還是有幫助」。`;
+【重要規範】絕對不能使用「燃脂」「排油」「減肥」「瘦身」「代謝」「消脂」等暗示醫療或減重功效的字眼，即使使用者主動問也一樣。只能描述風味與情境上的舒適感（例如餐後清爽），並清楚說明茶飲不具醫療或減重功效，不要用任何轉折語氣暗示它「還是有幫助」。
+【輸出格式】回答結束後，另起一行，固定用這個格式列出 3 個使用者可能想接著說的話：
+【建議】建議一|建議二|建議三
+規則：建議一必須直接延續剛剛的對話（例如追問你推薦的這款茶）；建議二、三可以是換一種心情或狀態、或想了解其他茶款。每個 15 字以內，用使用者的口吻，不要跟對話中已經說過的重複，也不要出現上面禁止的功效字眼。`;
 
   try {
     const contents = toGeminiContents(companionHistory);
-    const reply = await callGemini(systemPrompt, contents);
+    const raw = await callGemini(systemPrompt, contents);
+    // 把 AI 附在最後的【建議】那行拆出來當按鈕；泡泡裡只顯示正文
+    const [replyPart, suggestPart] = raw.split('【建議】');
+    const reply = replyPart.trim();
+    const suggestions = suggestPart
+      ? suggestPart.split('|').map(s => s.trim()).filter(Boolean).slice(0, 3)
+      : [];
     removeTyping('companion-log');
     const bubble = addBubble('companion-log', 'bot', '');
     await typeIntoBubble('companion-log', bubble, reply);
@@ -542,24 +938,690 @@ ${dbText}
       linkWrap.className = 'flex justify-start mt-1';
       const linkBtn = document.createElement('button');
       linkBtn.className = 'chip text-[11px] bg-tea-gold/90 text-tea-dark font-bold rounded-full px-3.5 py-1.5 flex items-center gap-1.5';
-      linkBtn.innerHTML = `<span>${mentionedTea.emoji}</span>看看「${mentionedTea.name}」的完整介紹 →`;
+      linkBtn.innerHTML = `${teaIconSVG(mentionedTea.id, "#12261A", "w-4 h-4 flex-shrink-0")}看看「${mentionedTea.name}」的完整介紹 →`;
       linkBtn.onclick = () => openProduct(mentionedTea.id);
       linkWrap.appendChild(linkBtn);
       document.getElementById('companion-log').appendChild(linkWrap);
       document.getElementById('companion-log').scrollTop = document.getElementById('companion-log').scrollHeight;
     }
 
-    if (companionStage === 0) {
-      companionStage = 1;
-      renderChips(['再推薦一次', '想看這款茶的介紹']);
-    }
+    companionStage = 1;
+    // AI 有給建議就用 AI 的；沒有的話退回預設按鈕
+    renderChips(suggestions.length ? suggestions : ['再推薦一次', '想看這款茶的介紹', '換一種心情']);
   } catch (e) {
     removeTyping('companion-log');
     addBubble('companion-log', 'bot', '目前連線有點問題，稍後再試試看 🙏（' + e.message + '）');
+    renderChips(['想放鬆一下', '最近外食比較多', '想喝點溫暖的']);
   }
 }
 
+// 重新整理時不要沿用上次的捲動位置，一律從頁面最上方開始
+if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+window.scrollTo(0, 0);
+
+// 迎賓畫面：播完（或被點掉）就從頁面移除，並記住這個分頁已經看過
+function skipSplash() {
+  const s = document.getElementById('splash');
+  if (!s || s.classList.contains('skip')) return;
+  s.classList.add('skip');
+  document.querySelectorAll('body > header, body > main').forEach(el => { el.style.animation = 'none'; el.style.opacity = '1'; });
+}
+(function initSplash() {
+  const s = document.getElementById('splash');
+  if (!s) return;
+  s.addEventListener('animationend', (e) => { if (e.animationName === 'splashOut') s.remove(); });
+})();
+
+/* ================= 一握調茶室 ================= */
+const LAB_INGS = [
+  { id: 'rose',     name: '玫瑰', color: '#D9607A', f: { 花香: 3, 甜香: 1 } },
+  { id: 'jujube',   name: '紅棗', color: '#A8322D', f: { 甜香: 3, 暖意: 1 } },
+  { id: 'goji',     name: '枸杞', color: '#E0502A', f: { 甜香: 2, 果香: 1 } },
+  { id: 'chenpi',   name: '陳皮', color: '#E89A3C', f: { 果香: 2, 清爽: 2 } },
+  { id: 'hawthorn', name: '山楂', color: '#C8403A', f: { 果香: 2, 清爽: 2 } },
+  { id: 'longan',   name: '桂圓', color: '#8A5A2B', f: { 甜香: 3, 暖意: 1 } },
+  { id: 'ginger',   name: '薑',   color: '#E0B84A', f: { 暖意: 3 } }
+];
+const LAB_DIMS = ['茶香', '花香', '果香', '甜香', '清爽', '暖意'];
+// 三款「一握」的配料，用來比對使用者調出來的茶
+const LAB_RECIPES = { yanran: ['rose', 'jujube', 'goji'], qingying: ['chenpi', 'hawthorn'], nuanyang: ['jujube', 'longan', 'ginger'] };
+let labPicked = [];
+
+function labMix(hexes) {
+  const rgb = hexes.map(h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16)));
+  const avg = [0, 1, 2].map(k => Math.round(rgb.reduce((s, c) => s + c[k], 0) / rgb.length));
+  return '#' + avg.map(v => v.toString(16).padStart(2, '0')).join('');
+}
+function labFlavor() {
+  const v = { 茶香: 3, 花香: 0, 果香: 0, 甜香: 0, 清爽: 0, 暖意: 0 };
+  labPicked.forEach(id => { const g = LAB_INGS.find(x => x.id === id); for (const k in g.f) v[k] += g.f[k]; });
+  return v;
+}
+
+
+/* ================= 集章卡 ＋ 關卡切換 ================= */
+const STAMP_DEFS = [
+  { id: 'process', name: '製茶工序', icon: '<path d="M12 3c6 2.5 8.5 8.5 6 15-1.6 3.6-4.6 5-6 5s-4.4-1.4-6-5C3.5 11.5 6 5.5 12 3z"/><path d="M12 7v15"/>' },
+  { id: 'diy',     name: 'DIY 調茶', icon: '<path d="M5 8h14l-2 12a2 2 0 0 1-2 1.7H9A2 2 0 0 1 7 20z"/><path d="M6 13h12"/><path d="M10 5c-.8-.8-.8-1.7 0-2.5M14 5c-.8-.8-.8-1.7 0-2.5"/>' },
+  { id: 'quiz',    name: '茶知識問答', icon: '<circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6v.6"/><path d="M12 17.5v.01"/>' }
+];
+let stamps = [];
+try { stamps = JSON.parse(localStorage.getItem('yw-stamps') || '[]'); } catch (e) { stamps = []; }
+
+function stampSet(id) {
+  if (stamps.includes(id)) return;
+  stamps.push(id);
+  try { localStorage.setItem('yw-stamps', JSON.stringify(stamps)); } catch (e) {}
+  renderStamps(id);
+}
+function renderStamps(justGot) {
+  document.getElementById('stamp-count').innerText = `已集 ${stamps.length} / 3`;
+  document.getElementById('stamp-row').innerHTML = STAMP_DEFS.map(d => {
+    const got = stamps.includes(d.id);
+    return `<div class="text-center">
+      <div class="mx-auto w-16 h-16 rounded-full flex items-center justify-center ${got ? 'border-2 border-tea-gold bg-tea-gold/15' : 'border-2 border-dashed border-white/25'} ${d.id === justGot ? 'stamp-in' : ''}" style="${got ? 'transform:rotate(-12deg)' : ''}">
+        <svg viewBox="0 0 24 24" class="w-7 h-7" fill="none" stroke="${got ? '#D4AF37' : 'rgba(255,255,255,.25)'}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">${d.icon}</svg>
+      </div>
+      <div class="text-[11px] mt-2 ${got ? 'text-tea-gold font-bold' : 'text-white/40'}">${d.name}</div>
+    </div>`;
+  }).join('');
+  const cert = document.getElementById('stamp-cert');
+  if (stamps.length === 3) {
+    const d = new Date();
+    cert.innerHTML = `<div class="mt-5 rounded-2xl border border-tea-gold/60 p-5 text-center" style="background:linear-gradient(135deg, rgba(212,175,55,.18), rgba(212,175,55,.04))">
+      <div class="text-[10px] tracking-[0.3em] text-tea-gold">CERTIFICATE</div>
+      <div class="font-serif text-xl font-bold mt-1">一握體驗館・體驗完成證</div>
+      <p class="text-xs text-white/65 mt-2 leading-relaxed">恭喜你完成製茶工序、DIY 調茶與茶知識問答，<br>找到屬於你的那一握。</p>
+      <div class="text-[11px] text-white/40 mt-3">一握茶研所　${d.getFullYear()}/${d.getMonth() + 1}/${d.getDate()}</div>
+      <p class="text-[11px] text-tea-gold mt-3">截圖分享給朋友吧！</p>
+      <button onclick="stampReset()" class="text-[11px] text-white/40 underline mt-2">重新集章</button>
+    </div>`;
+  } else cert.innerHTML = '';
+}
+function stampReset() {
+  stamps = [];
+  try { localStorage.removeItem('yw-stamps'); } catch (e) {}
+  renderStamps();
+}
+function labTab(k) {
+  ['process', 'diy', 'quiz'].forEach(x => {
+    document.getElementById('st-' + x).classList.toggle('hidden', x !== k);
+    const t = document.getElementById('tab-' + x);
+    t.className = 'flex-1 py-2.5 text-xs font-bold rounded-full transition-all ' + (x === k ? 'bg-tea-gold text-tea-dark' : 'text-white/60');
+  });
+}
+
+/* ================= 共用拖曳工具（Pointer Events，滑鼠／觸控都適用） =================
+   拖動距離超過門檻才算「拖曳」，沒超過就當作「點一下」，兩種操作互不干擾。 */
+function bindDrag(handleEl, opts) {
+  handleEl.style.touchAction = 'none';
+  let sx = 0, sy = 0, moved = false, dragging = false, ghost = null;
+  handleEl.addEventListener('pointerdown', e => {
+    if (opts.disabled && opts.disabled()) return;
+    dragging = true; moved = false; sx = e.clientX; sy = e.clientY;
+    try { handleEl.setPointerCapture(e.pointerId); } catch (err) {}
+  });
+  handleEl.addEventListener('pointermove', e => {
+    if (!dragging) return;
+    const dx = e.clientX - sx, dy = e.clientY - sy;
+    if (!moved && Math.hypot(dx, dy) > 8) {
+      moved = true;
+      ghost = (opts.makeGhost ? opts.makeGhost() : handleEl.cloneNode(true));
+      ghost.classList.add('drag-ghost');
+      document.body.appendChild(ghost);
+      opts.onStart && opts.onStart();
+    }
+    if (moved) {
+      ghost.style.left = e.clientX + 'px';
+      ghost.style.top = e.clientY + 'px';
+      opts.onMove && opts.onMove(e.clientX, e.clientY);
+    }
+  });
+  const end = e => {
+    if (!dragging) return;
+    dragging = false;
+    if (moved) {
+      if (ghost) ghost.remove();
+      ghost = null;
+      opts.onEnd && opts.onEnd(e.clientX, e.clientY);
+    } else {
+      opts.onTap && opts.onTap();
+    }
+  };
+  handleEl.addEventListener('pointerup', end);
+  handleEl.addEventListener('pointercancel', () => { dragging = false; if (ghost) ghost.remove(); ghost = null; });
+}
+function pointInRect(x, y, rect) { return x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom; }
+
+/* ================= 第二站：DIY 調茶 —— 把配料真的拖進杯子裡 ================= */
+function labRender() {
+  const box = document.getElementById('lab-ings');
+  box.innerHTML = '';
+  LAB_INGS.forEach(g => {
+    const on = labPicked.includes(g.id);
+    const wrap = document.createElement('div');
+    wrap.className = 'flex flex-col items-center gap-1';
+    const b = document.createElement('button');
+    b.className = 'w-14 h-14 rounded-full flex items-center justify-center border-2 transition-all ' + (on ? '' : 'liquid-glass-dark border-white/20');
+    if (on) { b.style.background = g.color + '33'; b.style.borderColor = g.color; }
+    b.innerHTML = labBitSVG(g.id, g.color, 26);
+    wrap.appendChild(b);
+    const label = document.createElement('div');
+    label.className = 'text-[11px] ' + (on ? 'font-bold' : 'text-white/60');
+    if (on) label.style.color = g.color;
+    label.innerText = g.name;
+    wrap.appendChild(label);
+    box.appendChild(wrap);
+
+    if (on) {
+      // 已在杯中：點一下拿掉
+      b.onclick = () => labRemove(g.id);
+    } else {
+      // 不在杯中：可以拖進杯子，也可以點一下（給不方便拖曳的人用）加入
+      bindDrag(b, {
+        makeGhost: () => { const d = document.createElement('div'); d.innerHTML = labBitSVG(g.id, g.color, 34); d.style.width = d.style.height = '34px'; return d; },
+        onStart: () => document.getElementById('lab-cup').classList.add('drop-target-hot'),
+        onMove: (x, y) => {
+          const cup = document.getElementById('lab-cup').getBoundingClientRect();
+          document.getElementById('lab-cup').style.transform = pointInRect(x, y, cup) ? 'scale(1.04)' : '';
+        },
+        onEnd: (x, y) => {
+          const cupEl = document.getElementById('lab-cup');
+          cupEl.classList.remove('drop-target-hot'); cupEl.style.transform = '';
+          const cup = cupEl.getBoundingClientRect();
+          if (pointInRect(x, y, cup)) labAdd(g.id, (x - cup.left) / cup.width);
+        },
+        onTap: () => labAdd(g.id, 0.5)
+      });
+    }
+  });
+  document.getElementById('lab-picked').innerText = labPicked.length
+    ? labPicked.map(id => LAB_INGS.find(x => x.id === id).name).join('、') : '還沒有加入配料';
+  const v = labFlavor();
+  document.getElementById('lab-bars').innerHTML = LAB_DIMS.map(k => `
+    <div class="flex items-center gap-2 text-[11px]">
+      <span class="w-8 text-white/60 flex-shrink-0">${k}</span>
+      <div class="flex-1 h-1.5 rounded-full bg-white/10 overflow-hidden"><div class="h-full rounded-full bg-tea-gold transition-all duration-500" style="width:${Math.min(v[k] / 6, 1) * 100}%"></div></div>
+    </div>`).join('');
+}
+// 每種配料的杯中顆粒圖案（不是單純一個點）
+function labBitSVG(id, color, size) {
+  const shapes = {
+    rose:     `<path d="M12 3c3 1.5 4 4 3 7-2 .7-4-.2-5-2.5" fill="${color}"/><path d="M12 3c-3 1.5-4 4-3 7 2 .7 4-.2 5-2.5" fill="${color}" opacity=".8"/><circle cx="12" cy="8" r="2" fill="${color}"/>`,
+    jujube:   `<ellipse cx="12" cy="12" rx="6" ry="5" fill="${color}"/><path d="M9 12h6M12 9v6" stroke="rgba(0,0,0,.15)" stroke-width="1"/>`,
+    goji:     `<ellipse cx="12" cy="12" rx="4.5" ry="6" fill="${color}"/>`,
+    chenpi:   `<path d="M5 8c6-3 12-1 14 4-6 3-12 1-14-4z" fill="${color}"/><path d="M6 9c5-2 9-.5 11 3" stroke="rgba(0,0,0,.2)" stroke-width="1" fill="none"/>`,
+    hawthorn: `<circle cx="12" cy="12" r="6" fill="${color}"/><circle cx="12" cy="12" r="2" fill="rgba(0,0,0,.2)"/>`,
+    longan:   `<circle cx="12" cy="12" r="6" fill="${color}"/><circle cx="10" cy="10" r="1.6" fill="rgba(255,255,255,.5)"/>`,
+    ginger:   `<path d="M4 14c1-5 5-9 10-9 4 4 1 9-4 10-3 .7-5-.3-6-1z" fill="${color}"/>`
+  };
+  return `<svg viewBox="0 0 24 24" width="${size}" height="${size}">${shapes[id] || `<circle cx="12" cy="12" r="6" fill="${color}"/>`}</svg>`;
+}
+function labAdd(id, xRatio) {
+  const hint = document.getElementById('lab-hint');
+  if (labPicked.includes(id)) return;
+  if (labPicked.length >= 3) { hint.innerText = '最多只能選 3 種配料喔'; return; }
+  hint.innerText = '';
+  labPicked.push(id);
+  labSplash(xRatio);
+  labRender();
+  labUpdate();
+}
+function labRemove(id) {
+  labPicked = labPicked.filter(x => x !== id);
+  labRemovePieces(id);
+  document.getElementById('lab-hint').innerText = '';
+  labRender(); labUpdate();
+}
+// ---- 杯中配料：每種 3 片，從杯口掉進杯底；沖泡後隨熱水浮起、輕輕晃動 ----
+// 位置（外層）和晃動動畫（內層）分開兩層，動畫才不會把位置蓋掉
+let labBrewed = false;
+const LAB_SURFACE_DRY = 97, LAB_SURFACE_FULL = 30;
+function labPiece(id, x, restY, floatY, rot) {
+  const g = LAB_INGS.find(v => v.id === id);
+  const outer = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+  outer.setAttribute('class', 'lab-piece');
+  outer.dataset.ing = id; outer.dataset.x = x; outer.dataset.rest = restY; outer.dataset.float = floatY;
+  outer.style.transform = `translate(${x}px, -14px)`;
+  outer.innerHTML = `<g class="lab-bob" style="animation-delay:-${(Math.random() * 2.5).toFixed(2)}s"><g transform="rotate(${rot})">${labBitSVG(id, g.color, 19).replace('<svg', '<svg x="-9.5" y="-9.5" overflow="visible"')}</g></g>`;
+  return outer;
+}
+function labRipple(x, y) {
+  const ring = document.createElementNS('http://www.w3.org/2000/svg', 'ellipse');
+  ring.setAttribute('cx', x); ring.setAttribute('cy', y); ring.setAttribute('rx', 7); ring.setAttribute('ry', 2);
+  ring.setAttribute('fill', 'none'); ring.setAttribute('stroke', 'rgba(255,255,255,.7)'); ring.setAttribute('stroke-width', '1.2');
+  ring.setAttribute('class', 'lab-ripple');
+  document.getElementById('lab-ripples').appendChild(ring);
+  setTimeout(() => ring.remove(), 700);
+}
+function labSplash(xRatio) {
+  const id = labPicked[labPicked.length - 1];
+  const gi = labPicked.length - 1;
+  const box = document.getElementById('lab-bits');
+  const cx = Math.max(38, Math.min(66, 20 + xRatio * 64));
+  [-9, 0, 9].forEach((off, k) => {
+    const x = cx + off + (Math.random() * 4 - 2);
+    const restY = 94 + Math.random() * 5;
+    const floatY = 40 + gi * 15 + k * 5 + Math.random() * 6;
+    const el = labPiece(id, x, restY, floatY, Math.round(Math.random() * 360));
+    box.appendChild(el);
+    void el.getBoundingClientRect();
+    const target = labBrewed ? floatY : restY;
+    const delay = k * 0.12;
+    el.style.transition = `transform .75s cubic-bezier(.45,0,.6,1.3) ${delay}s`;
+    el.style.transform = `translate(${x}px, ${target}px)`;
+    setTimeout(() => labRipple(x, labBrewed ? LAB_SURFACE_FULL : LAB_SURFACE_DRY), (delay + (labBrewed ? 0.25 : 0.55)) * 1000);
+    if (labBrewed) setTimeout(() => el.classList.add('floating'), (delay + 0.8) * 1000);
+  });
+}
+function labRemovePieces(id) {
+  document.querySelectorAll(`#lab-bits .lab-piece[data-ing="${id}"]`).forEach(el => {
+    el.style.transition = 'opacity .3s ease'; el.style.opacity = '0';
+    setTimeout(() => el.remove(), 320);
+  });
+}
+function labFloatPieces() {
+  document.querySelectorAll('#lab-bits .lab-piece').forEach(el => {
+    el.classList.remove('floating');
+    el.style.transition = 'none';
+    el.style.transform = `translate(${el.dataset.x}px, ${el.dataset.rest}px)`;
+    void el.getBoundingClientRect();
+    const d = (0.3 + Math.random() * 0.6).toFixed(2);
+    el.style.transition = `transform 2.2s cubic-bezier(.3,.1,.3,1) ${d}s`;
+    el.style.transform = `translate(${el.dataset.x}px, ${el.dataset.float}px)`;
+    setTimeout(() => el.classList.add('floating'), (2.2 + +d) * 1000);
+  });
+}
+function labColor() {
+  const t = +document.getElementById('lab-temp').value, m = +document.getElementById('lab-time').value;
+  const base = labMix(['#C8872E', '#C8872E', ...labPicked.map(id => LAB_INGS.find(x => x.id === id).color)]);
+  const k = Math.max(-0.4, Math.min(0.45, (m - 3) * 0.08 + (t - 90) * 0.012));
+  const toward = k >= 0 ? '#2A1506' : '#F2DCA0';
+  const w = Math.abs(k);
+  const a = [1, 3, 5].map(i => parseInt(base.slice(i, i + 2), 16));
+  const b = [1, 3, 5].map(i => parseInt(toward.slice(i, i + 2), 16));
+  return '#' + a.map((v, i) => Math.round(v * (1 - w) + b[i] * w).toString(16).padStart(2, '0')).join('');
+}
+function labTip() {
+  const t = +document.getElementById('lab-temp').value, m = +document.getElementById('lab-time').value;
+  const a = t < 88 ? '水溫偏低，佛手烏龍的香氣比較出不來' : t > 97 ? '水溫偏高，茶湯容易變澀' : '水溫剛好，香氣最能釋放';
+  const b = m < 3 ? '浸泡時間短，茶湯會比較清淡' : m > 5 ? '浸泡比較久，茶湯會偏濃' : '浸泡時間適中，濃淡剛好';
+  return { text: `${a}；${b}。`, good: t >= 88 && t <= 97 && m >= 3 && m <= 5 };
+}
+function labUpdate() {
+  document.getElementById('lab-temp-v').innerText = document.getElementById('lab-temp').value + '°C';
+  document.getElementById('lab-time-v').innerText = document.getElementById('lab-time').value + ' 分鐘';
+  document.getElementById('lab-tip').innerText = labTip().text + '（建議 90～95°C、3～5 分鐘）';
+  document.getElementById('lab-liquid').setAttribute('fill', labColor());
+}
+function labBrew() {
+  const btn = document.getElementById('lab-brew-btn');
+  const liquid = document.getElementById('lab-liquid');
+  btn.disabled = true; btn.innerText = '沖泡中…'; btn.classList.add('opacity-60');
+  document.getElementById('lab-cup').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  document.getElementById('lab-result').innerHTML = '';
+  liquid.style.transition = 'none'; liquid.style.transform = 'scaleY(0.1)';
+  void liquid.getBoundingClientRect();
+  liquid.style.transition = '';
+  liquid.style.transform = 'scaleY(1)';
+  document.getElementById('lab-steam').style.opacity = '1';
+  labBrewed = true;
+  labFloatPieces();
+  setTimeout(() => { labShowResult(); btn.disabled = false; btn.innerText = '再沖泡一次'; btn.classList.remove('opacity-60'); stampSet('diy'); }, 2500);
+}
+function labShowResult() {
+  const v = labFlavor();
+  const top = LAB_DIMS.filter(k => k !== '茶香' && v[k] > 0).sort((a, b) => v[b] - v[a]).slice(0, 2);
+  const flavorText = top.length ? `帶有${top.join('與')}的佛手烏龍` : '純粹的佛手烏龍';
+  let best = null, bestScore = 0;
+  for (const id in LAB_RECIPES) {
+    const r = LAB_RECIPES[id];
+    const inter = r.filter(x => labPicked.includes(x)).length;
+    const score = inter / new Set([...r, ...labPicked]).size;
+    if (score > bestScore) { bestScore = score; best = id; }
+  }
+  const tip = labTip();
+  let html;
+  if (best) {
+    const tea = TEA_DB.find(t => t.id === best);
+    const exact = bestScore === 1;
+    html = `
+      <div class="mx-auto mb-3 w-14 h-14">${teaIconSVG(tea.id, tea.color, 'w-14 h-14')}</div>
+      <div class="text-xs text-white/55">你調出了一杯${flavorText}</div>
+      <div class="font-serif text-xl font-bold mt-2">${exact ? '跟' : '最接近'}「${tea.name}」${exact ? '的配方一模一樣！' : ''}</div>
+      <p class="text-xs mt-2" style="color:${tea.color}">「${tea.slogan || tea.series}」</p>
+      <p class="text-[11px] text-white/50 mt-3 leading-relaxed">${tip.good ? '沖泡條件也剛剛好，這杯茶的香氣會很漂亮。' : tip.text}</p>
+      <div class="flex flex-wrap justify-center gap-2 mt-5">
+        <button onclick="openProduct('${tea.id}')" class="px-5 py-2 rounded-full text-sm font-bold btn-bounce" style="background:${tea.color}; color:#12261A">看看「${tea.name}」</button>
+        <button onclick="labReset()" class="px-5 py-2 rounded-full text-sm font-bold border border-white/30 btn-bounce">重新調一杯</button>
+      </div>`;
+  } else {
+    html = `
+      <div class="text-xs text-white/55">你調出了一杯${flavorText}</div>
+      <div class="font-serif text-xl font-bold mt-2">試試加入配料，找出你的那一握</div>
+      <p class="text-[11px] text-white/50 mt-3 leading-relaxed">${tip.text}</p>
+      <div class="flex justify-center mt-5"><button onclick="labReset()" class="px-5 py-2 rounded-full text-sm font-bold border border-white/30 btn-bounce">重新調一杯</button></div>`;
+  }
+  const box = document.getElementById('lab-result');
+  box.innerHTML = `<div class="liquid-glass rounded-[2rem] p-6 text-center fade-in-block">${html}</div>`;
+  setTimeout(() => box.scrollIntoView({ behavior: 'smooth', block: 'center' }), 100);
+}
+function labReset() {
+  labPicked = [];
+  document.getElementById('lab-temp').value = 90;
+  document.getElementById('lab-time').value = 3;
+  document.getElementById('lab-result').innerHTML = '';
+  document.getElementById('lab-steam').style.opacity = '0';
+  document.getElementById('lab-ripples').innerHTML = '';
+  document.getElementById('lab-bits').innerHTML = '';
+  labBrewed = false;
+  const liquid = document.getElementById('lab-liquid');
+  liquid.style.transition = 'none'; liquid.style.transform = 'scaleY(0.1)';
+  const btn = document.getElementById('lab-brew-btn'); btn.innerText = '③ 開始沖泡';
+  labRender(); labUpdate();
+  document.getElementById('st-diy').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+/* ================= 第一站：製茶工序 —— 每一步用不同的手勢完成 =================
+   採摘＝拖曳、萎凋＝左右滑、浪菁＝來回快速滑、殺青＝畫圈、揉捻＝上下搓、焙火＝按住不放 */
+const PROCESS_STEPS = [
+  { name: '採摘',     color: '#6FBF4A', hint: '用手指把茶葉從枝頭拖進下面的竹籃', desc: '清晨採下佛手茶樹的嫩葉。佛手茶的葉片寬大肥厚，是它香氣飽滿的開始。' },
+  { name: '萎凋',     color: '#8DB84A', hint: '在竹篩上左右滑動，把茶葉攤開',     desc: '把茶菁攤開，讓水分慢慢散失，葉子變得柔軟，青草味漸漸轉成清香。' },
+  { name: '浪菁',     color: '#A9A844', hint: '左右快速來回滑動，搖一搖竹篩',     desc: '輕輕翻動、搖晃茶葉，讓葉緣互相摩擦，慢慢發酵出烏龍茶特有的花果香。' },
+  { name: '殺青',     color: '#9C8A3A', hint: '用手指在鍋子裡畫圈翻炒',           desc: '用高溫炒茶，停止發酵，把剛剛培養出來的香氣固定下來。' },
+  { name: '揉捻',     color: '#7A5A2A', hint: '上下來回搓揉，把茶葉揉成球狀',     desc: '把茶葉揉捲成球狀，讓茶汁附著在表面，沖泡時風味更容易釋放。' },
+  { name: '乾燥焙火', color: '#5A3A1A', hint: '按住畫面不放，用炭火慢慢烘焙',     desc: '烘乾水分，再依風味慢慢焙火，茶湯就會變得溫潤醇厚。' }
+];
+let procStep = 0, procDone = false, pp = 0, gs = {};
+
+function lerpColor(a, b, t) {
+  const A = [1, 3, 5].map(i => parseInt(a.slice(i, i + 2), 16)), B = [1, 3, 5].map(i => parseInt(b.slice(i, i + 2), 16));
+  return '#' + A.map((v, i) => Math.round(v + (B[i] - v) * t).toString(16).padStart(2, '0')).join('');
+}
+function leafG(x, y, sx, sy, rot, color) {
+  return `<g transform="translate(${x} ${y}) rotate(${rot}) scale(${sx} ${sy})">
+    <path d="M0 -26c12 5 17 17 12 30-3.3 8.6-9.8 12-12 12s-8.7-3.4-12-12C-17 -9 -12 -21 0 -26z" fill="${color}"/>
+    <path d="M0 -21v36M0 -11l-6-4M0 -11l6-4M0 -2l-8-5M0 -2l8-5M0 7l-7-4M0 7l7-4" stroke="rgba(255,255,255,.35)" stroke-width="1.2" fill="none" stroke-linecap="round"/></g>`;
+}
+function procColor() {
+  const st = PROCESS_STEPS[procStep];
+  const next = procStep < 5 ? PROCESS_STEPS[procStep + 1].color : '#3E2612';
+  return lerpColor(st.color, next, pp);
+}
+function drawProc() {
+  const svg = document.getElementById('proc-svg');
+  if (!svg) return;
+  const c = procColor();
+  let s = '';
+  if (procStep === 0) {
+    const lx = gs.lx ?? 100, ly = gs.ly ?? 64;
+    s = `<path d="M-5 34 Q60 18 120 30 T205 26" stroke="#7A5A33" stroke-width="5" fill="none" stroke-linecap="round"/>
+      ${leafG(40, 44, .55, .55, -30, '#5FA83C')}${leafG(165, 40, .55, .55, 25, '#5FA83C')}
+      <g opacity=".95"><path d="M52 150h96l-11 40H63z" fill="#8B6A3E" stroke="#5A4225" stroke-width="2"/>
+      <path d="M58 162h84M61 174h78M55 150v0M80 150l-4 40M100 150v40M120 150l4 40" stroke="#5A4225" stroke-width="1.5"/></g>
+      ${leafG(lx, ly, 1.1, 1.1, gs.dragLeaf ? -12 : 8, c)}`;
+  } else if (procStep === 1) {
+    const A = [[100, 118], [93, 112], [107, 113], [97, 122], [104, 121]], B = [[52, 108], [148, 108], [100, 84], [70, 145], [130, 145]];
+    s = `<ellipse cx="100" cy="118" rx="88" ry="60" fill="#A07A45" opacity=".55" stroke="#6B4F2A" stroke-width="3"/>
+      <ellipse cx="100" cy="118" rx="70" ry="45" fill="none" stroke="#6B4F2A" stroke-width="1" opacity=".5"/>` +
+      A.map((a, i) => leafG(a[0] + (B[i][0] - a[0]) * pp, a[1] + (B[i][1] - a[1]) * pp, .7, .7, i * 70 + pp * 40, c)).join('');
+  } else if (procStep === 2) {
+    const t = gs.tilt || 0;
+    s = `<g transform="rotate(${t} 100 118)"><ellipse cx="100" cy="118" rx="88" ry="60" fill="#A07A45" opacity=".55" stroke="#6B4F2A" stroke-width="3"/>` +
+      [[62, 110], [138, 110], [100, 90], [80, 142], [122, 142]].map((a, i) => leafG(a[0] + t * 1.6, a[1] - Math.abs(t) * (i % 2 ? .8 : .3), .68, .68, i * 70 + t * 3, c)).join('') + '</g>' +
+      `<path d="M18 60l-10 8 10 8M182 60l10 8-10 8" stroke="rgba(255,255,255,.35)" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`;
+  } else if (procStep === 3) {
+    const a = gs.angle || 0;
+    s = `<circle cx="100" cy="110" r="82" fill="#2A2522" stroke="#5B524B" stroke-width="7"/>
+      <circle cx="100" cy="110" r="70" fill="#E0702A" opacity="${(0.12 + pp * 0.3).toFixed(2)}"/>` +
+      [0, 1, 2, 3].map(i => { const r = a + i * Math.PI / 2; return leafG(100 + Math.cos(r) * 36, 110 + Math.sin(r) * 36, .65, .65, r * 57 + 90, c); }).join('');
+  } else if (procStep === 4) {
+    s = `<rect x="28" y="36" width="144" height="140" rx="14" fill="#6B5A3A" opacity=".5"/>` +
+      [0, 1, 2, 3, 4, 5].map(i => `<path d="M${40 + i * 24} 44v124" stroke="#4A3D26" stroke-width="2" opacity=".6"/>`).join('') +
+      leafG(100, 108, 1.35 - pp * .45, 1.35 - pp * .95, -18 + (gs.roll || 0), c) +
+      (pp > .5 ? `<circle cx="100" cy="106" r="${(8 + pp * 10).toFixed(1)}" fill="${c}" opacity="${((pp - .5) * 2).toFixed(2)}"/>` : '');
+  } else {
+    const heat = gs.holding ? 1 : .25;
+    s = `<rect x="40" y="150" width="120" height="30" rx="8" fill="#2A1C14"/>` +
+      [55, 78, 100, 122, 145].map((x, i) => `<circle cx="${x}" cy="163" r="${9 + i % 2 * 2}" fill="#E0502A" opacity="${(0.25 + heat * .6).toFixed(2)}"/>`).join('') +
+      (gs.holding ? [70, 100, 130].map(x => `<path d="M${x} 140c-5-6 5-10 0-18" stroke="rgba(255,170,90,.55)" stroke-width="2.5" fill="none" stroke-linecap="round"/>`).join('') : '') +
+      `<ellipse cx="100" cy="98" rx="68" ry="34" fill="#9C7A48" opacity=".55" stroke="#6B4F2A" stroke-width="3"/>` +
+      [[80, 94], [100, 88], [120, 95], [92, 104], [112, 104]].map(p => `<circle cx="${p[0]}" cy="${p[1]}" r="9" fill="${c}" stroke="rgba(0,0,0,.2)"/>`).join('');
+  }
+  if (pp >= 1) s += `<g><circle cx="100" cy="100" r="30" fill="rgba(212,175,55,.92)"/><path d="M86 100l10 10 18-20" stroke="#12261A" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></g>`;
+  svg.innerHTML = s;
+  const bar = document.getElementById('proc-bar');
+  if (bar) bar.style.width = Math.round(Math.min(pp, 1) * 100) + '%';
+}
+function renderProcess() {
+  const st = PROCESS_STEPS[procStep];
+  const dots = PROCESS_STEPS.map((s, i) => `
+    <div class="flex-1 text-center">
+      <div class="h-1.5 rounded-full ${i < procStep || procDone ? 'bg-tea-gold' : i === procStep ? 'bg-tea-gold/60' : 'bg-white/15'}"></div>
+      <div class="text-[10px] mt-1.5 ${i === procStep && !procDone ? 'text-tea-gold font-bold' : 'text-white/40'}">${s.name}</div>
+    </div>`).join('');
+  const box = document.getElementById('st-process');
+  if (procDone) {
+    box.innerHTML = `
+      <div class="liquid-glass-dark rounded-2xl p-5 border border-white/10">
+        <div class="flex gap-1.5 mb-5">${dots}</div>
+        <div class="text-center py-2">
+          <svg viewBox="0 0 64 64" class="mx-auto w-20 h-20"><circle cx="24" cy="36" r="9" fill="#5A3A1A"/><circle cx="40" cy="36" r="9" fill="#4E3216"/><circle cx="32" cy="24" r="9" fill="#62401E"/></svg>
+          <div class="font-serif text-xl font-bold mt-2">一片茶葉的旅程完成了</div>
+          <p class="text-xs text-white/60 mt-2 leading-relaxed">從採摘到焙火，一片佛手茶葉要經過六道工序，<br>才會成為你杯中的那一握。</p>
+          <div class="flex justify-center gap-2 mt-5">
+            <button onclick="labTab('diy')" class="px-5 py-2 rounded-full text-sm font-bold bg-tea-gold text-tea-dark btn-bounce">下一站：DIY 調茶</button>
+            <button onclick="procReset()" class="px-5 py-2 rounded-full text-sm font-bold border border-white/30 btn-bounce">再做一次</button>
+          </div>
+        </div>
+      </div>`;
+    return;
+  }
+  box.innerHTML = `
+    <div class="liquid-glass-dark rounded-2xl p-5 border border-white/10">
+      <div class="flex gap-1.5 mb-5">${dots}</div>
+      <div class="text-[11px] text-white/45 text-center">第 ${procStep + 1} 步 / 共 6 步</div>
+      <div class="font-serif text-2xl font-bold text-center mt-1">${st.name}</div>
+      <p class="text-xs text-white/65 text-center mt-2 leading-relaxed px-2">${st.desc}</p>
+      <div id="proc-pad" oncontextmenu="return false" class="relative mx-auto mt-5 w-full max-w-[280px] aspect-square rounded-2xl bg-black/25 border border-white/10 overflow-hidden select-none" style="touch-action:none; -webkit-user-select:none; -webkit-touch-callout:none">
+        <svg id="proc-svg" viewBox="0 0 200 200" class="w-full h-full"></svg>
+      </div>
+      <p class="text-center text-xs text-tea-gold font-bold mt-3">👆 ${st.hint}</p>
+      <div class="mx-auto max-w-[280px] h-1.5 rounded-full bg-white/10 mt-3 overflow-hidden"><div id="proc-bar" class="h-full rounded-full bg-tea-gold" style="width:0%; transition: width .15s linear"></div></div>
+      <div class="text-center mt-3"><button onclick="procSkip()" class="text-[11px] text-white/35 underline">跳過這一步</button></div>
+      ${procStep === 5 && /[?&]debug=1/.test(location.search) ? `<div class="text-center mt-3 text-[11px] text-white/60">
+        <button onclick="vibTest()" class="px-4 py-1.5 rounded-full border border-white/30">震動測試</button>
+        <div id="vib-result" class="mt-2"></div></div>` : ''}
+    </div>`;
+  drawProc();
+  bindProcPad();
+}
+function procPoint(e) {
+  const r = document.getElementById('proc-pad').getBoundingClientRect();
+  return { x: (e.clientX - r.left) / r.width * 200, y: (e.clientY - r.top) / r.height * 200 };
+}
+function bindProcPad() {
+  const pad = document.getElementById('proc-pad');
+  pad.addEventListener('touchstart', e => e.preventDefault(), { passive: false });
+  pad.addEventListener('pointerdown', e => {
+    if (gs.lock) return;
+    e.preventDefault();
+    try { pad.setPointerCapture(e.pointerId); } catch (err) {}
+    const p = procPoint(e);
+    gs.down = true; gs.px = p.x; gs.py = p.y; gs.ax = p.x;
+    if (procStep === 0) gs.dragLeaf = Math.hypot(p.x - (gs.lx ?? 100), p.y - (gs.ly ?? 64)) < 45;
+    if (procStep === 3) gs.pa = Math.atan2(p.y - 110, p.x - 100);
+    if (procStep === 5) procHoldStart();
+  });
+  pad.addEventListener('pointermove', e => {
+    if (!gs.down || gs.lock) return;
+    const p = procPoint(e), dx = p.x - gs.px, dy = p.y - gs.py;
+    if (procStep === 0 && gs.dragLeaf) {
+      gs.lx = Math.max(20, Math.min(180, p.x)); gs.ly = Math.max(50, Math.min(172, p.y));
+      pp = Math.max(0, Math.min(.95, (gs.ly - 64) / (150 - 64)));
+    } else if (procStep === 1) {
+      pp += Math.abs(dx) / 650;
+    } else if (procStep === 2) {
+      const off = p.x - gs.ax;
+      if (Math.abs(off) > 22) { const d = Math.sign(off); if (d !== gs.dir) { if (gs.dir) pp += 1 / 8; gs.dir = d; } gs.ax = p.x; }
+      gs.tilt = Math.max(-12, Math.min(12, (p.x - 100) / 5));
+    } else if (procStep === 3) {
+      const a = Math.atan2(p.y - 110, p.x - 100);
+      let da = a - gs.pa; if (da > Math.PI) da -= 2 * Math.PI; if (da < -Math.PI) da += 2 * Math.PI;
+      gs.angle = (gs.angle || 0) + da; gs.pa = a; pp += Math.abs(da) / (4 * Math.PI);
+    } else if (procStep === 4) {
+      pp += Math.abs(dy) / 750; gs.roll = (gs.roll || 0) + dy * .4;
+    }
+    gs.px = p.x; gs.py = p.y;
+    pp = Math.min(pp, 1);
+    drawProc();
+    if (pp >= 1) procFinish();
+  });
+  const up = (e) => {
+    if (!gs.down) return;
+    gs.cancelled = e && e.type === 'pointercancel';
+    gs.down = false;
+    if (procStep === 0 && gs.dragLeaf && !gs.lock) {
+      gs.dragLeaf = false;
+      if ((gs.ly ?? 0) >= 136 && Math.abs((gs.lx ?? 100) - 100) < 55) { pp = 1; drawProc(); procFinish(); }
+      else { gs.lx = 100; gs.ly = 64; pp = 0; drawProc(); }
+    }
+    if (procStep === 2) { gs.tilt = 0; drawProc(); }
+    if (procStep === 5) procHoldStop();
+  };
+  pad.addEventListener('pointerup', up);
+  pad.addEventListener('pointercancel', up);
+}
+// 震動回饋：Android 用標準的 navigator.vibrate；
+// iPhone 不支援它，改用「撥動隱藏的系統開關」觸發震動（iOS 17.4～26.4 有效，26.5 起被 Apple 封鎖）。
+// 不論能不能震，畫面都會有一下「咚」的視覺回饋，最新版 iPhone 也感覺得到節奏。
+let hapticLabel = null;
+function hapticIOS() {
+  if (!hapticLabel) {
+    const wrap = document.createElement('div');
+    wrap.setAttribute('aria-hidden', 'true');
+    wrap.style.cssText = 'position:fixed;left:-9999px;top:0;width:1px;height:1px;opacity:0;pointer-events:none;overflow:hidden';
+    wrap.innerHTML = '<input type="checkbox" id="yw-haptic" switch tabindex="-1"><label for="yw-haptic" id="yw-haptic-label"></label>';
+    document.body.appendChild(wrap);
+    hapticLabel = document.getElementById('yw-haptic-label');
+  }
+  hapticLabel.click();
+}
+function procBuzz() {
+  try {
+    if (typeof navigator.vibrate === 'function') navigator.vibrate(70); else hapticIOS();
+  } catch (e) { try { hapticIOS(); } catch (err) {} }
+  const pad = document.getElementById('proc-pad');
+  if (pad) { pad.classList.remove('pad-pulse'); void pad.offsetWidth; pad.classList.add('pad-pulse'); }
+}
+const HOLD_MS = 2400;
+function procHoldStart() {
+  gs.holding = true;
+  // Android：在手指按下的當下把剩下的震動節奏一次排好（按下去這一刻一定允許震動，最可靠）
+  if (typeof navigator.vibrate === 'function') {
+    const marks = [1 / 3, 2 / 3, 1].filter(t => pp < t).map(t => Math.round((t - pp) * HOLD_MS));
+    const pattern = [0];
+    let at = 0;
+    marks.forEach(ms => { pattern.push(Math.max(0, ms - at), 70); at = ms + 70; });
+    try { navigator.vibrate(pattern); } catch (e) {}
+  }
+  let last = performance.now();
+  const tick = now => {
+    if (!gs.holding || gs.lock) return;
+    const before = pp;
+    pp = Math.min(1, pp + (now - last) / HOLD_MS); last = now;
+    // 火候到三分之一、三分之二、完成時各震一下（Android 支援；iPhone 瀏覽器不支援震動）
+    [1 / 3, 2 / 3, 1].forEach(t => { if (before < t && pp >= t) procBuzz(); });
+    drawProc();
+    if (pp >= 1) { gs.holding = false; procFinish(); return; }
+    requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
+}
+function procHoldStop() { gs.holding = false; try { if (!gs.lock && !gs.cancelled && navigator.vibrate) navigator.vibrate(0); } catch (e) {} drawProc(); }
+function procFinish() {
+  if (gs.lock) return;
+  gs.lock = true; gs.holding = false; pp = 1; drawProc();
+  setTimeout(procAdvance, 750);
+}
+function vibTest() {
+  const out = document.getElementById('vib-result');
+  if (typeof navigator.vibrate !== 'function') { out.innerText = '這個瀏覽器沒有震動功能（iPhone 或部分 App 內建瀏覽器）'; return; }
+  const ok = navigator.vibrate([300, 150, 300]);
+  out.innerText = ok ? '已送出震動指令：如果手機沒震，代表是手機設定、App 或裝置本身擋掉' : '瀏覽器拒絕了震動指令';
+}
+function procSkip() { if (!gs.lock) procFinish(); }
+function procAdvance() {
+  pp = 0; gs = {};
+  if (procStep === PROCESS_STEPS.length - 1) { procDone = true; renderProcess(); stampSet('process'); }
+  else { procStep++; renderProcess(); }
+}
+function procReset() { procStep = 0; procDone = false; pp = 0; gs = {}; renderProcess(); }
+
+
+/* ----- 第三站：茶知識問答 ----- */
+const QUIZ = [
+  { q: '「一握・嫣然」優雅的花香，主要來自哪一種配料？', a: ['玫瑰', '山楂', '薑'], exp: '嫣然以佛手烏龍搭配玫瑰、紅棗與枸杞，玫瑰帶來主要的花香。' },
+  { q: '陳皮是用什麼做成的？', a: ['乾燥陳放的柑橘果皮', '曬乾的老茶葉', '橘子樹的花'], exp: '陳皮是柑橘果皮經過長時間乾燥陳放而成，常用來入菜、入茶。' },
+  { q: '製作烏龍茶時，「殺青」的目的是什麼？', a: ['用高溫停止發酵、固定香氣', '把茶葉染成青綠色', '讓茶葉長得更大'], exp: '殺青是用高溫炒茶，讓發酵停下來，把香氣留住。' },
+  { q: '傳統的糖葫蘆，最常用哪一種水果？', a: ['山楂', '桂圓', '枸杞'], exp: '山楂酸甜，是糖葫蘆最經典的材料，也是「一握・輕盈」的配料之一。' },
+  { q: '「一握・暖陽」裡帶來溫暖辛香的是哪一種配料？', a: ['薑', '玫瑰', '陳皮'], exp: '暖陽以紅棗、桂圓的甜香搭配薑的溫暖香氣，適合秋冬飲用。' }
+];
+let quizI = 0, quizScore = 0, quizOpts = [];
+
+function renderQuiz() {
+  const box = document.getElementById('st-quiz');
+  if (quizI >= QUIZ.length) {
+    const msg = quizScore === 5 ? '全對！你是真正的懂茶人' : quizScore >= 3 ? '很不錯！你已經很認識佛手茶了' : '沒關係，逛逛三款茶的介紹再來挑戰吧';
+    box.innerHTML = `<div class="liquid-glass-dark rounded-2xl p-6 border border-white/10 text-center">
+      <div class="text-[11px] text-white/45">你的成績</div>
+      <div class="font-serif text-4xl font-bold text-tea-gold mt-1">${quizScore} / ${QUIZ.length}</div>
+      <p class="text-sm text-white/75 mt-2">${msg}</p>
+      <div class="flex justify-center gap-2 mt-5">
+        <button onclick="quizReset()" class="px-5 py-2 rounded-full text-sm font-bold border border-white/30 btn-bounce">再玩一次</button>
+      </div>
+    </div>`;
+    stampSet('quiz');
+    return;
+  }
+  const item = QUIZ[quizI];
+  quizOpts = [...item.a].sort(() => Math.random() - 0.5);
+  box.innerHTML = `<div class="liquid-glass-dark rounded-2xl p-5 border border-white/10">
+    <div class="flex justify-between text-[11px] text-white/45"><span>第 ${quizI + 1} 題 / 共 ${QUIZ.length} 題</span><span>答對 ${quizScore} 題</span></div>
+    <div class="h-1 rounded-full bg-white/10 mt-2 overflow-hidden"><div class="h-full bg-tea-gold" style="width:${quizI / QUIZ.length * 100}%"></div></div>
+    <div class="font-bold text-base mt-4 leading-relaxed">${item.q}</div>
+    <div id="quiz-opts" class="space-y-2 mt-4">${quizOpts.map((o, i) => `
+      <button onclick="quizPick(${i})" class="w-full text-left text-sm px-4 py-3 rounded-xl liquid-glass-dark border border-white/15 btn-bounce">${o}</button>`).join('')}
+    </div>
+    <div id="quiz-exp"></div>
+  </div>`;
+}
+function quizPick(i) {
+  const item = QUIZ[quizI];
+  const right = quizOpts[i] === item.a[0];
+  if (right) quizScore++;
+  document.querySelectorAll('#quiz-opts button').forEach((b, k) => {
+    b.disabled = true;
+    if (quizOpts[k] === item.a[0]) { b.style.background = 'rgba(52,211,153,.25)'; b.style.borderColor = '#34D399'; }
+    else if (k === i) { b.style.background = 'rgba(248,113,113,.2)'; b.style.borderColor = '#F87171'; }
+  });
+  document.getElementById('quiz-exp').innerHTML = `
+    <div class="mt-4 text-xs leading-relaxed ${right ? 'text-emerald-300' : 'text-rose-300'} font-bold">${right ? '答對了！' : '差一點！'}</div>
+    <p class="text-xs text-white/65 mt-1 leading-relaxed">${item.exp}</p>
+    <div class="text-right mt-4"><button onclick="quizNext()" class="px-5 py-2 rounded-full text-sm font-bold bg-tea-gold text-tea-dark btn-bounce">${quizI === QUIZ.length - 1 ? '看成績' : '下一題'}</button></div>`;
+}
+function quizNext() { quizI++; renderQuiz(); }
+function quizReset() { quizI = 0; quizScore = 0; renderQuiz(); }
+
+renderStamps(); renderProcess(); renderQuiz(); labRender(); labUpdate(); labTab('process');
+
 renderLandingCards();
+
+// 掃 QR code 直接開到指定茶款：網址帶 ?tea=yanran / qingying / nuanyang
+(function openFromQR() {
+  const teaId = new URLSearchParams(location.search).get('tea');
+  if (teaId && TEA_DB.some(t => t.id === teaId)) openProduct(teaId);
+})();
 
 // 讓 .scroll-fade 區塊在「真正進入畫面」的當下才播放淡入動畫，
 // 不論是手動滑過去、還是按按鈕跳過去，節奏都一致

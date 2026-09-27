@@ -180,6 +180,42 @@ body, html {
 #lab-modal .modal-bg { animation: modalBgIn .3s ease; }
 #lab-modal .modal-card { animation: modalIn .45s cubic-bezier(.16,1,.3,1); }
 #lab-modal.closing { opacity: 0; transition: opacity .2s ease; }
+
+/* ===== 體驗館「任務介紹」開關動畫 =====
+   為了手機順暢，只動 transform 與 opacity（交給 GPU 合成，不觸發重排／重繪），
+   不用 blur、backdrop-filter、clip-path、會動的陰影，也沒有無限循環的動畫。
+   開：中央一道金色光線向兩側拉開 → 視窗像螢幕開機一樣從這條線上下展開
+       → 四角框就位 → 內容依序淡入上浮
+   關：視窗上下壓扁成一條線 → 線往中間收掉（像螢幕關機） */
+#lab-modal.ap .modal-bg { background: rgba(0,0,0,.62); animation: apFadeIn .3s ease both; }
+#lab-modal.ap .ap-beam { position: absolute; left: 50%; top: 50%; width: min(24rem, calc(100% - 2.5rem)); height: 2px; margin-left: calc(min(24rem, calc(100% - 2.5rem)) / -2);
+  border-radius: 2px; background: #F5DC8E; box-shadow: 0 0 10px 2px rgba(240,210,122,.6); pointer-events: none;
+  transform: scaleX(0); opacity: 0; will-change: transform, opacity; animation: apBeam .5s cubic-bezier(.32,.72,0,1) both; }
+@keyframes apBeam { 0% { opacity: 1; transform: scaleX(0); } 45% { opacity: 1; transform: scaleX(1); } 100% { opacity: 0; transform: scaleX(1); } }
+#lab-modal.ap .modal-card { will-change: transform, opacity; animation: apOn .55s cubic-bezier(.32,.72,0,1) .16s both; }
+@keyframes apOn { 0% { opacity: 0; transform: scaleY(.01); } 15% { opacity: 1; } 100% { opacity: 1; transform: none; } }
+#lab-modal.ap .ap-item { animation: apItem .45s cubic-bezier(.32,.72,0,1) var(--d) both; }
+@keyframes apItem { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+@keyframes apFadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes apFadeOut { from { opacity: 1; } to { opacity: 0; } }
+/* 四角框 */
+#lab-modal.ap .ap-corner { position: absolute; width: 14px; height: 14px; border: 0 solid rgba(240,210,122,.6); pointer-events: none;
+  animation: apCorner .45s cubic-bezier(.32,.72,0,1) .6s both; }
+#lab-modal.ap .ap-corner.tl { top: 12px; left: 12px; border-top-width: 1.5px; border-left-width: 1.5px; border-top-left-radius: 6px; --x: -6px; --y: -6px; }
+#lab-modal.ap .ap-corner.tr { top: 12px; right: 12px; border-top-width: 1.5px; border-right-width: 1.5px; border-top-right-radius: 6px; --x: 6px; --y: -6px; }
+#lab-modal.ap .ap-corner.bl { bottom: 12px; left: 12px; border-bottom-width: 1.5px; border-left-width: 1.5px; border-bottom-left-radius: 6px; --x: -6px; --y: 6px; }
+#lab-modal.ap .ap-corner.br { bottom: 12px; right: 12px; border-bottom-width: 1.5px; border-right-width: 1.5px; border-bottom-right-radius: 6px; --x: 6px; --y: 6px; }
+@keyframes apCorner { from { opacity: 0; transform: translate(var(--x), var(--y)); } to { opacity: 1; transform: none; } }
+/* 關閉：螢幕關機 */
+#lab-modal.ap.closing { opacity: 1; transition: none; }
+#lab-modal.ap.closing .modal-bg { animation: apFadeOut .3s ease .08s both; }
+#lab-modal.ap.closing .modal-card { animation: apOff .32s cubic-bezier(.5,0,.75,0) both; }
+@keyframes apOff { 0% { opacity: 1; transform: none; } 55% { opacity: 1; transform: scale(1, .01); } 100% { opacity: 0; transform: scale(0, .01); } }
+@media (prefers-reduced-motion: reduce) {
+  #lab-modal.ap .ap-beam { display: none; }
+  #lab-modal.ap .modal-card, #lab-modal.ap .ap-item, #lab-modal.ap .ap-corner { animation: apFadeIn .2s ease both; }
+  #lab-modal.ap.closing .modal-card { animation: apFadeOut .2s ease both; }
+}
 .pour-flow { stroke-dasharray: 4 7; animation: pourFlow .35s linear infinite; }
 @keyframes pourFlow { to { stroke-dashoffset: -11; } }
 /* 關卡內容滑入 */
@@ -527,9 +563,11 @@ body > header, body > main { animation: pageIn .8s ease 2.6s both; }
                 <div class="md:order-2 flex flex-col items-center pt-8">
                 <svg id="lab-cup" viewBox="2 0 100 110" class="w-40 h-44 md:w-52 md:h-56" aria-hidden="true" style="overflow:visible">
                   <defs><clipPath id="lab-clip"><path d="M19.2 22 27.2 98Q28.3 104.3 35 104.3H69Q75.7 104.3 76.8 98L84.8 22z"/></clipPath></defs>
-                  <g id="lab-stream" style="opacity:0; transition:opacity .3s ease" fill="none" stroke-linecap="round">
-                    <path d="M64.9 1.6Q56 6 53.5 20L53.5 104" stroke="rgba(255,236,200,.55)" stroke-width="3.2"/>
-                    <path class="pour-flow" d="M64.9 1.6Q56 6 53.5 20L53.5 104" stroke="rgba(255,255,255,.75)" stroke-width="1.3"/>
+                  <!-- 水柱分兩段：杯口以上這段照常畫；杯子裡那段放進杯子的裁切範圍、畫在茶湯下面，
+                       所以只會在杯內出現，而且碰到茶湯水面就被蓋住，不會穿出杯底 -->
+                  <g id="lab-stream" class="lab-stream" style="opacity:0; transition:opacity .3s ease" fill="none" stroke-linecap="round">
+                    <path d="M64.9 1.6Q56 6 53.5 20L53.5 23" stroke="rgba(255,236,200,.55)" stroke-width="3.2"/>
+                    <path class="pour-flow" d="M64.9 1.6Q56 6 53.5 20L53.5 23" stroke="rgba(255,255,255,.75)" stroke-width="1.3"/>
                   </g>
                   <g id="lab-kettle" style="opacity:0; transform:translate(16px,-16px); transition:transform .5s cubic-bezier(.2,.8,.3,1), opacity .4s ease">
                     <g transform="translate(84 -6) rotate(-35) scale(.85)" fill="none" stroke="rgba(255,255,255,.88)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -547,6 +585,10 @@ body > header, body > main { animation: pageIn .8s ease 2.6s both; }
                     <path d="M62 16c-2.4-2.4-2.4-5.2 0-7.8" stroke="rgba(255,255,255,.5)" stroke-width="2.2" fill="none" stroke-linecap="round"/>
                   </g>
                   <g clip-path="url(#lab-clip)">
+                    <g class="lab-stream" style="opacity:0; transition:opacity .3s ease" fill="none" stroke-linecap="butt">
+                      <path d="M53.5 21V104.3" stroke="rgba(255,236,200,.55)" stroke-width="3.2"/>
+                      <path class="pour-flow" d="M53.5 21V104.3" stroke="rgba(255,255,255,.75)" stroke-width="1.3"/>
+                    </g>
                     <rect id="lab-liquid" x="0" y="26" width="104" height="78.3" fill="#C8872E"
                       style="transform-box:fill-box; transform-origin:bottom; transform:scaleY(0.1); transition:transform 2.4s cubic-bezier(.45,0,.2,1), fill .6s ease"/>
                     <g id="lab-bits"></g>
@@ -1640,10 +1682,11 @@ function labUpdate() {
 }
 const POUR_MS = 4000;   // 倒滿一杯茶的時間
 const POUR_EASE = 'cubic-bezier(.45,.05,.55,.95)';
+// 水柱（杯外、杯內兩段）一起顯示／隱藏
+function labStreamOpacity(v) { document.querySelectorAll('#lab-cup .lab-stream').forEach(g => g.style.opacity = v); }
 function labBrew() {
   const btn = document.getElementById('lab-brew-btn');
   const liquid = document.getElementById('lab-liquid');
-  const stream = document.getElementById('lab-stream');
   btn.disabled = true; btn.innerText = '沖泡中…'; btn.classList.add('opacity-60');
   document.getElementById('lab-cup').scrollIntoView({ behavior: 'smooth', block: 'center' });
   document.getElementById('lab-result').innerHTML = '';
@@ -1654,7 +1697,7 @@ function labBrew() {
   // 熱水壺先從右上方滑進來、傾斜，接著倒出熱水，茶湯慢慢升高
   const kettle = document.getElementById('lab-kettle');
   kettle.style.opacity = '1'; kettle.style.transform = 'translate(0,0)';
-  setTimeout(() => { stream.style.opacity = '1'; }, 450);
+  setTimeout(() => { labStreamOpacity('1'); }, 450);
   setTimeout(() => {
     liquid.style.transition = `transform ${POUR_MS}ms ${POUR_EASE}, fill .6s ease`;
     liquid.style.transform = 'scaleY(1)';
@@ -1662,7 +1705,7 @@ function labBrew() {
     labFloatPieces();
   }, 550);
   // 倒滿後收水流、水壺退出、冒熱氣
-  setTimeout(() => { stream.style.opacity = '0'; }, 550 + POUR_MS - 200);
+  setTimeout(() => { labStreamOpacity('0'); }, 550 + POUR_MS - 200);
   setTimeout(() => { kettle.style.opacity = '0'; kettle.style.transform = 'translate(16px,-16px)'; document.getElementById('lab-steam').style.opacity = '1'; }, 550 + POUR_MS + 100);
   setTimeout(() => {
     labShowResult(); btn.disabled = false; btn.innerText = '再沖泡一次'; btn.classList.remove('opacity-60');
@@ -1773,21 +1816,25 @@ function labIntro() {
     ['② 茶飲DIY', '把配料拖進杯子、設定水溫與浸泡時間，沖一杯屬於你的茶'],
     ['③ 茶知識問答', '5 題小測驗，認識佛手茶與三款茶的配料故事']
   ];
+  // 內容依序淡入：每項晚 0.06 秒
+  const d = i => `--d:${(0.12 + i * 0.06).toFixed(2)}s`;
   const m = document.createElement('div');
   m.id = 'lab-modal';
-  m.className = 'fixed inset-0 z-[150] flex items-center justify-center p-5';
+  m.className = 'ap fixed inset-0 z-[150] flex items-center justify-center p-5';
   m.innerHTML = `
-    <div class="modal-bg absolute inset-0 bg-black/70" onclick="labModalClose()"></div>
+    <div class="modal-bg absolute inset-0" onclick="labModalClose()"></div>
+    <div class="ap-beam" aria-hidden="true"></div>
     <div class="modal-card relative w-full max-w-sm rounded-[2rem] p-6 pt-8 border border-tea-gold/40 shadow-2xl" style="background:linear-gradient(160deg,#1C3A27 0%,#2A3320 55%,#3A2E12 100%)">
-      <button onclick="labModalClose()" aria-label="關閉" class="absolute top-3 right-4 text-white/50 text-2xl leading-none">×</button>
-      <div class="text-center">
+      <span class="ap-corner tl" aria-hidden="true"></span><span class="ap-corner tr" aria-hidden="true"></span><span class="ap-corner bl" aria-hidden="true"></span><span class="ap-corner br" aria-hidden="true"></span>
+      <button onclick="labModalClose()" aria-label="關閉" class="absolute top-3 right-4 z-10 text-white/50 text-2xl leading-none">×</button>
+      <div class="ap-item text-center" style="${d(0)}">
         <div class="text-[10px] tracking-[0.3em] pl-[0.3em] text-tea-gold">MISSION</div>
         <div class="font-serif text-2xl font-bold mt-1">任務介紹</div>
         <p class="text-xs text-white/60 mt-2">歡迎來到一握體驗館！依序完成三個關卡吧</p>
       </div>
       <div class="space-y-3 mt-5">${rows.map((r, i) => `
-        <div class="flex items-start gap-3 rounded-2xl bg-black/20 border border-white/10 p-3">
-          <div class="w-10 h-10 flex-shrink-0 rounded-full border border-tea-gold/60 flex items-center justify-center">
+        <div class="ap-item flex items-start gap-3 rounded-2xl bg-black/20 border border-white/10 p-3" style="${d(i + 1)}">
+          <div class="relative w-10 h-10 flex-shrink-0 rounded-full border border-tea-gold/60 flex items-center justify-center">
             <svg viewBox="0 0 24 24" class="w-5 h-5" fill="none" stroke="#D4AF37" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">${STAMP_DEFS[i].icon}</svg>
           </div>
           <div class="text-left">
@@ -1796,8 +1843,8 @@ function labIntro() {
           </div>
         </div>`).join('')}
       </div>
-      <p class="text-[11px] text-white/55 text-center leading-relaxed mt-4">每完成一關蓋一個章，關卡需依序解鎖<br>集滿三個章，即可領取「一握體驗館・製茶證書」</p>
-      <div class="text-center mt-5">
+      <p class="ap-item text-[11px] text-white/55 text-center leading-relaxed mt-4" style="${d(4)}">每完成一關蓋一個章，關卡需依序解鎖<br>集滿三個章，即可領取「一握體驗館・製茶證書」</p>
+      <div class="ap-item text-center mt-5" style="${d(5)}">
         <button onclick="labModalClose()" class="px-8 py-2.5 rounded-full text-sm font-bold bg-tea-gold text-tea-dark btn-bounce">開始體驗</button>
       </div>
     </div>`;
@@ -1809,8 +1856,10 @@ function labModalClose(instant) {
   if (instant) { m.remove(); return; }
   // 使用者自己關掉視窗：返回時就不用再打開
   if (history.state && history.state.modal) history.replaceState(Object.assign({}, history.state, { modal: false }), '');
+  if (m.classList.contains('closing')) return; // 關閉動畫播放中，不要重複觸發
   m.classList.add('closing');
-  setTimeout(() => m.remove(), 220);
+  // 任務介紹（.ap）的關閉動畫約 0.3 秒，等它播完再移除；其他視窗維持 0.2 秒淡出
+  setTimeout(() => m.remove(), m.classList.contains('ap') ? 400 : 220);
 }
 document.addEventListener('keydown', e => { if (e.key === 'Escape') labModalClose(); });
 function labReset() {
@@ -1822,7 +1871,7 @@ function labReset() {
   document.getElementById('lab-ripples').innerHTML = '';
   document.getElementById('lab-bits').innerHTML = '';
   labBrewed = false;
-  document.getElementById('lab-stream').style.opacity = '0';
+  labStreamOpacity('0');
   const kt = document.getElementById('lab-kettle'); kt.style.opacity = '0'; kt.style.transform = 'translate(16px,-16px)';
   const liquid = document.getElementById('lab-liquid');
   liquid.style.transition = 'none'; liquid.style.transform = 'scaleY(0.1)';

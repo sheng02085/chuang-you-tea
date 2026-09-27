@@ -199,10 +199,10 @@ body > header, body > main { animation: pageIn .8s ease 2.6s both; }
     <section id="view-landing" class="view active node-reveal space-y-6">
 
       <!-- 第一屏：主視覺＋特色茶飲（電腦版剛好一個螢幕高、內容垂直置中） -->
-      <div class="space-y-6 md:min-h-[calc(100vh-5rem)] md:flex md:flex-col md:pb-6">
+      <div class="space-y-4 md:min-h-[calc(100vh-5rem)] md:flex md:flex-col md:pb-6">
 
       <!-- 品牌 + 主視覺 -->
-      <div class="text-center pt-4 pb-2 lg:pt-4 lg:pb-2 space-y-4 fade-in-block" style="animation-delay:0ms">
+      <div class="text-center pt-12 pb-2 lg:pt-12 lg:pb-2 space-y-4 fade-in-block" style="animation-delay:0ms">
         <div>
           <h2 class="font-serif text-3xl lg:text-5xl font-bold drop-shadow-md">一握茶研所</h2>
           <p class="text-white/60 text-sm lg:text-lg mt-3 leading-relaxed">找到適合你的茶<span class="hidden md:inline">，</span><br class="md:hidden">探索每一杯茶的故事</p>
@@ -212,7 +212,7 @@ body > header, body > main { animation: pageIn .8s ease 2.6s both; }
 
       <!-- 特色茶飲 -->
       <div id="tea-section" class="md:flex-1 md:flex md:flex-col" style="scroll-margin-top: 96px;">
-        <h3 class="font-bold text-base lg:text-xl mb-3 lg:mb-4 flex items-center gap-2 px-1 scroll-fade"><span>🌿</span>特色茶飲</h3>
+        <h3 class="font-bold text-base lg:text-xl mb-2 lg:mb-2 flex items-center gap-2 px-1 scroll-fade"><span>🌿</span>特色茶飲</h3>
         <div id="tea-scroll" class="flex flex-col md:flex-1 md:grid md:grid-cols-3 gap-0 md:gap-3 lg:gap-5 -mx-4 md:mx-0"></div>
       </div>
       </div>
@@ -1098,7 +1098,7 @@ function renderStamps(justGot) {
     certFile = null; buildCert();
     const d = new Date();
     cert.innerHTML = `<div class="mt-5 rounded-2xl border border-tea-gold/60 p-5 text-center" style="background:linear-gradient(135deg, rgba(212,175,55,.18), rgba(212,175,55,.04))">
-      <div class="text-[10px] tracking-[0.3em] text-tea-gold">CERTIFICATE</div>
+      <div class="text-[10px] tracking-[0.3em] pl-[0.3em] text-tea-gold">CERTIFICATE</div>
       <div class="font-serif text-xl font-bold mt-1">一握體驗館・製茶證書</div>
       <p class="text-xs text-white/65 mt-2 leading-relaxed">恭喜你完成製茶工序、DIY 調茶與茶知識問答，<br>找到屬於你的那一握。</p>
       <div class="text-[11px] text-white/40 mt-3">一握茶研所　${d.getFullYear()}/${d.getMonth() + 1}/${d.getDate()}</div>
@@ -1483,12 +1483,12 @@ function labShowResult() {
     const tea = TEA_DB.find(t => t.id === best);
     const exact = bestScore === 1;
     html = `
-<div class="flex items-center justify-center gap-3 mb-4">
-        <div class="w-14 h-14 rounded-full border-2 border-white/25 shadow-inner" style="background:${labColor()}"></div>
-        ${best ? `<div class="w-14 h-14">${teaIconSVG(best, TEA_DB.find(t => t.id === best).color, 'w-14 h-14')}</div>` : ''}
+<div class="mx-auto w-[4.5rem] h-[4.5rem] rounded-full border border-tea-gold/40 bg-tea-gold/10 flex items-center justify-center">
+        ${teaIconSVG(best, '#D4AF37', 'w-11 h-11')}
       </div>
-      <div class="text-xs text-white/55">你調出了一杯${flavorText}</div>
-      <div class="font-serif text-xl font-bold mt-2">${exact ? '跟' : '最接近'}「${tea.name}」${exact ? '的配方一模一樣！' : ''}</div>
+      <div class="text-[10px] tracking-[0.3em] pl-[0.3em] text-tea-gold mt-3">YOUR TEA</div>
+      <div class="text-xs text-white/55 mt-2">你調出了一杯${flavorText}</div>
+      <div class="font-serif text-xl font-bold mt-1.5">${exact ? '跟' : '最接近'}「${tea.name}」${exact ? '的配方一模一樣！' : ''}</div>
       <p class="text-xs mt-2" style="color:${tea.color}">「${tea.slogan || tea.series}」</p>
       <p class="text-[11px] text-white/50 mt-3 leading-relaxed">${tip.good ? '沖泡條件也剛剛好，這杯茶的香氣會很漂亮。' : tip.text}</p>
       <div class="flex flex-wrap justify-center gap-2 mt-5">
@@ -1497,12 +1497,9 @@ function labShowResult() {
       </div>
       <button onclick="labModalClose(); labTab('quiz'); document.getElementById('st-quiz').scrollIntoView({behavior:'smooth', block:'start'})" class="mt-3 text-sm font-bold text-tea-gold btn-bounce">下一站：茶知識問答 →</button>`;
   } else {
-    html = `<div class="flex items-center justify-center gap-3 mb-4">
-        <div class="w-14 h-14 rounded-full border-2 border-white/25 shadow-inner" style="background:${labColor()}"></div>
-        ${best ? `<div class="w-14 h-14">${teaIconSVG(best, TEA_DB.find(t => t.id === best).color, 'w-14 h-14')}</div>` : ''}
-      </div>
-      <div class="text-xs text-white/55">你調出了一杯${flavorText}</div>
-      <div class="font-serif text-xl font-bold mt-2">試試加入配料，找出你的那一握</div>
+    html = `<div class="text-[10px] tracking-[0.3em] pl-[0.3em] text-tea-gold">YOUR TEA</div>
+      <div class="text-xs text-white/55 mt-2">你調出了一杯${flavorText}</div>
+      <div class="font-serif text-xl font-bold mt-3">試試加入配料，找出你的那一握</div>
       <p class="text-[11px] text-white/50 mt-3 leading-relaxed">${tip.text}</p>
       <div class="flex justify-center mt-5"><button onclick="labModalClose(); labReset()" class="px-5 py-2 rounded-full text-sm font-bold border border-white/30 btn-bounce">重新調一杯</button></div>
       <button onclick="labModalClose(); labTab('quiz'); document.getElementById('st-quiz').scrollIntoView({behavior:'smooth', block:'start'})" class="mt-3 text-sm font-bold text-tea-gold btn-bounce">下一站：茶知識問答 →</button>`;
@@ -1525,17 +1522,46 @@ function labModal(html) {
   m.className = 'fixed inset-0 z-[150] flex items-center justify-center p-5';
   m.innerHTML = `
     <div class="modal-bg absolute inset-0 bg-black/70" onclick="labModalClose()"></div>
-    <div class="modal-card relative w-full max-w-sm rounded-[2rem] p-6 pt-8 text-center border border-tea-gold/40 shadow-2xl" style="background:linear-gradient(160deg,#1C3A27 0%,#2A3320 55%,#3A2E12 100%)">
+    <div class="modal-card relative w-full max-w-sm rounded-[2rem] p-6 pt-7 text-center border border-tea-gold/40 shadow-2xl" style="background:linear-gradient(160deg,#1C3A27 0%,#2A3320 55%,#3A2E12 100%)">
       <button onclick="labModalClose()" aria-label="關閉" class="absolute top-3 right-4 text-white/50 text-2xl leading-none">×</button>
-      <div class="text-[10px] tracking-[0.3em] text-tea-gold mb-3">YOUR TEA</div>
       ${html}
     </div>`;
   document.body.appendChild(m);
 }
-// 從首頁進體驗館：先顯示任務介紹
+// 從首頁進體驗館：已經有進度就顯示「歡迎回來」，完全沒開始過才顯示完整任務介紹
 function openLab() {
   showView('lab');
-  setTimeout(labIntro, 450);
+  const hasProgress = stamps.length > 0 || procStep > 0;
+  setTimeout(hasProgress ? labWelcomeBack : labIntro, 450);
+}
+function labNextTab() {
+  if (!stamps.includes('process')) return 'process';
+  if (!stamps.includes('diy')) return 'diy';
+  return 'quiz';
+}
+function labProgressLabel() {
+  if (stamps.includes('diy')) return '準備挑戰「③ 茶知識問答」';
+  if (stamps.includes('process')) return '準備挑戰「② 茶飲DIY」';
+  if (procStep > 0) return `「① 製茶工序」做到「${PROCESS_STEPS[procStep].name}」`;
+  return '準備挑戰「① 製茶工序」';
+}
+function labWelcomeBack() {
+  labModalClose(true);
+  const m = document.createElement('div');
+  m.id = 'lab-modal';
+  m.className = 'fixed inset-0 z-[150] flex items-center justify-center p-5';
+  m.innerHTML = `
+    <div class="modal-bg absolute inset-0 bg-black/70" onclick="labModalClose()"></div>
+    <div class="modal-card relative w-full max-w-sm rounded-[2rem] p-6 pt-8 border border-tea-gold/40 shadow-2xl text-center" style="background:linear-gradient(160deg,#1C3A27 0%,#2A3320 55%,#3A2E12 100%)">
+      <button onclick="labModalClose()" aria-label="關閉" class="absolute top-3 right-4 text-white/50 text-2xl leading-none">×</button>
+      <div class="text-[10px] tracking-[0.3em] pl-[0.3em] text-tea-gold">WELCOME BACK</div>
+      <div class="font-serif text-2xl font-bold mt-1">歡迎回來</div>
+      <p class="text-xs text-white/60 mt-3 leading-relaxed">已集 ${stamps.length} / 3 個章<br>${labProgressLabel()}，繼續加油！</p>
+      <div class="mt-6">
+        <button onclick="labModalClose(); labTab('${labNextTab()}')" class="px-8 py-2.5 rounded-full text-sm font-bold bg-tea-gold text-tea-dark btn-bounce">繼續挑戰</button>
+      </div>
+    </div>`;
+  document.body.appendChild(m);
 }
 function labIntro() {
   labModalClose(true);
@@ -1552,7 +1578,7 @@ function labIntro() {
     <div class="modal-card relative w-full max-w-sm rounded-[2rem] p-6 pt-8 border border-tea-gold/40 shadow-2xl" style="background:linear-gradient(160deg,#1C3A27 0%,#2A3320 55%,#3A2E12 100%)">
       <button onclick="labModalClose()" aria-label="關閉" class="absolute top-3 right-4 text-white/50 text-2xl leading-none">×</button>
       <div class="text-center">
-        <div class="text-[10px] tracking-[0.3em] text-tea-gold">MISSION</div>
+        <div class="text-[10px] tracking-[0.3em] pl-[0.3em] text-tea-gold">MISSION</div>
         <div class="font-serif text-2xl font-bold mt-1">任務介紹</div>
         <p class="text-xs text-white/60 mt-2">歡迎來到一握體驗館！依序完成三個關卡吧</p>
       </div>
@@ -1905,7 +1931,7 @@ function quizPick(i) {
 function quizNext() { quizI++; renderQuiz(); document.getElementById('st-quiz').scrollIntoView({ behavior: 'smooth', block: 'start' }); }
 function quizReset() { quizI = 0; quizScore = 0; renderQuiz(); }
 
-renderStamps(); renderProcess(); renderQuiz(); labRender(); labUpdate(); labTab('process');
+renderStamps(); renderProcess(); renderQuiz(); labRender(); labUpdate(); labTab(labNextTab());
 
 renderLandingCards();
 

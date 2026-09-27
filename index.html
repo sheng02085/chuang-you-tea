@@ -1532,10 +1532,40 @@ function labModal(html) {
     </div>`;
   document.body.appendChild(m);
 }
-// 從首頁進體驗館：先顯示任務介紹
+// 從首頁進體驗館：第一次進來顯示任務介紹；已經有進度的話改顯示「歡迎回來」
 function openLab() {
   showView('lab');
-  setTimeout(labIntro, 450);
+  setTimeout(stamps.length > 0 && stamps.length < 3 ? labWelcomeBack : labIntro, 450);
+}
+function labWelcomeBack() {
+  labModalClose(true);
+  const order = ['process', 'diy', 'quiz'];
+  const nextKey = order.find(k => !stamps.includes(k));
+  const nextName = TAB_NAMES[nextKey].slice(2);
+  const m = document.createElement('div');
+  m.id = 'lab-modal';
+  m.className = 'fixed inset-0 z-[150] flex items-center justify-center p-5';
+  m.innerHTML = `
+    <div class="modal-bg absolute inset-0 bg-black/70" onclick="labModalClose()"></div>
+    <div class="modal-card relative w-full max-w-sm rounded-[2rem] p-6 pt-8 border border-tea-gold/40 shadow-2xl text-center" style="background:linear-gradient(160deg,#1C3A27 0%,#2A3320 55%,#3A2E12 100%)">
+      <button onclick="labModalClose()" aria-label="關閉" class="absolute top-3 right-4 text-white/50 text-2xl leading-none">×</button>
+      <div class="text-[10px] tracking-[0.3em] text-tea-gold">WELCOME BACK</div>
+      <div class="font-serif text-2xl font-bold mt-1">歡迎回來</div>
+      <p class="text-xs text-white/60 mt-2">你已經集了 ${stamps.length} / 3 個章，繼續挑戰吧</p>
+      <div class="flex justify-center gap-6 mt-5">${STAMP_DEFS.map(d => {
+        const got = stamps.includes(d.id);
+        return `<div class="text-center">
+          <div class="mx-auto w-12 h-12 rounded-full flex items-center justify-center ${got ? 'border-2 border-tea-gold bg-tea-gold/15' : 'border-2 border-dashed border-white/25'}" style="${got ? 'transform:rotate(-12deg)' : ''}">
+            <svg viewBox="0 0 24 24" class="w-5 h-5" fill="none" stroke="${got ? '#D4AF37' : 'rgba(255,255,255,.25)'}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">${d.icon}</svg>
+          </div>
+          <div class="text-[10px] mt-1.5 ${got ? 'text-tea-gold font-bold' : 'text-white/40'}">${d.name}</div>
+        </div>`;
+      }).join('')}</div>
+      <div class="mt-5">
+        <button onclick="labModalClose()" class="px-8 py-2.5 rounded-full text-sm font-bold bg-tea-gold text-tea-dark btn-bounce">繼續「${nextName}」</button>
+      </div>
+    </div>`;
+  document.body.appendChild(m);
 }
 function labIntro() {
   labModalClose(true);
@@ -1890,7 +1920,8 @@ function quizPick(i) {
 function quizNext() { quizI++; renderQuiz(); document.getElementById('st-quiz').scrollIntoView({ behavior: 'smooth', block: 'start' }); }
 function quizReset() { quizI = 0; quizScore = 0; renderQuiz(); }
 
-renderStamps(); renderProcess(); renderQuiz(); labRender(); labUpdate(); labTab('process');
+renderStamps(); renderProcess(); renderQuiz(); labRender(); labUpdate();
+labTab(stamps.includes('diy') ? 'quiz' : (stamps.includes('process') ? 'diy' : 'process'));
 
 renderLandingCards();
 

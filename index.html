@@ -1774,9 +1774,10 @@ function labModal(html) {
     </div>`;
   document.body.appendChild(m);
 }
-// 從首頁進體驗館：已經有進度就顯示「歡迎回來」，完全沒開始過才顯示完整任務介紹
+// 從首頁進體驗館：完全沒開始過 → 任務介紹；做到一半 → 「歡迎回來」；三個章都集滿 → 不跳視窗，直接進館
 function openLab() {
   showView('lab');
+  if (stamps.length >= STAMP_DEFS.length) return;
   const hasProgress = stamps.length > 0 || procStep > 0;
   setTimeout(hasProgress ? labWelcomeBack : labIntro, 450);
 }

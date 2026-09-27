@@ -89,8 +89,6 @@ body, html {
   background: linear-gradient(90deg, rgba(255,255,255,0), rgba(255,240,200,.75), rgba(255,255,255,0));
   animation: segSweep 1.3s ease-in-out infinite; }
 @keyframes segSweep { from { transform: translateX(-110%); } to { transform: translateX(240%); } }
-.yw-switch { transform: scale(1.5); margin: 8px 10px; accent-color: #D4AF37; }
-.yw-switch:disabled { opacity: 1; }
 @keyframes stampIn { 0% { opacity: 0; transform: scale(1.8) rotate(-12deg); } 60% { opacity: 1; transform: scale(.92) rotate(-12deg); } 100% { opacity: 1; transform: scale(1) rotate(-12deg); } }
 .stamp-in { animation: stampIn .5s cubic-bezier(.2,1.4,.4,1) both; }
 @media (min-width: 768px) { #ai-panel, #lab-panel { width: 100% !important; } }
@@ -201,7 +199,7 @@ body > header, body > main { animation: pageIn .8s ease 2.6s both; }
     <section id="view-landing" class="view active node-reveal space-y-6">
 
       <!-- 第一屏：主視覺＋特色茶飲（電腦版剛好一個螢幕高、內容垂直置中） -->
-      <div class="space-y-6 md:min-h-[calc(100vh-5rem)] md:flex md:flex-col md:justify-center md:pb-6">
+      <div class="space-y-6 md:min-h-[calc(100vh-5rem)] md:flex md:flex-col md:pb-6">
 
       <!-- 品牌 + 主視覺 -->
       <div class="text-center pt-4 pb-2 lg:pt-4 lg:pb-2 space-y-4 fade-in-block" style="animation-delay:0ms">
@@ -213,9 +211,9 @@ body > header, body > main { animation: pageIn .8s ease 2.6s both; }
       </div>
 
       <!-- 特色茶飲 -->
-      <div id="tea-section" style="scroll-margin-top: 96px;">
+      <div id="tea-section" class="md:flex-1 md:flex md:flex-col" style="scroll-margin-top: 96px;">
         <h3 class="font-bold text-base lg:text-xl mb-3 lg:mb-4 flex items-center gap-2 px-1 scroll-fade"><span>🌿</span>特色茶飲</h3>
-        <div id="tea-scroll" class="flex flex-col md:grid md:grid-cols-3 gap-0 md:gap-3 lg:gap-5 -mx-4 md:mx-0"></div>
+        <div id="tea-scroll" class="flex flex-col md:flex-1 md:grid md:grid-cols-3 gap-0 md:gap-3 lg:gap-5 -mx-4 md:mx-0"></div>
       </div>
       </div>
 
@@ -243,7 +241,7 @@ body > header, body > main { animation: pageIn .8s ease 2.6s both; }
         </button>
 
         <!-- 一握調茶室：觀光工廠式 DIY 互動體驗 -->
-        <button id="lab-panel" onclick="showView('lab')" class="scroll-fade relative overflow-hidden block w-full -mx-4 md:mx-0 !mt-0 md:!mt-6 -mb-10 md:mb-0 text-center px-6 pt-10 pb-10 lg:p-12 md:rounded-[2rem] md:border border-amber-300/30 btn-bounce" style="width:calc(100% + 2rem)">
+        <button id="lab-panel" onclick="openLab()" class="scroll-fade relative overflow-hidden block w-full -mx-4 md:mx-0 !mt-0 md:!mt-6 -mb-10 md:mb-0 text-center px-6 pt-10 pb-10 lg:p-12 md:rounded-[2rem] md:border border-amber-300/30 btn-bounce" style="width:calc(100% + 2rem)">
           <div class="absolute inset-0 pointer-events-none" style="background-image:linear-gradient(-45deg, #140F08, #3A2A12, #5C4415, #1E160A); background-size:400% 400%; animation: fluidBackground 18s ease infinite; animation-delay:-9s"></div>
           <div class="relative">
             <div class="font-serif font-bold text-3xl md:text-xl lg:text-2xl">一握體驗館</div>
@@ -320,6 +318,7 @@ body > header, body > main { animation: pageIn .8s ease 2.6s both; }
           <span class="text-[10px] font-mono bg-tea-gold text-tea-dark font-bold px-2 py-1 rounded">互動體驗</span>
           <h2 class="font-serif text-3xl font-bold mt-3">一握體驗館</h2>
           <p class="text-xs lg:text-sm text-white/60 mt-2 leading-relaxed">製茶工序•茶飲DIY•茶知識問答<br>集滿三個章，領取製茶證書</p>
+          <button onclick="labIntro()" class="mt-3 text-[11px] text-tea-gold underline underline-offset-4">任務說明</button>
         </div>
 
         <!-- 關卡切換 -->
@@ -597,7 +596,7 @@ function renderLandingCards() {
   box.innerHTML = '';
   TEA_DB.forEach((tea, idx) => {
     const card = document.createElement('button');
-    card.className = "scroll-fade relative overflow-hidden w-full text-center px-6 pt-10 pb-12 md:px-4 md:pt-6 md:pb-6 md:rounded-2xl md:border border-white/10 transition-all btn-bounce";
+    card.className = "scroll-fade relative overflow-hidden w-full text-center px-6 pt-10 pb-12 md:px-4 md:pt-6 md:pb-6 md:h-full md:flex md:flex-col md:justify-center md:rounded-2xl md:border border-white/10 transition-all btn-bounce";
     card.onmouseenter = () => { card.style.borderColor = tea.color; };
     card.onmouseleave = () => { card.style.borderColor = ''; };
     card.onclick = () => openProduct(tea.id);
@@ -606,11 +605,11 @@ function renderLandingCards() {
     card.innerHTML = `
       <div class="absolute inset-0 pointer-events-none" style="background-image:${tea.bg}; background-size:400% 400%; animation: fluidBackground 18s ease infinite; animation-delay:-${idx * 6}s"></div>
       <div class="relative flex flex-col items-center">
-      <div class="font-serif font-bold text-3xl md:text-xl lg:text-2xl">${tea.name}</div>
+      <div class="font-serif font-bold text-3xl md:text-2xl lg:text-3xl">${tea.name}</div>
       <div class="text-sm md:text-xs lg:text-sm text-white/75 mt-2">${tea.slogan || tea.series}</div>
       <div class="text-xs text-white/45 mt-1">${tea.tag}</div>
       <span class="inline-block mt-5 md:mt-4 px-6 py-2 rounded-full text-sm font-bold" style="background:${tea.color}; color:#12261A">查看介紹</span>
-      <div class="order-last md:order-first mt-8 md:mt-0 md:mb-3 drop-shadow-lg">${teaIconSVG(tea.id, tea.color, "mx-auto w-28 h-28 md:w-14 md:h-14 lg:w-16 lg:h-16")}</div>
+      <div class="order-last md:order-first mt-8 md:mt-0 md:mb-3 drop-shadow-lg">${teaIconSVG(tea.id, tea.color, "mx-auto w-28 h-28 md:w-16 md:h-16 lg:w-20 lg:h-20")}</div>
       </div>`;
     box.appendChild(card);
   });
@@ -1100,7 +1099,7 @@ function renderStamps(justGot) {
     const d = new Date();
     cert.innerHTML = `<div class="mt-5 rounded-2xl border border-tea-gold/60 p-5 text-center" style="background:linear-gradient(135deg, rgba(212,175,55,.18), rgba(212,175,55,.04))">
       <div class="text-[10px] tracking-[0.3em] text-tea-gold">CERTIFICATE</div>
-      <div class="font-serif text-xl font-bold mt-1">一握體驗館・體驗完成證</div>
+      <div class="font-serif text-xl font-bold mt-1">一握體驗館・製茶證書</div>
       <p class="text-xs text-white/65 mt-2 leading-relaxed">恭喜你完成製茶工序、DIY 調茶與茶知識問答，<br>找到屬於你的那一握。</p>
       <div class="text-[11px] text-white/40 mt-3">一握茶研所　${d.getFullYear()}/${d.getMonth() + 1}/${d.getDate()}</div>
       <button onclick="shareCert()" class="mt-4 px-5 py-2 rounded-full text-xs font-bold bg-tea-gold text-tea-dark btn-bounce">儲存證書，分享給朋友吧！</button>
@@ -1109,7 +1108,7 @@ function renderStamps(justGot) {
     </div>`;
   } else cert.innerHTML = '';
 }
-/* ---------- 體驗完成證：用 canvas 畫成一張圖片，手機跳出分享選單（可存到相簿或傳 LINE），電腦直接下載 ---------- */
+/* ---------- 製茶證書：用 canvas 畫成一張圖片，手機跳出分享選單（可存到相簿或傳 LINE），電腦直接下載 ---------- */
 let certFile = null;
 function certSpaced(ctx, text, x, y, gap) {
   const w = [...text].reduce((s, c) => s + ctx.measureText(c).width + gap, -gap);
@@ -1139,7 +1138,7 @@ async function buildCert() {
   certSpaced(ctx, 'CERTIFICATE', W / 2, 200, 14);
   ctx.textAlign = 'center';
   ctx.fillStyle = '#fff'; ctx.font = '700 66px "Noto Serif TC", serif';
-  ctx.fillText('一握體驗館・體驗完成證', W / 2, 300);
+  ctx.fillText('一握體驗館・製茶證書', W / 2, 300);
   ctx.strokeStyle = 'rgba(212,175,55,.5)'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(340, 370); ctx.lineTo(740, 370); ctx.stroke();
   STAMP_DEFS.forEach((d, i) => {
     const x = 270 + i * 270, y = 555;
@@ -1161,7 +1160,7 @@ async function buildCert() {
   ctx.fillStyle = 'rgba(212,175,55,.8)'; ctx.font = '400 28px "Noto Sans TC", sans-serif';
   ctx.fillText('把佛手的溫潤，留給忙碌生活裡的你', W / 2, 1180);
   const blob = await new Promise(r => cv.toBlob(r, 'image/png'));
-  certFile = new File([blob], '一握體驗館_體驗完成證.png', { type: 'image/png' });
+  certFile = new File([blob], '一握體驗館_製茶證書.png', { type: 'image/png' });
   return certFile;
 }
 function certDownload(file) {
@@ -1173,7 +1172,7 @@ function certDownload(file) {
 async function shareCert() {
   const msg = document.getElementById('cert-msg');
   if (!certFile) { if (msg) msg.innerText = '證書產生中…'; await buildCert(); }
-  const data = { files: [certFile], title: '一握體驗館・體驗完成證' };
+  const data = { files: [certFile], title: '一握體驗館・製茶證書' };
   if (navigator.canShare && navigator.canShare(data)) {
     try { await navigator.share(data); if (msg) msg.innerText = ''; return; }
     catch (e) { if (e.name === 'AbortError') { if (msg) msg.innerText = ''; return; } }
@@ -1533,6 +1532,48 @@ function labModal(html) {
     </div>`;
   document.body.appendChild(m);
 }
+// 從首頁進體驗館：先顯示任務介紹
+function openLab() {
+  showView('lab');
+  setTimeout(labIntro, 450);
+}
+function labIntro() {
+  labModalClose(true);
+  const rows = [
+    ['① 製茶工序', '用拖曳、滑動、畫圈、按住等手勢，親手完成採摘到焙火六道工序'],
+    ['② 茶飲DIY', '把配料拖進杯子、設定水溫與浸泡時間，沖一杯屬於你的茶'],
+    ['③ 茶知識問答', '5 題小測驗，認識佛手茶與三款茶的配料故事']
+  ];
+  const m = document.createElement('div');
+  m.id = 'lab-modal';
+  m.className = 'fixed inset-0 z-[150] flex items-center justify-center p-5';
+  m.innerHTML = `
+    <div class="modal-bg absolute inset-0 bg-black/70" onclick="labModalClose()"></div>
+    <div class="modal-card relative w-full max-w-sm rounded-[2rem] p-6 pt-8 border border-tea-gold/40 shadow-2xl" style="background:linear-gradient(160deg,#1C3A27 0%,#2A3320 55%,#3A2E12 100%)">
+      <button onclick="labModalClose()" aria-label="關閉" class="absolute top-3 right-4 text-white/50 text-2xl leading-none">×</button>
+      <div class="text-center">
+        <div class="text-[10px] tracking-[0.3em] text-tea-gold">MISSION</div>
+        <div class="font-serif text-2xl font-bold mt-1">任務介紹</div>
+        <p class="text-xs text-white/60 mt-2">歡迎來到一握體驗館！依序完成三個關卡吧</p>
+      </div>
+      <div class="space-y-3 mt-5">${rows.map((r, i) => `
+        <div class="flex items-start gap-3 rounded-2xl bg-black/20 border border-white/10 p-3">
+          <div class="w-10 h-10 flex-shrink-0 rounded-full border border-tea-gold/60 flex items-center justify-center">
+            <svg viewBox="0 0 24 24" class="w-5 h-5" fill="none" stroke="#D4AF37" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">${STAMP_DEFS[i].icon}</svg>
+          </div>
+          <div class="text-left">
+            <div class="text-sm font-bold text-tea-gold">${r[0]}</div>
+            <div class="text-[11px] text-white/65 leading-relaxed mt-0.5">${r[1]}</div>
+          </div>
+        </div>`).join('')}
+      </div>
+      <p class="text-[11px] text-white/55 text-center leading-relaxed mt-4">每完成一關蓋一個章，關卡需依序解鎖<br>集滿三個章，即可領取「一握體驗館・製茶證書」</p>
+      <div class="text-center mt-5">
+        <button onclick="labModalClose()" class="px-8 py-2.5 rounded-full text-sm font-bold bg-tea-gold text-tea-dark btn-bounce">開始體驗</button>
+      </div>
+    </div>`;
+  document.body.appendChild(m);
+}
 function labModalClose(instant) {
   const m = document.getElementById('lab-modal');
   if (!m) return;
@@ -1667,14 +1708,7 @@ function renderProcess() {
       <div id="proc-pad" oncontextmenu="return false" class="relative mx-auto mt-5 w-full max-w-[280px] aspect-square rounded-2xl bg-black/25 border border-white/10 overflow-hidden select-none" style="touch-action:none; -webkit-user-select:none; -webkit-touch-callout:none">
         <svg id="proc-svg" viewBox="0 0 200 200" class="w-full h-full"></svg>
       </div>
-      ${procStep === 5 && procSwitchMode() ? `
-      <p class="text-center text-xs text-tea-gold font-bold mt-3">依序撥動下面三個開關，用炭火慢慢烘焙</p>
-      <div class="flex justify-center gap-8 mt-4">
-        ${['點火', '加火', '收火'].map((t, i) => `
-        <label class="flex flex-col items-center gap-2 text-xs text-white/75">
-          <input type="checkbox" switch class="yw-switch" data-i="${i}" onchange="procSwitch(this)">${t}
-        </label>`).join('')}
-      </div>` : `<p class="text-center text-xs text-tea-gold font-bold mt-3">👆 ${st.hint}</p>`}
+      <p class="text-center text-xs text-tea-gold font-bold mt-3">👆 ${st.hint}</p>
       <div class="mx-auto max-w-[280px] h-1.5 rounded-full bg-white/10 mt-3 overflow-hidden"><div id="proc-bar" class="h-full rounded-full bg-tea-gold" style="width:0%; transition: width .15s linear"></div></div>
       <div class="text-center mt-3"><button onclick="procSkip()" class="text-[11px] text-white/35 underline">跳過這一步</button></div>
       ${procStep === 5 && /[?&]debug=1/.test(location.search) ? `<div class="text-center mt-3 text-[11px] text-white/60">
@@ -1699,7 +1733,7 @@ function bindProcPad() {
     gs.down = true; gs.px = p.x; gs.py = p.y; gs.ax = p.x;
     if (procStep === 0) gs.dragLeaf = Math.hypot(p.x - (gs.lx ?? 100), p.y - (gs.ly ?? 64)) < 45;
     if (procStep === 3) gs.pa = Math.atan2(p.y - 110, p.x - 100);
-    if (procStep === 5 && !procSwitchMode()) procHoldStart();
+    if (procStep === 5) procHoldStart();
   });
   pad.addEventListener('pointermove', e => {
     if (!gs.down || gs.lock) return;
@@ -1740,48 +1774,16 @@ function bindProcPad() {
   pad.addEventListener('pointerup', up);
   pad.addEventListener('pointercancel', up);
 }
-// 震動回饋：Android 用標準的 navigator.vibrate；
-// iPhone 不支援它，改用「撥動隱藏的系統開關」觸發震動（iOS 17.4～26.4 有效，26.5 起被 Apple 封鎖）。
-// 不論能不能震，畫面都會有一下「咚」的視覺回饋，最新版 iPhone 也感覺得到節奏。
-let hapticLabel = null;
-function hapticIOS() {
-  if (!hapticLabel) {
-    const wrap = document.createElement('div');
-    wrap.setAttribute('aria-hidden', 'true');
-    wrap.style.cssText = 'position:fixed;left:-9999px;top:0;width:1px;height:1px;opacity:0;pointer-events:none;overflow:hidden';
-    wrap.innerHTML = '<input type="checkbox" id="yw-haptic" switch tabindex="-1"><label for="yw-haptic" id="yw-haptic-label"></label>';
-    document.body.appendChild(wrap);
-    hapticLabel = document.getElementById('yw-haptic-label');
-  }
-  hapticLabel.click();
-}
-// iPhone（沒有網頁震動功能）改用親手撥系統開關：使用者自己撥，iPhone 就會「噠」一下
-// 網址加 ?switch=1 可以在 Android／電腦上預覽這個模式
-function procSwitchMode() {
-  const ios = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-  return /[?&]switch=1/.test(location.search) || (ios && typeof navigator.vibrate !== 'function');
-}
-function procSwitch(el) {
-  if (gs.lock) { el.checked = true; return; }
-  const all = [...document.querySelectorAll('.yw-switch')];
-  const i = +el.dataset.i;
-  const done = all.filter(s => s.checked).length - 1;
-  // 要照順序撥：撥錯順序就彈回去
-  if (!el.checked || i !== done) { el.checked = false; const hint = document.querySelector('#st-process .text-tea-gold.font-bold.mt-3'); if (hint) hint.innerText = `請先撥「${['點火', '加火', '收火'][done < 0 ? 0 : done]}」`; return; }
-  el.disabled = true;
-  pp = (i + 1) / 3;
-  procPulse();
-  drawProc();
-  if (i === 2) procFinish();
-}
+// 震動回饋：用標準的 navigator.vibrate（Android 支援；iPhone 瀏覽器目前不支援，
+// 沒有震動也沒關係，畫面上的「咚」視覺回饋一樣看得到節奏）。
 function procPulse() {
   const pad = document.getElementById('proc-pad');
   if (pad) { pad.classList.remove('pad-pulse'); void pad.offsetWidth; pad.classList.add('pad-pulse'); }
 }
 function procBuzz() {
   try {
-    if (typeof navigator.vibrate === 'function') navigator.vibrate(BUZZ_MS); else hapticIOS();
-  } catch (e) { try { hapticIOS(); } catch (err) {} }
+    if (typeof navigator.vibrate === 'function') navigator.vibrate(BUZZ_MS);
+  } catch (e) {}
   const pad = document.getElementById('proc-pad');
   if (pad) { pad.classList.remove('pad-pulse'); void pad.offsetWidth; pad.classList.add('pad-pulse'); }
 }
@@ -1913,4 +1915,3 @@ document.querySelectorAll('.scroll-fade').forEach(el => scrollFadeObserver.obser
 </script>
 </body>
 </html>
-

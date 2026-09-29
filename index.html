@@ -1123,15 +1123,25 @@ function initTin360(root) {
 
   function resize() {
     if (!fw) return;
+    const cw = root.clientWidth;
+    if (!cw) return false;
     const dpr = Math.min(window.devicePixelRatio || 1, 3);
     // 畫布最多與單格原圖等大，不做無意義的放大運算
-    const w = Math.max(1, Math.min(Math.round(root.clientWidth * dpr), fw));
+    const w = Math.max(1, Math.min(Math.round(cw * dpr), fw));
     const h = Math.max(1, Math.round(w * fh / fw));
     if (cv.width !== w || cv.height !== h) {
       cv.width = w; cv.height = h;
       ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high';
       drawn = NaN;
     }
+    return true;
+  }
+  // 強制重畫：尺寸改變、進入畫面、外層淡入動畫結束時都補畫一次
+  // （Safari 在外層有 backdrop-filter＋淡入動畫時，偶爾不會把先畫好的 canvas 顯示出來）
+  function repaint() {
+    if (!fw || !root.isConnected) return;
+    if (!resize()) { requestAnimationFrame(repaint); return; }
+    drawn = NaN; render();
   }
   function cell(f, alpha) {
     ctx.globalAlpha = alpha;
@@ -1182,15 +1192,29 @@ function initTin360(root) {
   const onReady = () => {
     if (!root.isConnected) return;
     fw = img.naturalWidth / COLS; fh = img.naturalHeight / ROWS;
-    resize(); render();
+    repaint();
     root.classList.add('ready');
     if (typeof ResizeObserver !== 'undefined') {
-      const ro = new ResizeObserver(() => { if (!root.isConnected) return ro.disconnect(); resize(); render(); });
+      const ro = new ResizeObserver(() => { if (!root.isConnected) return ro.disconnect(); repaint(); });
       ro.observe(root);
     }
-    if (reduce) return;
-    // 進場只轉一圈提示可以旋轉，轉完停在正面，不循環
-    introStart = performance.now() + 450; mode = 'intro'; kick();
+    const card = root.closest('.fade-in-block');
+    if (card) card.addEventListener('animationend', repaint, { once: true });
+    // 進場只轉一圈提示可以旋轉，轉完停在正面，不循環；等茶罐真的出現在畫面上才轉
+    let introDone = reduce;
+    const startIntro = () => {
+      repaint();
+      if (introDone || drag || mode || root.dataset.touched) { introDone = true; return; }
+      introDone = true;
+      introStart = performance.now() + 450; mode = 'intro'; kick();
+    };
+    if (typeof IntersectionObserver !== 'undefined') {
+      const io = new IntersectionObserver((es) => {
+        if (!root.isConnected) return io.disconnect();
+        if (es.some(e => e.isIntersecting)) { startIntro(); if (introDone) io.disconnect(); }
+      }, { threshold: 0.3 });
+      io.observe(root);
+    } else startIntro();
   };
   const decodeThen = () => {
     // 先完成解碼再顯示，避免第一次拖曳時才解碼造成卡頓
@@ -1206,7 +1230,7 @@ function initTin360(root) {
 
   root.addEventListener('pointerdown', (e) => {
     if (!fw || (e.pointerType === 'mouse' && e.button !== 0)) return;
-    drag = true; mode = ''; vel = 0; lastX = e.clientX;
+    drag = true; mode = ''; vel = 0; lastX = e.clientX; root.dataset.touched = '1';
     samples = [[performance.now(), pos]];
     root.classList.add('grabbing');
     try { root.setPointerCapture(e.pointerId); } catch (err) {}
@@ -1237,7 +1261,7 @@ function initTin360(root) {
   root.addEventListener('pointercancel', end);
   root.addEventListener('keydown', (e) => {
     if (!fw || (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight')) return;
-    e.preventDefault();
+    e.preventDefault(); root.dataset.touched = '1';
     const base = mode === 'settle' ? target : Math.round(pos);
     target = base + (e.key === 'ArrowRight' ? 1 : -1);
     if (reduce) { pos = target; mode = ''; render(); return; }
@@ -1302,8 +1326,6 @@ function openProduct(teaId, fromHistory) {
       </div>
     </div>`;
 
-  initTin360(box.querySelector('.tin360'));
-
   // 還原（或初始化）這款茶各自的聊天紀錄
   const log = document.getElementById('product-chat-log');
   if (!productLogs[teaId]) {
@@ -1314,6 +1336,8 @@ function openProduct(teaId, fromHistory) {
   renderProductChips();
 
   showView('product', fromHistory);
+  // 茶款頁顯示後才初始化茶罐，確保量得到實際尺寸
+  initTin360(box.querySelector('.tin360'));
 }
 
 /* 快速提問按鈕：題庫比顯示數量多，每次問完就從題庫裡重新抽一批不重複的，

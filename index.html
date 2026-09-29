@@ -2446,6 +2446,7 @@ document.querySelectorAll('.scroll-fade').forEach(el => scrollFadeObserver.obser
 const ICON_HOVER = matchMedia('(hover: hover) and (pointer: fine)').matches; // 有滑鼠＝電腦版
 let iconAnimReady = false, icBusy = null, icQueueT = 0, icDoneT = 0, heroBusyUntil = 0, heroOnScreen = false;
 const icQueue = [];
+const IC_SETTLE = 150; // 圖示完整停在畫面上多久才開始播（ms）
 function iconDuration(el) {
   let end = 0;
   try { el.getAnimations({ subtree: true }).forEach(a => { end = Math.max(end, a.effect.getComputedTiming().endTime); }); } catch (e) {}
@@ -2459,6 +2460,9 @@ function runIconQueue() {
   const wait = heroOnScreen ? heroBusyUntil - Date.now() : 0;
   if (wait > 0) { icQueueT = setTimeout(runIconQueue, wait); return; }
   icQueue.sort((a, b) => (a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING) ? -1 : 1);
+  // 快速滑過：圖示要連續完整停在畫面上 IC_SETTLE 才開始播，一閃而過的不佔用播放順序
+  const settle = IC_SETTLE - (Date.now() - icQueue[0]._icSeen);
+  if (settle > 0) { icQueueT = setTimeout(runIconQueue, settle); return; }
   const el = icQueue.shift();
   el._icPending = false;
   if (!el.classList.contains('ic-wait')) { // 原本是完整靜態圖示：從第一格重新開始播
@@ -2484,9 +2488,12 @@ const iconObserver = ('IntersectionObserver' in window) ? new IntersectionObserv
     if (e.intersectionRatio >= 0.97) {
       if (el.classList.contains('ic-play') || el._icPending) return;
       el._icPending = true;
+      el._icSeen = Date.now();
       icQueue.push(el);
     } else if (e.isIntersecting) {
       if (el._icPending) el._icPending = false; // 排隊中但又沒有完整看到了 → 先不播
+      // 正在播的圖示已經被滑到只剩一部分：讓它自己播完，但不再擋住後面的圖示
+      if (icBusy === el) { clearTimeout(icDoneT); icBusy = null; }
     } else if (!iconAnimReady) {
       el._icPending = false; // 迎賓結束前先都維持靜態，等 iconAnimStart() 再依位置決定
     } else {

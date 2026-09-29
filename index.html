@@ -456,6 +456,15 @@ body > header, body > main { animation: pageIn .8s ease 2.6s both; }
   #mnav.show .mnav-bg { opacity: 1; }
   #mnav .mnav-it, #mnav.show .mnav-it { transform: none; transition: opacity .2s ease; transition-delay: 0s; }
 }
+/* 茶款頁 360° 茶罐：6×6 序列圖，拖曳時只改 transform */
+.tin360 { position: relative; width: 140px; height: 300px; margin: 1.25rem auto 0; overflow: hidden; touch-action: pan-y; cursor: grab; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent; outline: none; }
+.tin360.grabbing { cursor: grabbing; }
+.tin360 img { position: absolute; left: 0; top: 0; width: 600%; height: 600%; max-width: none; pointer-events: none; opacity: 0; transition: opacity .5s ease; will-change: transform; }
+.tin360.ready img { opacity: 1; }
+.tin360:focus-visible { box-shadow: 0 0 0 2px rgba(255,255,255,.35); border-radius: 12px; }
+.t360-hint { display: flex; align-items: center; justify-content: center; gap: .35rem; margin-top: .35rem; font-size: 11px; color: rgba(255,255,255,.45); letter-spacing: .06em; }
+@media (min-width: 1024px) { .tin360 { width: 168px; height: 360px; } }
+@media (prefers-reduced-motion: reduce) { .tin360 img { transition: none; } }
 </style>
 
 </head>
@@ -919,7 +928,7 @@ const TEA_DB = [
     formula: "佛手烏龍 70% ・ 玫瑰 10% ・ 紅棗 10% ・ 枸杞 10%",
     flavor: "烏龍茶香、優雅花香、微甜果香",
     fit: "忙碌想放鬆、想要一點花香儀式感、情緒緊繃需要溫和舒緩時",
-    story: "「嫣然」取自「嫣然一笑」。人們總把行程排得滿滿、把別人放在前面，卻很少停下來好好喝一口水。所以我們做了一款不挑茶具、不挑場合的茶：佛手烏龍溫潤，玫瑰舒展，紅棗枸杞帶出淡淡的甜。願你在茶香散開時，找回屬於自己的那抹笑意。",
+    story: "一握茶研所的創辦人，常看著身邊的女性朋友，忙起來一整天連喝口水的時間都沒有。「一握・嫣然」的誕生，就是想留一個小小的儀式感給她們——不需要精緻的茶具，不需要特別的場合，只要泡開的那一刻，玫瑰香氣散開，就像是幫自己按下一個暫停鍵。",
     features: [
       { icon: "cup", label: "茶底", desc: "佛手烏龍，溫潤茶香" },
       { icon: "rose", label: "花香", desc: "玫瑰，優雅香氣" },
@@ -1085,6 +1094,88 @@ function storyMedia(tea, delay) {
   return `<video class="w-full rounded-xl bg-black" src="${v}" controls playsinline preload="metadata"></video>`;
 }
 
+// 茶款頁 360° 茶罐：images/tin-<茶款id>.webp 為 6×6、共 36 格的旋轉序列圖
+// 圖片不存在時整塊自動隱藏，不影響頁面
+function tin360HTML(tea) {
+  return `<div class="t360-wrap">
+    <div class="tin360" tabindex="0" role="img" aria-label="${tea.name} 茶罐，可左右拖曳旋轉">
+      <img src="images/tin-${tea.id}.webp" alt="" draggable="false" decoding="async">
+    </div>
+    <div class="t360-hint"><svg class="yi" aria-hidden="true"><use href="#yi-tap"/></svg>左右滑動，轉一圈看看</div>
+  </div>`;
+}
+
+function initTin360(root) {
+  if (!root) return;
+  const img = root.querySelector('img');
+  const N = 36, COLS = 6;
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let pos = 0, vel = 0, drag = false, lastX = 0, lastT = 0, raf = 0, lastFrame = -1;
+
+  function draw() {
+    const f = ((Math.round(pos) % N) + N) % N;
+    if (f === lastFrame) return;
+    lastFrame = f;
+    img.style.transform = `translate(${-(f % COLS) * 100 / COLS}%, ${-Math.floor(f / COLS) * 100 / COLS}%)`;
+  }
+  const pxPerFrame = () => Math.max(6, root.clientWidth / 20);
+
+  img.addEventListener('error', () => { const w = root.closest('.t360-wrap'); if (w) w.remove(); }, { once: true });
+  const onReady = () => {
+    draw();
+    root.classList.add('ready');
+    if (reduce) return;
+    // 進場只轉一圈提示可以旋轉，轉完停在正面，不循環
+    const start = performance.now() + 450, dur = 1600;
+    const intro = (now) => {
+      if (drag || !root.isConnected) return;
+      const t = Math.min(1, Math.max(0, (now - start) / dur));
+      pos = N * (1 - Math.pow(1 - t, 3));
+      draw();
+      if (t < 1) raf = requestAnimationFrame(intro); else pos = 0;
+    };
+    raf = requestAnimationFrame(intro);
+  };
+  if (img.complete && img.naturalWidth) onReady(); else img.addEventListener('load', onReady, { once: true });
+
+  root.addEventListener('pointerdown', (e) => {
+    if (e.pointerType === 'mouse' && e.button !== 0) return;
+    cancelAnimationFrame(raf);
+    drag = true; vel = 0; lastX = e.clientX; lastT = performance.now();
+    root.classList.add('grabbing');
+    try { root.setPointerCapture(e.pointerId); } catch (err) {}
+  });
+  root.addEventListener('pointermove', (e) => {
+    if (!drag) return;
+    const now = performance.now(), dx = e.clientX - lastX;
+    const d = dx / pxPerFrame();
+    pos += d;
+    vel = d / Math.max(8, now - lastT) * 16;
+    lastX = e.clientX; lastT = now;
+    draw();
+  });
+  const end = () => {
+    if (!drag) return;
+    drag = false;
+    root.classList.remove('grabbing');
+    if (reduce || performance.now() - lastT > 80) return;
+    const glide = () => {
+      if (drag || !root.isConnected) return;
+      pos += vel; vel *= 0.9; draw();
+      if (Math.abs(vel) > 0.03) raf = requestAnimationFrame(glide);
+    };
+    raf = requestAnimationFrame(glide);
+  };
+  root.addEventListener('pointerup', end);
+  root.addEventListener('pointercancel', end);
+  root.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+      e.preventDefault(); cancelAnimationFrame(raf);
+      pos += e.key === 'ArrowRight' ? 1 : -1; draw();
+    }
+  });
+}
+
 function openProduct(teaId, fromHistory) {
   currentTeaId = teaId;
   const tea = TEA_DB.find(t => t.id === teaId);
@@ -1097,6 +1188,7 @@ function openProduct(teaId, fromHistory) {
       <h2 class="font-serif text-3xl lg:text-4xl font-bold mt-4 flex items-center justify-center gap-2.5">${teaIconSVG(tea.id, tea.color, "w-11 h-11 lg:w-12 lg:h-12 flex-shrink-0")}${tea.name}</h2>
       <p class="font-serif text-base lg:text-lg mt-3" style="color:${tea.color}">「${tea.slogan}」</p>
       <p class="text-sm text-white/55 mt-2">${tea.formula}</p>
+      ${tin360HTML(tea)}
     </div>
     <div class="liquid-glass-dark rounded-2xl p-5 border border-white/10 fade-in-block" style="animation-delay:${D(1)}ms">
       <h3 class="font-bold text-sm mb-2" style="color:${tea.color}"><span class="mr-1.5"><svg class="yi" aria-hidden="true"><use href="#yi-brush"/></svg></span>茶款故事</h3>
@@ -1140,6 +1232,8 @@ function openProduct(teaId, fromHistory) {
         <button onclick="askProduct()" class="w-10 h-10 rounded-full flex items-center justify-center btn-bounce" style="background:${tea.color}; color:#12261A"><span class="text-base leading-none"><svg class="yi" aria-hidden="true"><use href="#yi-send"/></svg></span></button>
       </div>
     </div>`;
+
+  initTin360(box.querySelector('.tin360'));
 
   // 還原（或初始化）這款茶各自的聊天紀錄
   const log = document.getElementById('product-chat-log');

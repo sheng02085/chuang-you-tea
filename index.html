@@ -588,6 +588,10 @@ body > header, body > main { animation: pageIn .8s ease 2.6s both; }
     </div>
   </nav>
 
+  <!-- 預熱：讓 Tailwind CDN 一載入就生成對話泡泡的 class，
+       否則第一則訊息插入時樣式還沒生成，飛行動畫會量到錯誤位置 -->
+  <div class="hidden flex justify-end justify-start bg-tea-gold text-tea-dark rounded-2xl rounded-tr-sm rounded-tl-sm max-w-[80%] max-w-[85%] px-4 py-2.5 font-medium" aria-hidden="true"></div>
+
   <main class="flex-1 pt-24 md:pt-20 pb-10 px-4 max-w-2xl lg:max-w-4xl mx-auto w-full relative z-10">
 
     <!-- ============ 入口頁 ============ -->
@@ -1399,7 +1403,7 @@ function renderProductChips(suggestions) {
     btn.className = 'chip chip-in text-[10px] liquid-glass-dark border border-white/20 rounded-full px-3 py-1.5';
     btn.style.animationDelay = (i * 70) + 'ms';
     btn.innerText = q;
-    btn.onclick = () => askProduct(q);
+    btn.onclick = () => askProduct(q, btn);
     box.appendChild(btn);
   });
 }
@@ -1508,11 +1512,14 @@ function addBubble(logId, role, text, iconHTML, noAnim) {
   const log = document.getElementById(logId);
   const wrap = document.createElement('div');
   wrap.className = role === 'user' ? 'flex justify-end' : 'flex justify-start';
+  wrap.style.display = 'flex';
+  wrap.style.justifyContent = role === 'user' ? 'flex-end' : 'flex-start';
   const bubble = document.createElement('div');
   bubble.className = role === 'user'
     ? 'bg-tea-gold text-tea-dark rounded-2xl rounded-tr-sm px-4 py-2.5 max-w-[80%] font-medium'
     : 'liquid-glass-dark border border-white/10 rounded-2xl rounded-tl-sm px-4 py-2.5 max-w-[85%] text-white/85 leading-relaxed';
   bubble.innerText = text;
+  bubble.style.maxWidth = role === 'user' ? '80%' : '85%';
   if (!noAnim) bubble.classList.add(role === 'user' ? 'msg-in-user' : 'msg-in-bot');
   if (iconHTML) bubble.insertAdjacentHTML('beforeend', iconHTML);
   wrap.appendChild(bubble);
@@ -1603,6 +1610,65 @@ function flySend(inputId) {
 // 等待回答期間不重複送出
 const chatBusy = {};
 
+// 記下訊息的起飛點：一律是輸入列右下角（送出鍵的右下角），在清空輸入列前量好
+function msgSource(input) {
+  const el = (input && input.nextElementSibling) || input;
+  if (!el) return null;
+  const r = el.getBoundingClientRect();
+  return { x: r.right, y: r.bottom };
+}
+
+// 使用者泡泡從輸入列右下角飛進聊天室落地。
+// 做法：先把真正的泡泡放好但隱藏，量出位置；再放一個長得一樣的替身，
+// 以泡泡右下角為基準，從起飛點縮小狀態飛過去放大落地（只動 transform / opacity）。
+// 一律 resolve，不會卡住後續流程
+function flyMessage(logId, bubble, text, src) {
+  const log = document.getElementById(logId);
+  log.scrollTop = log.scrollHeight;
+  if (!src || REDUCE_MOTION || !bubble.animate) { bubble.classList.add('msg-in-user'); return Promise.resolve(); }
+  bubble.style.opacity = '0';
+  // 等兩個畫格：確保泡泡樣式已套用、聊天室已捲到底，才量落地位置
+  return new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)))
+    .then(() => flyGhost(log, bubble, text, src));
+}
+function flyGhost(log, bubble, text, src) {
+  log.scrollTop = log.scrollHeight;
+  const b = bubble.getBoundingClientRect();
+  const cs = getComputedStyle(bubble);
+  const dx = src.x - b.right;
+  const dy = src.y - b.bottom;
+
+  const ghost = document.createElement('div');
+  ghost.setAttribute('aria-hidden', 'true');
+  ghost.className = 'bg-tea-gold text-tea-dark rounded-2xl rounded-tr-sm font-medium';
+  ghost.style.cssText = `position:absolute; left:${b.left + window.scrollX}px; top:${b.top + window.scrollY}px;
+    width:${b.width}px; height:${b.height}px; box-sizing:border-box; padding:${cs.padding};
+    font-size:${cs.fontSize}; line-height:${cs.lineHeight}; white-space:${cs.whiteSpace};
+    z-index:80; pointer-events:none; transform-origin:100% 100%; will-change:transform, opacity;`;
+  ghost.textContent = text;
+  document.body.appendChild(ghost);
+
+  const T = 560;
+  const fly = ghost.animate([
+    { opacity: 0, transform: `translate(${dx}px, ${dy}px) scale(.35)` },
+    { opacity: 1, offset: .3 },
+    { opacity: 1, transform: 'translate(0, -8px) scale(1.04)', offset: .78 },
+    { opacity: 1, transform: 'none' }
+  ], { duration: T, easing: 'cubic-bezier(.3,.85,.25,1)', fill: 'both' });
+
+  return new Promise(resolve => {
+    let done = false;
+    const finish = () => {
+      if (done) return; done = true;
+      bubble.style.opacity = '';
+      ghost.remove();
+      resolve();
+    };
+    fly.onfinish = finish;
+    setTimeout(finish, T + 200);   // 保險：動畫事件沒觸發也一定收尾
+  });
+}
+
 // 把我們自己存的對話紀錄格式，轉成 Gemini API 要的格式（bot 要轉成 model）
 function toGeminiContents(history) {
   return history.map(m => ({ role: m.role === 'user' ? 'user' : 'model', parts: [{ text: m.text }] }));
@@ -1632,17 +1698,19 @@ async function callGemini(systemPrompt, contents) {
 }
 
 /* ---------------- 產品介紹頁問答 ---------------- */
-async function askProduct(presetText) {
+async function askProduct(presetText, srcEl) {
   const tea = TEA_DB.find(t => t.id === currentTeaId);
   const input = document.getElementById('product-chat-input');
   const text = presetText || input.value.trim();
   if (!text || chatBusy.product) return;
   chatBusy.product = true;
-  flySend('product-chat-input');
+  const src = msgSource(input);   // 起飛點：輸入列右下角
+  if (!srcEl) flySend('product-chat-input');
   input.value = '';
   document.getElementById('product-chips').innerHTML = '';
-  addBubble('product-chat-log', 'user', text);
+  const userBubble = addBubble('product-chat-log', 'user', text, null, true);
   productLogs[currentTeaId].push({ role: 'user', text });
+  await flyMessage('product-chat-log', userBubble, text, src);
   addTyping('product-chat-log');
 
   const systemPrompt = `你是「一握茶研所」品牌的茶伴 AI，現在使用者正在看的是「${tea.name}」這款茶的介紹頁。
@@ -1696,21 +1764,23 @@ function renderChips(options) {
     btn.className = 'chip chip-in text-[10px] liquid-glass-dark border border-white/20 rounded-full px-3 py-1.5';
     btn.style.animationDelay = (i * 70) + 'ms';
     btn.innerText = opt;
-    btn.onclick = () => { document.getElementById('companion-input').value = opt; sendCompanion(); };
+    btn.onclick = () => { document.getElementById('companion-input').value = opt; sendCompanion(btn); };
     box.appendChild(btn);
   });
 }
 
-async function sendCompanion() {
+async function sendCompanion(srcEl) {
   const input = document.getElementById('companion-input');
   const text = input.value.trim();
   if (!text || chatBusy.companion) return;
   chatBusy.companion = true;
-  flySend('companion-input');
+  const src = msgSource(input);   // 起飛點：輸入列右下角
+  if (!srcEl) flySend('companion-input');
   input.value = '';
   document.getElementById('companion-chips').innerHTML = '';
-  addBubble('companion-log', 'user', text);
+  const userBubble = addBubble('companion-log', 'user', text, null, true);
   companionHistory.push({ role: 'user', text });
+  await flyMessage('companion-log', userBubble, text, src);
   addTyping('companion-log');
 
   const dbText = TEA_DB.map(t => `- ${t.name}（${t.series}）：配方 ${t.formula}；風味 ${t.flavor}；適合 ${t.fit}`).join('\n');

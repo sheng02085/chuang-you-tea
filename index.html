@@ -126,8 +126,17 @@ html.bg-hold .fluid-bg { animation-play-state: paused !important; }
 #hero-anim.play .ha-lip > *     { animation: haLipFade 6.3s ease both; }
 #hero-anim.play .ha-disc-fill   { animation: haFill 6.3s ease both; }
 #hero-anim.play .ha-rim         { animation: haRim 6.3s ease both; }
-#hero-anim.play .ha-rip.r1      { animation: haRip 1.2s ease-out 1.8s 2 both; }
-#hero-anim.play .ha-rip.r2      { animation: haRip 1.2s ease-out 2.4s 1 both; }
+/* 茶湯漣漪：三款茶每款都是同一組兩圈（進場前 0.1 秒一圈、再隔 0.6 秒一圈），三款各差 1 秒，跟著茶款進場節奏 */
+#hero-anim.play .ha-rip         { animation: haRip 1.2s ease-out forwards; } /* 不用 both：等待期間不能先套第一格（會在中央留一個小圈） */
+#hero-anim.play .ha-rip.r1      { animation-delay: 1.8s; }
+#hero-anim.play .ha-rip.r2      { animation-delay: 2.4s; }
+#hero-anim.play .ha-rip.r3      { animation-delay: 2.8s; }
+#hero-anim.play .ha-rip.r4      { animation-delay: 3.4s; }
+#hero-anim.play .ha-rip.r5      { animation-delay: 3.8s; }
+#hero-anim.play .ha-rip.r6      { animation-delay: 4.4s; }
+/* 倒茶時（遠看小茶杯）：茶柱落進杯口，茶湯上泛起兩圈小漣漪；跟著茶湯圓盤一起是壓扁的橢圓，看起來就是有透視的杯口 */
+#hero-anim.play .ha-rip.p1      { animation-duration: .7s; animation-delay: 1.2s; }
+#hero-anim.play .ha-rip.p2      { animation-duration: .7s; animation-delay: 1.45s; }
 #hero-anim.play .ha-t.t1        { animation: haT1 6.3s ease both; }
 #hero-anim.play .ha-t.t2        { animation: haT2 6.3s ease both; }
 #hero-anim.play .ha-t.t3        { animation: haT3 6.3s ease both; }
@@ -352,7 +361,7 @@ body > header, body > main { animation: pageIn .8s ease 2.6s both; }
 }
 /* ===== 首頁圖示小動畫 =====
    手機一進來就露出一部分的圖示（第一款茶）先顯示完整靜態圖示，整個滑進畫面才播，不會出現空洞。
-   手機／平板：圖示整個出現在畫面內才播放（JS 加 .ic-play），同一時間只播一個，依序排隊。
+   手機／平板：圖示整個出現在畫面內才播放（JS 加 .ic-play），依畫面順序排隊，每個錯開 0.4 秒開始。
    電腦（有滑鼠）：圖示平常顯示完整圖案，滑鼠停在品項上才播，移開立即停止並回到完整圖案。
    完全滑出畫面後重置，下次再看到會重播。
    .ic-wait：先停在第一格（動畫暫停），.ic-play：開始播。只用 transform / opacity。
@@ -571,8 +580,14 @@ body > header, body > main { animation: pageIn .8s ease 2.6s both; }
               <clipPath id="ha-disc-clip"><circle r="49"/></clipPath>
               <circle class="ha-disc-fill" r="49" fill="#4A3510" stroke="none"/>
               <g clip-path="url(#ha-disc-clip)">
+                <circle class="ha-rip p1" r="30" stroke="#E6C35C" stroke-opacity=".7" stroke-width="1" vector-effect="non-scaling-stroke"/>
+                <circle class="ha-rip p2" r="30" stroke="#E6C35C" stroke-opacity=".7" stroke-width="1" vector-effect="non-scaling-stroke"/>
                 <circle class="ha-rip r1" r="30" stroke="#D4AF37" stroke-opacity=".35" stroke-width="1" vector-effect="non-scaling-stroke"/>
                 <circle class="ha-rip r2" r="30" stroke="#D4AF37" stroke-opacity=".35" stroke-width="1" vector-effect="non-scaling-stroke"/>
+                <circle class="ha-rip r3" r="30" stroke="#D4AF37" stroke-opacity=".35" stroke-width="1" vector-effect="non-scaling-stroke"/>
+                <circle class="ha-rip r4" r="30" stroke="#D4AF37" stroke-opacity=".35" stroke-width="1" vector-effect="non-scaling-stroke"/>
+                <circle class="ha-rip r5" r="30" stroke="#D4AF37" stroke-opacity=".35" stroke-width="1" vector-effect="non-scaling-stroke"/>
+                <circle class="ha-rip r6" r="30" stroke="#D4AF37" stroke-opacity=".35" stroke-width="1" vector-effect="non-scaling-stroke"/>
                 <g class="ha-t t1">
                   <svg x="-21" y="-31" width="42" height="42" viewBox="0 0 64 64" fill="none" stroke="#E8829B" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M32 40v16"/><path d="M32 51c-1.4-5.2-5.4-8-11-8 1 5.2 5 8 11 8z" fill="#E8829B40"/><path d="M32 47c1.8-3.4 5-5.2 9-5.2-.9 3.6-4 5.4-9 5.2z" fill="#E8829B40"/><path d="M21.5 23c-1.2-6.5 3.5-11 10.5-11s11.7 4.5 10.5 11" fill="#E8829B40"/><path d="M18 24c3.5 1.8 7.5 1 10.5-2.2 1.2 1.6 2.2 2.2 3.5 2.2s2.3-.6 3.5-2.2c3 3.2 7 4 10.5 2.2 0 9.5-6.2 16-14 16s-14-6.5-14-16z" fill="#E8829B40"/><path d="M32.4 16.4c-3.2.2-5.1 2.5-4.8 5.1.3 2.4 2.5 3.8 4.8 3.4 2-.4 3.1-2.1 2.8-3.7-.3-1.5-1.7-2.2-3-1.8"/></svg>
                   <text x="0" y="23" text-anchor="middle" fill="#E8829B" stroke="none" font-size="9.5" font-weight="700" letter-spacing="2" font-family="'Noto Serif TC', serif">嫣然</text>
@@ -2440,13 +2455,15 @@ const scrollFadeObserver = new IntersectionObserver((entries) => {
 }, { threshold: 0.2 });
 document.querySelectorAll('.scroll-fade').forEach(el => scrollFadeObserver.observe(el));
 // 首頁圖示小動畫（手機／平板）：圖示「整個」出現在畫面內才播放；完全滑出畫面（或切到別頁）後重置，下次看到會重播。
-// 同一時間只播一個：看得到的圖示依畫面順序排隊，上一個播完才換下一個。
+// 看得到的圖示依畫面順序排隊，上一個開始播 0.4 秒後下一個接著開始（不等整段播完）。
 // 電腦版改成滑鼠移到品項上才播，見下面 playIconHover()。
 // 主視覺五秒動畫還在畫面上播的時候，圖示先等它播完；迎賓畫面結束前也先不播。
 const ICON_HOVER = matchMedia('(hover: hover) and (pointer: fine)').matches; // 有滑鼠＝電腦版
-let iconAnimReady = false, icBusy = null, icQueueT = 0, icDoneT = 0, heroBusyUntil = 0, heroOnScreen = false;
+let iconAnimReady = false, icBusy = null, icBusyStart = 0, icQueueT = 0, icDoneT = 0, heroBusyUntil = 0, heroOnScreen = false;
 const icQueue = [];
 const IC_SETTLE = 150; // 圖示完整停在畫面上多久才開始播（ms）
+// 同時有好幾個圖示在畫面上時，不等上一個整段播完：上一個開始播 IC_GAP 後，下一個就接著開始（依畫面順序錯開）
+const IC_GAP = 400;
 function iconDuration(el) {
   let end = 0;
   try { el.getAnimations({ subtree: true }).forEach(a => { end = Math.max(end, a.effect.getComputedTiming().endTime); }); } catch (e) {}
@@ -2454,7 +2471,7 @@ function iconDuration(el) {
 }
 function runIconQueue() {
   clearTimeout(icQueueT);
-  if (!iconAnimReady || icBusy) return;
+  if (!iconAnimReady) return;
   for (let i = icQueue.length - 1; i >= 0; i--) if (!icQueue[i]._icPending) icQueue.splice(i, 1);
   if (!icQueue.length) return;
   const wait = heroOnScreen ? heroBusyUntil - Date.now() : 0;
@@ -2463,6 +2480,8 @@ function runIconQueue() {
   // 快速滑過：圖示要連續完整停在畫面上 IC_SETTLE 才開始播，一閃而過的不佔用播放順序
   const settle = IC_SETTLE - (Date.now() - icQueue[0]._icSeen);
   if (settle > 0) { icQueueT = setTimeout(runIconQueue, settle); return; }
+  const gap = icBusy ? IC_GAP - (Date.now() - icBusyStart) : 0;
+  if (gap > 0) { icQueueT = setTimeout(runIconQueue, gap); return; }
   const el = icQueue.shift();
   el._icPending = false;
   if (!el.classList.contains('ic-wait')) { // 原本是完整靜態圖示：從第一格重新開始播
@@ -2472,7 +2491,10 @@ function runIconQueue() {
   }
   el.classList.add('ic-play');
   icBusy = el;
-  icDoneT = setTimeout(() => { icBusy = null; runIconQueue(); }, iconDuration(el) + 200);
+  icBusyStart = Date.now();
+  clearTimeout(icDoneT);
+  icDoneT = setTimeout(() => { if (icBusy === el) icBusy = null; }, iconDuration(el) + 200);
+  if (icQueue.length) icQueueT = setTimeout(runIconQueue, IC_GAP);
 }
 // asStatic：回到完整靜態圖示（不先停在第一格），用在「一進來就看得到一部分」的圖示，避免出現空洞
 function resetIcon(el, asStatic) {

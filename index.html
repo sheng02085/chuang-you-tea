@@ -70,13 +70,19 @@ html.bg-hold .fluid-bg { animation-play-state: paused !important; }
 
 /* ===== AI 對話動畫（AI 茶伴＋茶款頁問答共用；只用 transform / opacity） ===== */
 /* 送出：使用者泡泡從右下彈出、送出鍵圖示往右上飛出再回來 */
-.msg-in-user { transform-origin: 100% 100%; animation: msgUser .38s cubic-bezier(.2,1.25,.4,1) both; }
-@keyframes msgUser { from { opacity: 0; transform: translateY(14px) scale(.88); } to { opacity: 1; transform: none; } }
-.send-fly svg { animation: sendFly .45s ease both; }
+.msg-in-user { transform-origin: 100% 100%; animation: msgUser .55s cubic-bezier(.2,1.4,.4,1) both; }
+@keyframes msgUser {
+  0% { opacity: 0; transform: translate(18px, 36px) scale(.6); }
+  60% { opacity: 1; }
+  100% { opacity: 1; transform: none; }
+}
+.send-fly { animation: sendPress .5s cubic-bezier(.3,1.6,.5,1) both; }
+@keyframes sendPress { 0% { transform: scale(1); } 25% { transform: scale(.8); } 60% { transform: scale(1.12); } 100% { transform: scale(1); } }
+.send-fly svg { animation: sendFly .6s ease both; }
 @keyframes sendFly {
   0% { opacity: 1; transform: none; }
-  45% { opacity: 0; transform: translate(12px, -12px); }
-  46% { opacity: 0; transform: translate(-10px, 10px); }
+  40% { opacity: 0; transform: translate(22px, -22px) rotate(-12deg) scale(.7); }
+  41% { opacity: 0; transform: translate(-14px, 14px) scale(.7); }
   100% { opacity: 1; transform: none; }
 }
 /* 思考中：茶葉圖示輕晃＋三點跳動＋狀態文字輪播 */
@@ -92,7 +98,7 @@ html.bg-hold .fluid-bg { animation-play-state: paused !important; }
 /* 回答：AI 泡泡從左上浮出，文字逐字淡入，結尾有跳動游標 */
 .msg-in-bot { transform-origin: 0 0; animation: msgBot .42s cubic-bezier(.2,1.1,.4,1) both; }
 @keyframes msgBot { from { opacity: 0; transform: translateY(8px) scale(.94); } to { opacity: 1; transform: none; } }
-.stream-ch { animation: streamIn .28s ease both; }
+.stream-ch { animation: streamIn .35s ease both; }
 @keyframes streamIn { from { opacity: 0; } to { opacity: 1; } }
 .stream-caret { display: inline-block; width: .5em; height: .5em; margin-left: .25em; border-radius: 50%; background: currentColor; vertical-align: middle; animation: caretPulse .8s ease-in-out infinite; }
 @keyframes caretPulse { 0%,100% { opacity: .45; transform: scale(.7); } 50% { opacity: 1; transform: scale(1); } }
@@ -100,7 +106,7 @@ html.bg-hold .fluid-bg { animation-play-state: paused !important; }
 .chip-in { animation: fadeInUp .35s cubic-bezier(.16,1,.3,1) backwards; }
 @media (prefers-reduced-motion: reduce) {
   .msg-in-user, .msg-in-bot, .chip-in { animation: streamIn .2s ease both; }
-  .think-icon, .think-dot, .stream-caret, .send-fly svg { animation: none; }
+  .think-icon, .think-dot, .stream-caret, .send-fly, .send-fly svg { animation: none; }
   .think-dot { opacity: .6; }
 }
 
@@ -755,32 +761,32 @@ body > header, body > main { animation: pageIn .8s ease 2.6s both; }
           <p class="text-sm text-white/60 mt-3">一握佛手，一茶一故事</p>
         </div>
 
-        <div class="liquid-glass-dark rounded-2xl p-5 lg:p-7 border border-white/10 fade-in-block" style="animation-delay:180ms">
+        <div class="liquid-glass-dark rounded-2xl p-5 lg:p-7 border border-white/10 fade-in-block" style="animation-delay:420ms">
           <h3 class="text-tea-gold font-bold text-sm lg:text-base mb-2"><span class="mr-1.5"><svg class="yi" aria-hidden="true"><use href="#yi-cup"/></svg></span>我們在做什麼</h3>
           <p class="text-xs lg:text-sm text-white/70 leading-relaxed">一握茶研所以臺灣特色「佛手烏龍茶」為核心，結合藥食同源素材與現代生活情境，開發「一握」系列茶飲。我們希望讓茶不只是一種飲品，而是陪伴日常生活的一段小時光。</p>
         </div>
 
-        <div class="liquid-glass-dark rounded-2xl p-5 lg:p-7 border border-white/10 fade-in-block" style="animation-delay:360ms">
+        <div class="liquid-glass-dark rounded-2xl p-5 lg:p-7 border border-white/10 fade-in-block" style="animation-delay:840ms">
           <h3 class="text-tea-gold font-bold text-sm lg:text-base mb-2"><span class="mr-1.5"><svg class="yi" aria-hidden="true"><use href="#yi-hands"/></svg></span>為什麼是「一握」</h3>
           <p class="text-xs lg:text-sm text-white/70 leading-relaxed">一握，是雙手捧起一杯茶的溫度，也是在忙碌生活裡，留給自己的一小段時間。不需要特別的茶具或場合，只要一杯茶，就能讓自己停下來喘口氣。</p>
         </div>
 
-        <div class="liquid-glass-dark rounded-2xl p-5 lg:p-7 border border-white/10 fade-in-block" style="animation-delay:540ms">
+        <div class="liquid-glass-dark rounded-2xl p-5 lg:p-7 border border-white/10 fade-in-block" style="animation-delay:1260ms">
           <h3 class="text-tea-gold font-bold text-sm lg:text-base mb-2"><span class="mr-1.5"><svg class="yi" aria-hidden="true"><use href="#yi-leaf"/></svg></span>依生活狀態選茶</h3>
           <p class="text-xs lg:text-sm text-white/70 leading-relaxed">不同於傳統以單一功效分類的養生茶，我們把茶飲與現代人的生活狀態連結，依照女性日常、外食聚餐、秋冬暖飲等情境設計茶款。每一款茶都有自己的風味與故事，讓每個人在不同的生活狀態中，都能找到屬於自己的那一握。</p>
         </div>
 
-        <div class="liquid-glass-dark rounded-2xl p-5 lg:p-7 border border-white/10 fade-in-block" style="animation-delay:720ms">
+        <div class="liquid-glass-dark rounded-2xl p-5 lg:p-7 border border-white/10 fade-in-block" style="animation-delay:1680ms">
           <h3 class="text-tea-gold font-bold text-sm lg:text-base mb-2"><span class="mr-1.5"><svg class="yi" aria-hidden="true"><use href="#yi-phone"/></svg></span>一茶一故事，一掃就懂</h3>
           <p class="text-xs lg:text-sm text-white/70 leading-relaxed">每款茶都附有專屬 QR Code，掃描後就能了解茶款理念、配方與飲用資訊；不知道喝哪一杯時，也可以和 AI 茶伴聊聊今天的心情，讓它幫你挑一款。</p>
         </div>
 
-        <div class="liquid-glass-dark rounded-2xl p-5 lg:p-7 border border-white/10 fade-in-block" style="animation-delay:900ms">
+        <div class="liquid-glass-dark rounded-2xl p-5 lg:p-7 border border-white/10 fade-in-block" style="animation-delay:2100ms">
           <h3 class="text-tea-gold font-bold text-sm lg:text-base mb-2"><span class="mr-1.5"><svg class="yi" aria-hidden="true"><use href="#yi-cycle"/></svg></span>永續的一杯茶</h3>
           <p class="text-xs lg:text-sm text-white/70 leading-relaxed">我們將減量包裝、可回收材質與 QR Code 數位資訊融入產品設計，用數位內容取代紙本說明，讓品嚐一杯茶的同時，也對環境溫柔一點。</p>
         </div>
 
-        <div class="text-center pt-4 pb-2 space-y-3 fade-in-block" style="animation-delay:1080ms">
+        <div class="text-center pt-4 pb-2 space-y-3 fade-in-block" style="animation-delay:2520ms">
           <button onclick="goToTeas()" class="bg-tea-gold text-tea-dark font-bold text-sm lg:text-base px-8 lg:px-10 py-3 lg:py-4 rounded-full shadow-[0_0_20px_rgba(212,175,55,0.3)] btn-bounce inline-block">開始探索茶款</button>
           <div><button onclick="showView('companion')" class="text-emerald-300 text-xs lg:text-sm font-bold btn-bounce"><span class="mr-1"><svg class="yi" aria-hidden="true"><use href="#yi-pot"/></svg></span>不知道喝哪一杯？問問 AI 茶伴 →</button></div>
         </div>
@@ -1519,7 +1525,7 @@ const REDUCE_MOTION = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 // 讓 AI 的回覆逐字淡入（類似 ChatGPT / Gemini 的串流效果），結尾帶一顆跳動游標；
 // 回傳 Promise，動畫跑完才 resolve。減少動態效果時直接整段淡入
-function typeIntoBubble(logId, bubble, text, speed = 22) {
+function typeIntoBubble(logId, bubble, text, speed = 34) {
   return new Promise(resolve => {
     const log = document.getElementById(logId);
     bubble.style.whiteSpace = 'pre-wrap';   // 保留 AI 回覆裡的換行
@@ -1532,7 +1538,7 @@ function typeIntoBubble(logId, bubble, text, speed = 22) {
     let i = 0;
     const timer = setInterval(() => {
       // 一次補 1～2 個字，節奏比較像真的串流
-      const n = Math.min(chars.length - i, Math.random() < 0.35 ? 2 : 1);
+      const n = Math.min(chars.length - i, Math.random() < 0.2 ? 2 : 1);
       const span = document.createElement('span');
       span.className = 'stream-ch';
       span.textContent = chars.slice(i, i + n).join('');
@@ -1542,7 +1548,7 @@ function typeIntoBubble(logId, bubble, text, speed = 22) {
       if (i >= chars.length) {
         clearInterval(timer);
         // 最後幾個字淡入完再收掉游標，並把一堆 span 合回純文字
-        setTimeout(() => { bubble.textContent = text; resolve(); }, 300);
+        setTimeout(() => { bubble.textContent = text; resolve(); }, 380);
       }
     }, speed);
   });
@@ -1592,7 +1598,7 @@ function flySend(inputId) {
   const btn = document.getElementById(inputId)?.nextElementSibling;
   if (!btn || REDUCE_MOTION) return;
   btn.classList.remove('send-fly'); void btn.offsetWidth; btn.classList.add('send-fly');
-  setTimeout(() => btn.classList.remove('send-fly'), 500);
+  setTimeout(() => btn.classList.remove('send-fly'), 650);
 }
 // 等待回答期間不重複送出
 const chatBusy = {};

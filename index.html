@@ -1105,34 +1105,56 @@ function storyMedia(tea, delay) {
 // 單格尺寸由圖片實際寬高自動計算，之後換成更高解析度的序列圖不需改程式
 // 圖片不存在時整塊自動隱藏，不影響頁面
 const TIN360_CACHE = {};
-// 提前準備某款茶罐序列圖（下載＋解碼），滑鼠移到卡片上或手指按下時呼叫
+const TIN360_DL = {};     // 背景預載中的序列圖：src → Promise
+const TIN360_POSTER = {}; // 已開始下載的正面預覽圖
+// 正面預覽圖（每張約 17 KB）先抓進快取，進茶款頁時幾乎立刻有畫面
+function tin360Poster(id) {
+  const src = `images/tin-${id}-front.webp`;
+  if (TIN360_POSTER[src]) return;
+  const img = TIN360_POSTER[src] = new Image();
+  try { img.fetchPriority = 'high'; } catch (e) {}
+  img.src = src;
+}
+// 提前準備某款茶罐序列圖（下載＋解碼），滑鼠移到卡片上、手指按下或進茶款頁時呼叫
 function tin360Warm(id) {
+  tin360Poster(id);
   const src = `images/tin-${id}.webp`;
   if (TIN360_CACHE[src]) return TIN360_CACHE[src];
   const img = TIN360_CACHE[src] = Object.assign(new Image(), { decoding: 'async' });
+  try { img.fetchPriority = 'high'; } catch (e) {} // new Image() 預設低優先，會被其他請求排在後面
   img.addEventListener('error', () => { img.dataset.failed = '1'; }, { once: true });
-  img.src = src;
-  if (img.decode) img.decode().catch(() => {});
+  const start = () => { img.src = src; if (img.decode) img.decode().catch(() => {}); };
+  // 背景預載正在下載同一張時，等它下完再從快取讀，不重複下載、不互搶頻寬
+  if (TIN360_DL[src]) TIN360_DL[src].then(start, start); else start();
   return img;
 }
-// 首頁穩定後，趁空檔把三張序列圖先下載到瀏覽器快取（只下載不解碼，不佔手機記憶體）
+// 首頁穩定後趁空檔預載：先抓三張正面預覽圖，再「一張一張」下載序列圖到瀏覽器快取
+// （不同時下載三張互搶頻寬；只存快取不解碼，不佔手機記憶體；iOS Safari 不支援 link prefetch，改用 fetch）
 function tin360Prefetch() {
   const c = navigator.connection;
   if (c && (c.saveData || /2g/.test(c.effectiveType || ''))) return;
-  const go = () => TEA_DB.forEach(t => {
-    const l = document.createElement('link');
-    l.rel = 'prefetch'; l.as = 'image'; l.href = `images/tin-${t.id}.webp`;
-    document.head.appendChild(l);
-  });
+  const go = () => {
+    TEA_DB.forEach(t => tin360Poster(t.id));
+    if (!window.fetch) return;
+    const queue = TEA_DB.map(t => `images/tin-${t.id}.webp`);
+    const next = () => {
+      const src = queue.shift();
+      if (!src) return;
+      if (TIN360_CACHE[src]) return next(); // 使用者已經觸發這張的下載
+      TIN360_DL[src] = fetch(src).then(r => (r.ok ? r.blob() : null)).catch(() => null)
+        .then(() => { delete TIN360_DL[src]; next(); });
+    };
+    next();
+  };
   const idle = window.requestIdleCallback || ((f) => setTimeout(f, 1));
-  setTimeout(() => idle(go, { timeout: 3000 }), 4000);
+  setTimeout(() => idle(go, { timeout: 2000 }), 1500);
 }
 if (document.readyState === 'complete') tin360Prefetch();
 else window.addEventListener('load', tin360Prefetch, { once: true });
 function tin360HTML(tea) {
   return `<div class="t360-wrap">
     <div class="tin360" tabindex="0" role="img" aria-label="${tea.name} 茶罐，可左右拖曳旋轉" data-src="images/tin-${tea.id}.webp" data-id="${tea.id}">
-      <img class="t360-poster" src="images/tin-${tea.id}-front.webp" alt="" aria-hidden="true" decoding="async" onload="if(!this.parentNode.classList.contains('ready'))this.parentNode.classList.add('poster')" onerror="this.remove()">
+      <img class="t360-poster" src="images/tin-${tea.id}-front.webp" alt="" aria-hidden="true" decoding="async" fetchpriority="high" onload="if(!this.parentNode.classList.contains('ready'))this.parentNode.classList.add('poster')" onerror="this.remove()">
       <canvas aria-hidden="true"></canvas>
     </div>
     <div class="t360-hint"><svg class="yi" aria-hidden="true"><use href="#yi-tap"/></svg>左右滑動，轉一圈看看</div>

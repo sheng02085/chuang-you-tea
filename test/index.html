@@ -486,13 +486,56 @@ body > header, body > main { animation: pageIn .8s ease 2.6s both; }
 .t360-hint .t360-pct { font-variant-numeric: tabular-nums; }
 .t360-retry { display: none; margin-left: .4rem; padding: .15rem .6rem; border-radius: 999px; border: 1px solid rgba(255,255,255,.3); color: rgba(255,255,255,.8); font-size: 11px; background: transparent; }
 .t360-wrap.failed .t360-retry { display: inline-block; }
-.t360-dbg { margin-top: .4rem; font-size: 10px; line-height: 1.6; color: rgba(255,255,255,.55); text-align: center; font-variant-numeric: tabular-nums; }
-.t360-dbg:empty { display: none; }
-/* 【測試版】主視覺標題旁的 BETA 標記（靜態，正式版不放） */
-.beta-tag { display: inline-block; vertical-align: super; margin-left: .45em; padding: .15em .55em; border: 1px solid rgba(212,175,55,.7); border-radius: 999px; font-family: system-ui, -apple-system, sans-serif; font-size: 11px; line-height: 1.2; font-weight: 700; letter-spacing: .12em; color: #D4AF37; }
-@media (min-width: 1024px) { .beta-tag { font-size: 13px; } }
-.t360-dbg a { text-decoration: underline; color: rgba(255,255,255,.8); }
 @media (prefers-reduced-motion: reduce) { .tin360 canvas, .tin360 .t360-poster, .tin360 .t360-ph, .t360-load i { transition: none; } }
+
+/* ===== 測試版 BETA 標記 ===== */
+.beta-tag { display: inline-block; vertical-align: middle; position: relative; top: -.35em; margin-left: .55em; padding: .28em .55em .28em .75em; border: 1px solid rgba(212,175,55,.6); border-radius: 999px; color: #D4AF37; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 10px; font-weight: 700; letter-spacing: .2em; line-height: 1; }
+
+/* ===== 首頁茶罐輪播（主視覺與茶卡之間）=====
+   背景換色、大字描邊、茶罐切成 7 條橫條錯位換罐；只用 transform / opacity，不用 clip-path、blur。
+   只在進入畫面時自動輪一圈（嫣然→輕盈→暖陽→回到嫣然）後停住，可左右滑或點圓點切換。 */
+.ts { --tw: 124px; --th: calc(var(--tw) * 2.2); --n: 7; position: relative; height: 400px; overflow: hidden; touch-action: pan-y; user-select: none; -webkit-user-select: none; contain: layout paint; }
+@media (min-width: 768px) { .ts { --tw: 124px; height: 370px; border-radius: 2rem; border: 1px solid rgba(255,255,255,.1); } }
+@media (min-width: 1024px) { .ts { --tw: 140px; height: 410px; } }
+.ts-bg { position: absolute; inset: 0; opacity: 0; transition: opacity .7s ease; }
+.ts-bg.on { opacity: 1; }
+.ts-word { position: absolute; inset: 0; display: grid; place-items: center; pointer-events: none; }
+.ts-w { grid-area: 1 / 1; margin-top: -40px; font-size: clamp(150px, 44vw, 250px); font-weight: 700; line-height: 1; letter-spacing: .04em; padding-left: .04em; white-space: nowrap; color: transparent; -webkit-text-stroke: 1.5px var(--c); opacity: 0; transform: scale(1.1); transition: opacity .45s ease, transform .9s cubic-bezier(.2,.8,.2,1); }
+@supports not (-webkit-text-stroke: 1px #000) { .ts-w { color: rgba(255,255,255,.08); } }
+.ts-w.on { opacity: .45; transform: scale(1); }
+.ts-floor { position: absolute; left: 50%; top: calc(46px + var(--th) - 14px); width: calc(var(--tw) * 1.5); height: 26px; margin-left: calc(var(--tw) * -.75); background: radial-gradient(closest-side, rgba(0,0,0,.45), transparent); pointer-events: none; }
+.ts-stage { position: absolute; left: 50%; top: 46px; width: var(--tw); height: var(--th); margin-left: calc(var(--tw) / -2); cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.ts-tin { position: absolute; inset: 0; }
+.ts-s { position: absolute; left: 0; width: 100%; top: calc(var(--i) * var(--th) / var(--n)); height: calc(var(--th) / var(--n) + 1px); overflow: hidden;
+  opacity: 0; transform: translateX(calc(var(--d) * -1));
+  transition: transform .46s cubic-bezier(.2,.85,.25,1) calc(var(--i) * 32ms), opacity .16s linear calc(var(--i) * 32ms); }
+.ts-s img { position: absolute; left: 0; top: calc(var(--i) * var(--th) / var(--n) * -1); width: var(--tw); height: var(--th); max-width: none; }
+.ts-tin.on .ts-s { opacity: 1; transform: translateX(0); }
+.ts-tin.off .ts-s { opacity: 0; transform: translateX(var(--d)); transition-duration: .34s, .2s; }
+.ts-tin.reset .ts-s { transition: none !important; }
+.ts-scan { position: absolute; left: -45%; width: 190%; top: 0; height: 2px; opacity: 0; background: linear-gradient(90deg, transparent, var(--c), transparent); pointer-events: none; }
+.ts-scan.run { animation: tsScan .6s cubic-bezier(.4,0,.3,1) both; }
+@keyframes tsScan { 0% { opacity: 0; transform: translateY(0); } 15% { opacity: .9; } 85% { opacity: .9; } 100% { opacity: 0; transform: translateY(var(--th)); } }
+.ts-top { position: absolute; left: 20px; right: 12px; top: 14px; display: flex; align-items: center; justify-content: space-between; }
+.ts-count { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11px; letter-spacing: .18em; color: rgba(255,255,255,.55); }
+.ts-count b { color: var(--c); font-weight: 700; transition: color .5s ease; }
+.ts-dots { display: flex; }
+.ts-dot { background: transparent; border: 0; padding: 0; width: 28px; height: 28px; display: inline-flex; align-items: center; justify-content: center; -webkit-tap-highlight-color: transparent; }
+.ts-dot i { width: 7px; height: 7px; border-radius: 50%; background: #fff; opacity: .3; transition: opacity .3s ease, transform .3s ease; }
+.ts-dot.on i { opacity: 1; transform: scale(1.3); }
+.ts-bottom { position: absolute; left: 20px; right: 20px; bottom: 20px; display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; }
+.ts-info { position: relative; flex: 1; min-width: 0; height: 52px; }
+.ts-in { position: absolute; left: 0; bottom: 0; opacity: 0; transform: translateY(6px); transition: opacity .35s ease, transform .5s cubic-bezier(.2,.8,.2,1); }
+.ts-in.on { opacity: 1; transform: none; transition-delay: .15s; }
+.ts-name { font-size: 20px; font-weight: 700; letter-spacing: .06em; white-space: nowrap; }
+.ts-tag { font-size: 12px; color: rgba(255,255,255,.55); margin-top: 3px; white-space: nowrap; }
+.ts-go { border: 0; flex-shrink: 0; padding: .5rem 1.25rem; border-radius: 999px; font-size: 14px; font-weight: 700; color: #12261A; background: var(--c); transition: background-color .5s ease; }
+@media (prefers-reduced-motion: reduce) {
+  .ts-s { transform: none !important; transition: opacity .35s ease !important; }
+  .ts-w { transform: none !important; }
+  .ts-scan { display: none; }
+  .ts-in { transform: none !important; }
+}
 </style>
 
 </head>
@@ -593,7 +636,7 @@ body > header, body > main { animation: pageIn .8s ease 2.6s both; }
         <!-- 平板／電腦（橫向畫面）：左邊文字、右邊動畫並排，不多佔高度，第一屏仍放得下三款茶 -->
         <div class="space-y-4 md:text-left">
         <div>
-          <h2 class="font-serif text-3xl lg:text-5xl font-bold drop-shadow-md">一握茶研所<span class="beta-tag" aria-label="測試版">BETA</span></h2>
+          <h2 class="font-serif text-3xl lg:text-5xl font-bold drop-shadow-md">一握茶研所<span class="beta-tag">BETA</span></h2>
           <p class="text-white/60 text-sm lg:text-lg mt-3 leading-relaxed">找到適合你的茶<span class="hidden md:inline">，</span><br class="md:hidden">探索每一杯茶的故事</p>
         </div>
         <button onclick="showView('story')" class="bg-tea-gold text-tea-dark font-bold text-sm lg:text-base px-8 lg:px-10 py-3 rounded-full shadow-[0_0_20px_rgba(212,175,55,0.3)] btn-bounce inline-block">品牌故事</button>
@@ -672,6 +715,9 @@ body > header, body > main { animation: pageIn .8s ease 2.6s both; }
           <span class="h-px w-10 bg-tea-gold/40"></span>特色茶飲<span class="h-px w-10 bg-tea-gold/40"></span>
         </div>
       </div>
+
+      <!-- 茶罐輪播（BETA 測試）：內容由 renderTinShow() 產生 -->
+      <div id="tin-show" class="ts fade-in-block !mt-0 md:!mt-4 -mx-4 md:mx-0" style="animation-delay:120ms" role="region" aria-roledescription="carousel" aria-label="三款茶罐"></div>
 
       <!-- 特色茶飲 -->
       <div id="tea-section" class="!mt-0 md:!mt-4 md:flex-1 md:flex md:flex-col" style="scroll-margin-top: 96px;">
@@ -1107,6 +1153,135 @@ function renderLandingCards() {
   });
 }
 
+
+// ===== 首頁茶罐輪播（BETA）=====
+// 背景換成該茶的底色、後面大字描邊茶名、茶罐切成 7 條橫條錯位換罐。
+// 自動播放只在「整塊進入畫面」時輪一圈（回到第一款）就停；完全滑出畫面後重置，下次進來再輪一圈。
+// 使用者滑動或點圓點後，本次不再自動切換。減少動態效果：不自動播，切換只淡入淡出。
+const TS = { i: 0, t: 0, steps: 0, user: false, vis: false, el: null };
+const TS_HOLD = 2600, TS_FIRST = 1400;
+// 圖片位置：正式版在 images/；放在 test/ 裡測試時，若 test/images/ 沒有圖，自動改讀上一層的 images/
+let TS_IMG_BASE = 'images/';
+function tsImgErr(img) {
+  if (img.dataset.retry) return;
+  img.dataset.retry = '1';
+  const file = img.getAttribute('src').split('/').pop();
+  TS_IMG_BASE = '../images/';
+  img.src = TS_IMG_BASE + file;
+}
+function renderTinShow() {
+  const box = document.getElementById('tin-show');
+  if (!box) return;
+  TS.el = box;
+  const N = 7, strips = (id) => Array.from({ length: N }, (_, i) => {
+    const d = (i % 2 ? -1 : 1) * (14 + (i * 7) % 12); // 每條錯開的距離與方向不同，像訊號干擾
+    return `<div class="ts-s" style="--i:${i};--d:${d}%"><img src="${TS_IMG_BASE}tin-${id}-front.webp" alt="" decoding="async" onerror="tsImgErr(this)"></div>`;
+  }).join('');
+  const short = (t) => t.name.split('・').pop();
+  box.innerHTML = `
+    ${TEA_DB.map(t => `<div class="ts-bg" style="background:radial-gradient(55% 45% at 50% 42%, ${t.color}55, transparent 72%), ${t.bg}"></div>`).join('')}
+    <div class="ts-word font-serif" aria-hidden="true">${TEA_DB.map(t => `<div class="ts-w" style="--c:${t.color}">${short(t)}</div>`).join('')}</div>
+    <div class="ts-floor" aria-hidden="true"></div>
+    <div class="ts-stage" role="button" tabindex="0">
+      ${TEA_DB.map(t => `<div class="ts-tin">${strips(t.id)}</div>`).join('')}
+      <div class="ts-scan" aria-hidden="true"></div>
+    </div>
+    <div class="ts-top">
+      <div class="ts-count" aria-hidden="true"><b>01</b> / ${String(TEA_DB.length).padStart(2, '0')}</div>
+      <div class="ts-dots">${TEA_DB.map((t, i) => `<button class="ts-dot" aria-label="${t.name}" data-i="${i}"><i></i></button>`).join('')}</div>
+    </div>
+    <div class="ts-bottom">
+      <div class="ts-info">${TEA_DB.map(t => `<div class="ts-in"><div class="ts-name font-serif">${t.name}</div><div class="ts-tag">${t.series}｜${t.tag}</div></div>`).join('')}</div>
+      <button class="ts-go btn-bounce">查看介紹</button>
+    </div>`;
+  tsPaint(-1, 0);
+
+  const open = () => openProduct(TEA_DB[TS.i].id);
+  const stage = box.querySelector('.ts-stage');
+  box.querySelector('.ts-go').onclick = open;
+  box.querySelectorAll('.ts-dot').forEach(b => b.onclick = () => tsGo(+b.dataset.i, true));
+  stage.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); } });
+  box.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight') tsGo(TS.i + 1, true);
+    else if (e.key === 'ArrowLeft') tsGo(TS.i - 1, true);
+  });
+  // 左右滑動切換；沒滑動的單點茶罐就進茶款頁
+  let sx = 0, sy = 0, down = false, swiped = false;
+  box.addEventListener('pointerdown', e => {
+    down = true; swiped = false; sx = e.clientX; sy = e.clientY;
+    tin360Warm(TEA_DB[TS.i].id);
+  }, { passive: true });
+  box.addEventListener('pointerup', e => {
+    if (!down) return; down = false;
+    const dx = e.clientX - sx, dy = e.clientY - sy;
+    if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy) * 1.2) { swiped = true; tsGo(TS.i + (dx < 0 ? 1 : -1), true); }
+  });
+  box.addEventListener('pointercancel', () => { down = false; });
+  stage.addEventListener('click', () => { if (!swiped) open(); swiped = false; });
+  box.addEventListener('mouseenter', () => tin360Warm(TEA_DB[TS.i].id));
+
+  // 進入畫面才自動播；滑出畫面（或切到別頁、view 被隱藏）就停，完全看不到時重置
+  if ('IntersectionObserver' in window) new IntersectionObserver(([e]) => {
+    TS.vis = e.intersectionRatio >= 0.6;
+    if (e.intersectionRatio === 0) { TS.steps = 0; TS.user = false; }
+    tsSchedule(TS_FIRST);
+  }, { threshold: [0, 0.6] }).observe(box);
+  document.addEventListener('visibilitychange', () => tsSchedule(TS_FIRST));
+}
+// 把第 prev 款換成第 n 款（prev = -1：初次顯示，不做過場）
+function tsPaint(prev, n) {
+  const box = TS.el, c = TEA_DB[n].color;
+  box.style.setProperty('--c', c);
+  const pick = (sel) => box.querySelectorAll(sel);
+  pick('.ts-bg').forEach((el, i) => el.classList.toggle('on', i === n));
+  pick('.ts-w').forEach((el, i) => el.classList.toggle('on', i === n));
+  pick('.ts-in').forEach((el, i) => el.classList.toggle('on', i === n));
+  pick('.ts-dot').forEach((el, i) => { el.classList.toggle('on', i === n); el.setAttribute('aria-current', i === n ? 'true' : 'false'); });
+  box.querySelector('.ts-count b').textContent = String(n + 1).padStart(2, '0');
+  box.querySelector('.ts-stage').setAttribute('aria-label', `查看 ${TEA_DB[n].name} 介紹`);
+  const tins = pick('.ts-tin');
+  tins.forEach((el, i) => {
+    if (i === n) {
+      // 先無過場移回進場起點（左右相反那一側），再滑進來
+      el.classList.add('reset'); el.classList.remove('off', 'on');
+      void el.offsetWidth;
+      el.classList.remove('reset');
+      if (prev < 0) el.classList.add('reset');
+      el.classList.add('on');
+      if (prev < 0) { void el.offsetWidth; el.classList.remove('reset'); }
+    } else if (i === prev) { el.classList.remove('on'); el.classList.add('off'); }
+    else { el.classList.remove('on'); }
+  });
+  if (prev >= 0) {
+    const scan = box.querySelector('.ts-scan');
+    scan.classList.remove('run'); void scan.offsetWidth; scan.classList.add('run');
+  }
+}
+function tsGo(n, user) {
+  const len = TEA_DB.length;
+  n = (n % len + len) % len;
+  if (user) { TS.user = true; clearTimeout(TS.t); }
+  if (n === TS.i) return;
+  const prev = TS.i; TS.i = n;
+  tsPaint(prev, n);
+}
+function tsSchedule(delay) {
+  clearTimeout(TS.t);
+  if (!TS.el || !TS.vis || TS.user || document.hidden || TS.steps >= TEA_DB.length) return;
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  // 迎賓還沒結束、或主視覺動畫正在畫面上播，先等它
+  let wait = delay;
+  if (document.getElementById('splash')) wait = Math.max(wait, 800);
+  if (typeof heroOnScreen !== 'undefined' && heroOnScreen) wait = Math.max(wait, heroBusyUntil - Date.now() + 300);
+  TS.t = setTimeout(() => {
+    if (document.getElementById('splash')) return tsSchedule(800);
+    if (typeof heroOnScreen !== 'undefined' && heroOnScreen && heroBusyUntil > Date.now()) return tsSchedule(0);
+    TS.steps++;
+    tsGo(TS.i + 1);
+    tsSchedule(TS_HOLD);
+  }, wait);
+}
+
 const DEFAULT_BG = "linear-gradient(-45deg, #0A140E, #1C3A27, #664d14, #12261A)";
 
 // 茶款故事影片：TEA_DB 裡填了 video 就顯示影片，沒填就顯示原本的故事文字
@@ -1124,27 +1299,15 @@ function storyMedia(tea, delay) {
   return `<video class="w-full rounded-xl bg-black" src="${v}" controls playsinline preload="metadata"></video>`;
 }
 
-// 茶款頁 360° 茶罐：images/tin-<茶款id>.webp 為 6×6、共 36 格的旋轉序列圖
+// 茶款頁 360° 茶罐：images/tin-<茶款id>-72.webp 為 12×6、共 72 格的旋轉序列圖（每格 5°）
 // 單格尺寸由圖片實際寬高自動計算，之後換成更高解析度的序列圖不需改程式
 // 載入中顯示茶罐剪影（或正面預覽圖）＋進度條；載入失敗時保留靜態畫面並提供「重新載入」
-// 【測試版】序列圖比較：網址加 ?tin=72（72 格）或 ?tin=hd（每格 840×1800），不加為目前正式版（36 格）
-const TIN360_VARIANTS = {
-  '36': { suf: '',    cols: 6,  rows: 6, label: '36 格（正式版）' },
-  '72': { suf: '-72', cols: 12, rows: 6, label: '72 格' },
-  'hd': { suf: '-hd', cols: 6,  rows: 6, label: '解析度兩倍' }
-};
-const TIN360_V = (() => {
-  let v = null;
-  try { v = new URLSearchParams(location.search).get('tin'); } catch (e) {}
-  try { if (v) sessionStorage.setItem('yw-tin', v); else v = sessionStorage.getItem('yw-tin'); } catch (e) {}
-  return TIN360_VARIANTS[v] ? v : '36';
-})();
-const TIN360_VC = TIN360_VARIANTS[TIN360_V];
-const tin360Src = (id) => `images/tin-${id}${TIN360_VC.suf}.webp`;
+const TIN360_COLS = 12, TIN360_ROWS = 6;
+const tin360Src = (id) => `images/tin-${id}-72.webp`;
 const TIN360_CACHE = {};  // src → Image（序列圖）
 const TIN360_DL = {};     // src → 下載工作 { p, loaded, total, done, subs }
 const TIN360_POSTER = {}; // 已開始下載的正面預覽圖
-const TIN360_EST = (TIN360_V === '36' ? 450 : 900) * 1024; // 伺服器沒回報檔案大小時，用來估算進度
+const TIN360_EST = 850 * 1024; // 伺服器沒回報檔案大小時，用來估算進度
 // 正面預覽圖（每張約 17 KB）先抓進快取，進茶款頁時幾乎立刻有畫面
 function tin360Poster(id) {
   const src = `images/tin-${id}-front.webp`;
@@ -1157,7 +1320,7 @@ function tin360Poster(id) {
 // 15 秒完全沒有新資料就放棄，交給畫面顯示「重新載入」
 function tin360Download(src, high) {
   if (TIN360_DL[src]) return TIN360_DL[src];
-  const d = TIN360_DL[src] = { loaded: 0, total: 0, done: false, subs: new Set(), t0: performance.now() };
+  const d = TIN360_DL[src] = { loaded: 0, total: 0, done: false, subs: new Set() };
   const emit = () => d.subs.forEach(f => { try { f(d); } catch (e) {} });
   const ctrl = window.AbortController ? new AbortController() : null;
   let stall = 0;
@@ -1165,12 +1328,7 @@ function tin360Download(src, high) {
   const opts = ctrl ? { signal: ctrl.signal } : {};
   if (high) opts.priority = 'high';
   arm();
-  // 【測試版】test/images 裡找不到的圖（例如正式版 36 格），自動改讀正式版的 ../images/
-  const get = (u) => fetch(u, opts).then(r => {
-    if (!r.ok && u === src && src.startsWith('images/')) return get('../' + src);
-    return r;
-  });
-  d.p = (window.fetch ? get(src) : Promise.reject(0))
+  d.p = (window.fetch ? fetch(src, opts) : Promise.reject(0))
     .then(r => {
       d.url = r.url; d.status = r.status;
       if (!r.ok) throw 0;
@@ -1186,7 +1344,7 @@ function tin360Download(src, high) {
       return pump();
     })
     .catch((e) => { if (!d.status) d.err = e && e.name === 'AbortError' ? '15 秒沒有進度，已中止' : '網路錯誤'; return null; })
-    .then(blob => { clearTimeout(stall); d.done = true; d.blob = blob; d.t1 = performance.now(); emit(); return blob; });
+    .then(blob => { clearTimeout(stall); d.done = true; d.blob = blob; emit(); return blob; });
   return d;
 }
 // 準備某款茶罐序列圖（下載＋解碼），滑鼠移到卡片上、手指按下或進茶款頁時呼叫
@@ -1201,9 +1359,7 @@ function tin360Warm(id) {
     if (blob) img.src = URL.createObjectURL(blob);
     else if (!window.fetch || location.protocol === 'file:') img.src = src; // 本機測試時 fetch 不能用，直接讀圖
     else { img.dataset.failed = '1'; img.dispatchEvent(new Event('error')); return; }
-    img._dt0 = performance.now();
-    const mark = () => { img._dt1 = performance.now(); };
-    if (img.decode) img.decode().then(mark, mark); else img.addEventListener('load', mark, { once: true });
+    if (img.decode) img.decode().catch(() => {});
   });
   return img;
 }
@@ -1223,31 +1379,15 @@ function tin360Prefetch() {
   requestAnimationFrame(() => setTimeout(go, 0));
 }
 tin360Prefetch();
-// 【測試版】茶罐下方顯示載入數據與版本切換
-function tin360Report(wrap, src, img, wait, drawMs) {
-  const el = wrap && wrap.querySelector('.t360-dbg');
-  if (!el) return;
-  const d = TIN360_DL[src] || {};
-  const s = (ms) => (ms / 1000).toFixed(2) + ' 秒';
-  const mb = d.blob ? (d.blob.size / 1048576).toFixed(2) + ' MB' : '—';
-  const dl = d.t1 && d.t0 ? s(d.t1 - d.t0) : '—';
-  const dec = img._dt1 && img._dt0 ? s(img._dt1 - img._dt0) : '—';
-  const mem = img.naturalWidth ? Math.round(img.naturalWidth * img.naturalHeight * 4 / 1048576) + ' MB' : '—';
-  const links = Object.keys(TIN360_VARIANTS).map(k => k === TIN360_V
-    ? `<b>${TIN360_VARIANTS[k].label}</b>`
-    : `<a href="?tin=${k}&tea=${encodeURIComponent((wrap.querySelector(".tin360") || {}).dataset.id || "")}">${TIN360_VARIANTS[k].label}</a>`).join('｜');
-  el.innerHTML = `${TIN360_VC.label}｜檔案 ${mb}｜解碼後約 ${mem}<br>下載 ${dl}｜解碼 ${dec}｜首次繪製 ${s(drawMs)}<br>點進來到畫面出現 ${s(wait)}<br>${links}`;
-}
 function tin360HTML(tea) {
   return `<div class="t360-wrap">
     <div class="tin360" tabindex="0" role="img" aria-label="${tea.name} 茶罐，可左右拖曳旋轉" data-src="${tin360Src(tea.id)}" data-id="${tea.id}">
       <div class="t360-ph" aria-hidden="true" style="--c1:${tea.color}1f; --c2:${tea.color}59"><div class="ph-lid"></div><div class="ph-body"></div><svg viewBox="0 0 160 160"><use href="#yw-cha"/></svg></div>
-      <img class="t360-poster" src="images/tin-${tea.id}-front.webp" alt="" aria-hidden="true" decoding="async" fetchpriority="high" onload="if(!this.parentNode.classList.contains('ready'))this.parentNode.classList.add('poster')" onerror="if(!this.dataset.alt){this.dataset.alt=1;this.src='../'+this.getAttribute('src')}else this.remove()">
+      <img class="t360-poster" src="images/tin-${tea.id}-front.webp" alt="" aria-hidden="true" decoding="async" fetchpriority="high" onload="if(!this.parentNode.classList.contains('ready'))this.parentNode.classList.add('poster')" onerror="this.remove()">
       <canvas aria-hidden="true"></canvas>
     </div>
     <div class="t360-load" aria-hidden="true" style="color:${tea.color}"><i></i></div>
     <div class="t360-hint"><svg class="yi" aria-hidden="true"><use href="#yi-tap"/></svg><span class="t360-hint-txt">茶罐準備中…</span><button type="button" class="t360-retry">重新載入</button></div>
-    <div class="t360-dbg"></div>
   </div>`;
 }
 
@@ -1261,7 +1401,7 @@ function initTin360(root) {
   const hintEl = wrap && wrap.querySelector('.t360-hint-txt');
   const setHint = (t) => { if (hintEl) hintEl.textContent = t; };
   const setBar = (f) => { if (bar) bar.style.transform = `scaleX(${f})`; };
-  const COLS = TIN360_VC.cols, ROWS = TIN360_VC.rows, N = COLS * ROWS, K = N / 36; // K：每 10° 幾格
+  const COLS = TIN360_COLS, ROWS = TIN360_ROWS, N = COLS * ROWS, K = N / 36; // K：每 10° 幾格（拖曳、鍵盤、慣性都照這個換算）
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const src = root.dataset.src;
   // 同一張序列圖只載入、解碼一次，切換茶款再回來不必重新解碼
@@ -1388,27 +1528,13 @@ function initTin360(root) {
     // 網路卡住、完全沒有新進度時，也要按時換成「網路較慢」的說明
     const slow = setTimeout(onProg, 6100);
     const finish = () => { clearTimeout(slow); if (d) d.subs.delete(onProg); };
-    const ok = () => {
-      if (tok !== loadTok) return;
-      finish();
-      // 【測試版】大圖在部分瀏覽器會延到第一次繪製才真正解碼，所以量到「畫面真的畫出來」為止
-      const p0 = performance.now();
-      onReady();
-      const drawMs = performance.now() - p0;
-      requestAnimationFrame(() => requestAnimationFrame(() => tin360Report(wrap, src, img, performance.now() - t0, drawMs)));
-    };
+    const ok = () => { if (tok !== loadTok) return; finish(); onReady(); };
     const bad = () => {
       if (tok !== loadTok || !root.isConnected) return;
       finish();
       delete TIN360_CACHE[src]; delete TIN360_DL[src]; // 讓「重新載入」可以重新下載
       if (wrap) { wrap.classList.remove('loading'); wrap.classList.add('failed'); }
       setHint('360° 茶罐暫時載入不了');
-      // 【測試版】顯示失敗原因，方便排查
-      const dbg = wrap && wrap.querySelector('.t360-dbg');
-      if (dbg) {
-        const why = d && d.status && d.status !== 200 ? `找不到檔案（HTTP ${d.status}）` : d && d.err ? d.err : '圖片解碼失敗（可能是記憶體不足）';
-        dbg.textContent = `${TIN360_VC.label}｜${src}｜${why}`;
-      }
     };
     const decodeThen = () => {
       // 先完成解碼再顯示，避免第一次拖曳時才解碼造成卡頓
@@ -2820,6 +2946,7 @@ function quizReset() { quizI = 0; quizScore = 0; renderQuiz(); }
 renderStamps(); renderProcess(); renderQuiz(); labRender(); labUpdate(); labTab(labNextTab());
 
 renderLandingCards();
+renderTinShow();
 
 // 掃 QR code 直接開到指定茶款：網址帶 ?tea=yanran / qingying / nuanyang
 history.replaceState({ v: 'landing', t: null, d: 0, y: 0 }, '');

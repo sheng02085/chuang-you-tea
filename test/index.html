@@ -488,6 +488,9 @@ body > header, body > main { animation: pageIn .8s ease 2.6s both; }
 .t360-wrap.failed .t360-retry { display: inline-block; }
 .t360-dbg { margin-top: .4rem; font-size: 10px; line-height: 1.6; color: rgba(255,255,255,.55); text-align: center; font-variant-numeric: tabular-nums; }
 .t360-dbg:empty { display: none; }
+/* 【測試版】主視覺標題旁的 BETA 標記（靜態，正式版不放） */
+.beta-tag { display: inline-block; vertical-align: super; margin-left: .45em; padding: .15em .55em; border: 1px solid rgba(212,175,55,.7); border-radius: 999px; font-family: system-ui, -apple-system, sans-serif; font-size: 11px; line-height: 1.2; font-weight: 700; letter-spacing: .12em; color: #D4AF37; }
+@media (min-width: 1024px) { .beta-tag { font-size: 13px; } }
 .t360-dbg a { text-decoration: underline; color: rgba(255,255,255,.8); }
 @media (prefers-reduced-motion: reduce) { .tin360 canvas, .tin360 .t360-poster, .tin360 .t360-ph, .t360-load i { transition: none; } }
 </style>
@@ -590,7 +593,7 @@ body > header, body > main { animation: pageIn .8s ease 2.6s both; }
         <!-- 平板／電腦（橫向畫面）：左邊文字、右邊動畫並排，不多佔高度，第一屏仍放得下三款茶 -->
         <div class="space-y-4 md:text-left">
         <div>
-          <h2 class="font-serif text-3xl lg:text-5xl font-bold drop-shadow-md">一握茶研所</h2>
+          <h2 class="font-serif text-3xl lg:text-5xl font-bold drop-shadow-md">一握茶研所<span class="beta-tag" aria-label="測試版">BETA</span></h2>
           <p class="text-white/60 text-sm lg:text-lg mt-3 leading-relaxed">找到適合你的茶<span class="hidden md:inline">，</span><br class="md:hidden">探索每一杯茶的故事</p>
         </div>
         <button onclick="showView('story')" class="bg-tea-gold text-tea-dark font-bold text-sm lg:text-base px-8 lg:px-10 py-3 rounded-full shadow-[0_0_20px_rgba(212,175,55,0.3)] btn-bounce inline-block">品牌故事</button>

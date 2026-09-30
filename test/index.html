@@ -1165,8 +1165,14 @@ function tin360Download(src, high) {
   const opts = ctrl ? { signal: ctrl.signal } : {};
   if (high) opts.priority = 'high';
   arm();
-  d.p = (window.fetch ? fetch(src, opts) : Promise.reject(0))
+  // 【測試版】test/images 裡找不到的圖（例如正式版 36 格），自動改讀正式版的 ../images/
+  const get = (u) => fetch(u, opts).then(r => {
+    if (!r.ok && u === src && src.startsWith('images/')) return get('../' + src);
+    return r;
+  });
+  d.p = (window.fetch ? get(src) : Promise.reject(0))
     .then(r => {
+      d.url = r.url; d.status = r.status;
       if (!r.ok) throw 0;
       d.total = +r.headers.get('content-length') || 0;
       const type = r.headers.get('content-type') || 'image/webp';
@@ -1179,7 +1185,7 @@ function tin360Download(src, high) {
       });
       return pump();
     })
-    .catch(() => null)
+    .catch((e) => { if (!d.status) d.err = e && e.name === 'AbortError' ? '15 秒沒有進度，已中止' : '網路錯誤'; return null; })
     .then(blob => { clearTimeout(stall); d.done = true; d.blob = blob; d.t1 = performance.now(); emit(); return blob; });
   return d;
 }
@@ -1236,7 +1242,7 @@ function tin360HTML(tea) {
   return `<div class="t360-wrap">
     <div class="tin360" tabindex="0" role="img" aria-label="${tea.name} 茶罐，可左右拖曳旋轉" data-src="${tin360Src(tea.id)}" data-id="${tea.id}">
       <div class="t360-ph" aria-hidden="true" style="--c1:${tea.color}1f; --c2:${tea.color}59"><div class="ph-lid"></div><div class="ph-body"></div><svg viewBox="0 0 160 160"><use href="#yw-cha"/></svg></div>
-      <img class="t360-poster" src="images/tin-${tea.id}-front.webp" alt="" aria-hidden="true" decoding="async" fetchpriority="high" onload="if(!this.parentNode.classList.contains('ready'))this.parentNode.classList.add('poster')" onerror="this.remove()">
+      <img class="t360-poster" src="images/tin-${tea.id}-front.webp" alt="" aria-hidden="true" decoding="async" fetchpriority="high" onload="if(!this.parentNode.classList.contains('ready'))this.parentNode.classList.add('poster')" onerror="if(!this.dataset.alt){this.dataset.alt=1;this.src='../'+this.getAttribute('src')}else this.remove()">
       <canvas aria-hidden="true"></canvas>
     </div>
     <div class="t360-load" aria-hidden="true" style="color:${tea.color}"><i></i></div>
@@ -1397,6 +1403,12 @@ function initTin360(root) {
       delete TIN360_CACHE[src]; delete TIN360_DL[src]; // 讓「重新載入」可以重新下載
       if (wrap) { wrap.classList.remove('loading'); wrap.classList.add('failed'); }
       setHint('360° 茶罐暫時載入不了');
+      // 【測試版】顯示失敗原因，方便排查
+      const dbg = wrap && wrap.querySelector('.t360-dbg');
+      if (dbg) {
+        const why = d && d.status && d.status !== 200 ? `找不到檔案（HTTP ${d.status}）` : d && d.err ? d.err : '圖片解碼失敗（可能是記憶體不足）';
+        dbg.textContent = `${TIN360_VC.label}｜${src}｜${why}`;
+      }
     };
     const decodeThen = () => {
       // 先完成解碼再顯示，避免第一次拖曳時才解碼造成卡頓

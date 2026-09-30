@@ -1128,7 +1128,7 @@ function tin360Warm(id) {
   if (TIN360_DL[src]) TIN360_DL[src].then(start, start); else start();
   return img;
 }
-// 首頁穩定後趁空檔預載：先抓三張正面預覽圖，再「一張一張」下載序列圖到瀏覽器快取
+// 一進站（迎賓動畫開始播）就預載：先抓三張正面預覽圖，再「一張一張」下載序列圖到瀏覽器快取
 // （不同時下載三張互搶頻寬；只存快取不解碼，不佔手機記憶體；iOS Safari 不支援 link prefetch，改用 fetch）
 function tin360Prefetch() {
   const c = navigator.connection;
@@ -1146,18 +1146,17 @@ function tin360Prefetch() {
     };
     next();
   };
-  const idle = window.requestIdleCallback || ((f) => setTimeout(f, 1));
-  setTimeout(() => idle(go, { timeout: 2000 }), 1500);
+  // 迎賓動畫第一幀畫出來後就開始，趁迎賓播放的幾秒先把茶罐下載好
+  requestAnimationFrame(() => setTimeout(go, 0));
 }
-if (document.readyState === 'complete') tin360Prefetch();
-else window.addEventListener('load', tin360Prefetch, { once: true });
+tin360Prefetch();
 function tin360HTML(tea) {
   return `<div class="t360-wrap">
     <div class="tin360" tabindex="0" role="img" aria-label="${tea.name} 茶罐，可左右拖曳旋轉" data-src="images/tin-${tea.id}.webp" data-id="${tea.id}">
       <img class="t360-poster" src="images/tin-${tea.id}-front.webp" alt="" aria-hidden="true" decoding="async" fetchpriority="high" onload="if(!this.parentNode.classList.contains('ready'))this.parentNode.classList.add('poster')" onerror="this.remove()">
       <canvas aria-hidden="true"></canvas>
     </div>
-    <div class="t360-hint"><svg class="yi" aria-hidden="true"><use href="#yi-tap"/></svg>左右滑動，轉一圈看看</div>
+    <div class="t360-hint"><svg class="yi" aria-hidden="true"><use href="#yi-tap"/></svg><span class="t360-hint-txt">茶罐準備中…</span></div>
   </div>`;
 }
 
@@ -1248,6 +1247,9 @@ function initTin360(root) {
     fw = img.naturalWidth / COLS; fh = img.naturalHeight / ROWS;
     repaint();
     root.classList.add('ready');
+    // 序列圖好了才顯示「可以轉」的提示，避免使用者在還不能轉時滑了沒反應
+    const hint = root.parentNode && root.parentNode.querySelector('.t360-hint-txt');
+    if (hint) hint.textContent = '左右滑動，轉一圈看看';
     if (typeof ResizeObserver !== 'undefined') {
       const ro = new ResizeObserver(() => { if (!root.isConnected) return ro.disconnect(); repaint(); });
       ro.observe(root);

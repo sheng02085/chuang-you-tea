@@ -583,6 +583,7 @@ body > header, body > main { animation: pageIn .8s ease 2.6s both; }
     <symbol id="yi-send" viewBox="0 0 24 24"><path d="M21 3 3.5 10.2l7 3.3 3.3 7z" fill="currentColor" fill-opacity=".22"/><path d="M21 3 10.5 13.5"/></symbol>
     <symbol id="yi-lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2.2" fill="currentColor" fill-opacity=".22"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/><path d="M12 15v2.2"/></symbol>
     <symbol id="yi-tap" viewBox="0 0 24 24"><path d="M10 13V5.5a1.5 1.5 0 0 1 3 0V11"/><path d="M13 10.5a1.5 1.5 0 0 1 3 0V12"/><path d="M16 11.5a1.5 1.5 0 0 1 3 0V15c0 3.6-2.5 6-6 6h-1c-2.1 0-3.5-.9-4.7-2.5l-2.8-3.8a1.5 1.5 0 0 1 2.4-1.8L10 15"/><path d="M6.5 4.5 5 3M6 7.5H4"/></symbol>
+    <symbol id="yi-nourish" viewBox="0 0 24 24"><path d="M12 20.2C6.9 16.9 3.5 13.8 3.5 10.1 3.5 7.6 5.5 5.6 7.9 5.6c1.7 0 3.2.9 4.1 2.4.9-1.5 2.4-2.4 4.1-2.4 2.4 0 4.4 2 4.4 4.5 0 3.7-3.4 6.8-8.5 10.1z" fill="currentColor" fill-opacity=".22"/></symbol>
     <symbol id="yi-date" viewBox="0 0 24 24"><path d="M12 7.5c3.9 0 6 3.4 6 7.2S15.9 21 12 21s-6-2.5-6-6.3 2.1-7.2 6-7.2z" fill="currentColor" fill-opacity=".22"/><path d="M12 7.5c0-2 .8-3.4 2.4-4.3"/><path d="M14.2 4.6c1.8-.7 3.4-.3 4.6 1-1.8.7-3.4.3-4.6-1z"/><path d="M9.3 12.5c.3-1.3 1-2.1 2-2.4"/></symbol>
     <symbol id="yi-berry" viewBox="0 0 24 24"><circle cx="8.3" cy="15.2" r="4.6" fill="currentColor" fill-opacity=".22"/><circle cx="16" cy="14.2" r="4.3" fill="currentColor" fill-opacity=".22"/><path d="M8.3 10.6c.6-3 2-5 4.3-6.6M16 9.9c-.4-2.6-1.5-4.4-3.4-5.9"/><path d="M12.6 4c1.7-1 3.5-1 5 .1-1.6 1-3.3 1-5-.1z"/><path d="M7.6 15.2h1.4M15.3 14.2h1.4" stroke-width="1.3"/></symbol>
     <symbol id="yi-ginger" viewBox="0 0 24 24"><path d="M3.5 15.5c0-2 1.4-3.2 3.1-3.2.5-2.4 2.6-3.5 4.6-2.9.9-2 3-2.8 5-1.9 1.9.8 2.6 2.8 1.8 4.4 1.9.5 2.6 2.4 1.6 3.9-1 1.6-3 1.9-4.5 1-1.4 2-3.9 2.5-5.9 1.5-2.2 1.2-5.3.4-5.7-1.8z" fill="currentColor" fill-opacity=".22"/><path d="M9.3 12.8l1 1.5M14.8 10.6l.8 1.4M7 16.2l1.1.9"/><path d="M16.6 7.6c.2-1.7 1.1-2.9 2.6-3.5"/></symbol>
@@ -1028,7 +1029,7 @@ const TEA_DB = [
     features: [
       { icon: "cup", label: "茶底", desc: "佛手烏龍，溫潤茶香" },
       { icon: "rose", label: "花香", desc: "玫瑰，優雅香氣" },
-      { icon: "date", label: "果香", desc: "紅棗枸杞，微甜圓潤" }
+      { icon: "nourish", label: "補益", desc: "紅棗益氣，枸杞滋補" }
     ],
     scenario: "月事來潮、情緒低落、氣色不佳的時候。",
     philosophy: "照顧別人之前，先學會照顧自己。這款茶不強調「功效」，而是強調「留白」——在忙碌的日常裡，留十分鐘給自己，讓身體跟情緒都能喘口氣。"
@@ -1135,7 +1136,8 @@ function teaIconSVG(id, color, cls) {
 
 // 配方特色的小圖示：玫瑰、柑橘直接用首頁同一套茶款圖示（靜態），其餘用 #yi-* 線條圖示
 function featureIcon(name, color) {
-  if (name === 'rose') return teaIconSVG('yanran', color, 'w-7 h-7');
+  // 玫瑰線條較細長，同尺寸看起來比旁邊兩個小，用 transform 放大 1.3 倍（不影響排版）
+  if (name === 'rose') return `<span style="display:inline-flex;transform:scale(1.3)">${teaIconSVG('yanran', color, 'w-7 h-7')}</span>`;
   if (name === 'citrus') return teaIconSVG('qingying', color, 'w-7 h-7');
   return `<svg class="yi" style="width:1.75rem;height:1.75rem;color:${color}" aria-hidden="true"><use href="#yi-${name}"/></svg>`;
 }

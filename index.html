@@ -1212,6 +1212,8 @@ const TIN360_CACHE = {};  // src → Image（序列圖）
 const TIN360_DL = {};     // src → 下載工作 { p, loaded, total, done, subs }
 const TIN360_POSTER = {}; // 已開始下載的正面預覽圖
 const TIN360_EST = 850 * 1024; // 伺服器沒回報檔案大小時，用來估算進度
+// 掃 QR Code 開啟的茶款頁：360° 茶罐不播進場轉一圈（只作用在那一次開啟，之後切換茶款照常轉）
+let tin360SkipIntro = false;
 // 正面預覽圖（每張約 17 KB）先抓進快取，進茶款頁時幾乎立刻有畫面
 function tin360Poster(id) {
   const src = `${IMG_BASE}tin-${id}-front.webp`;
@@ -1376,6 +1378,7 @@ function initTin360(root) {
   const setBar = (f) => { if (bar) bar.style.transform = `scaleX(${f})`; };
   const COLS = TIN360_COLS, ROWS = TIN360_ROWS, N = COLS * ROWS, K = N / 36; // K：每 10° 幾格（拖曳、鍵盤、慣性都照這個換算）
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const skipIntro = tin360SkipIntro; tin360SkipIntro = false; // 用過就清掉
   const src = root.dataset.src;
   // 同一張序列圖只載入、解碼一次，切換茶款再回來不必重新解碼
   let img = null, loadTok = 0;
@@ -1466,7 +1469,7 @@ function initTin360(root) {
     const card = root.closest('.fade-in-block');
     if (card) card.addEventListener('animationend', repaint, { once: true });
     // 進場只轉一圈提示可以旋轉，轉完停在正面，不循環；等茶罐真的出現在畫面上才轉
-    let introDone = reduce;
+    let introDone = reduce || skipIntro;
     const startIntro = () => {
       if (root.dataset.hold) { root._afterHold = startIntro; return; } // 茶罐舞台的橫條拼回還沒播完，先等
       repaint();
@@ -1675,7 +1678,13 @@ function renderProductChips(suggestions) {
   });
 }
 
+var heroReplaySkip = false;
 function goToTeas() {
+  heroReplaySkip = true;
+  // 主視覺不重播、而且馬上會被捲走：首頁圖示不用再等主視覺播完。
+  // 否則上一次播主視覺留下的等待時間（最多約 6.8 秒）還沒過，第一個完整出現的嫣然圖示會停在畫面上不動，
+  // 要等主視覺捲出畫面（或等待時間到）才開始播
+  try { heroBusyUntil = 0; } catch (e) {}
   // 畫面捲到茶款區的過程中先鎖住飲品圖示動畫，等畫面停下來才開放
   try { lockHoverIcons(); } catch (e) {}
   showView('landing');
@@ -1755,7 +1764,8 @@ function showView(name, fromHistory, restoreY) {
   });
 
   document.getElementById('back-btn').classList.toggle('hidden', name === 'landing');
-  if (name === 'landing') setTimeout(playHeroAnim, 250); // 回到首頁重播主視覺小動畫
+  // 回到首頁重播主視覺小動畫；「特色茶飲」直接捲到茶款區時不重播（主視覺會被捲走，重播只會讓圖示動畫空等）
+  if (name === 'landing') { if (heroReplaySkip) heroReplaySkip = false; else setTimeout(playHeroAnim, 250); }
 
   const sub = name === 'landing'
     ? '一握・系列'
@@ -3078,7 +3088,7 @@ renderLandingCards();
 history.replaceState({ v: 'landing', t: null, d: 0, y: 0 }, '');
 (function openFromQR() {
   const teaId = new URLSearchParams(location.search).get('tea');
-  if (teaId && TEA_DB.some(t => t.id === teaId)) openProduct(teaId);
+  if (teaId && TEA_DB.some(t => t.id === teaId)) { tin360SkipIntro = true; openProduct(teaId); }
 })();
 
 // 讓 .scroll-fade 區塊在「真正進入畫面」的當下才播放淡入動畫，
@@ -3268,7 +3278,9 @@ function resetHoverIcons() {
   document.querySelectorAll('svg.ic-anim').forEach(el => iconObserver.observe(el));
   // 主視覺在不在畫面上（滑走了就不用等它）
   const hero = document.getElementById('hero-anim');
-  if (hero) new IntersectionObserver(([e]) => { heroOnScreen = e.isIntersecting; runIconQueue(); }).observe(hero);
+  // 被固定頂欄蓋住的部分不算「在畫面上」，避免主視覺躲在頂欄後面還讓圖示一直等
+  const hdrH = Math.round(document.querySelector('header')?.getBoundingClientRect().height || 0);
+  if (hero) new IntersectionObserver(([e]) => { heroOnScreen = e.isIntersecting; runIconQueue(); }, { rootMargin: `-${hdrH}px 0px 0px 0px` }).observe(hero);
   // 滑到頁面最底的那一刻重新排一次隊，讓體驗館圖示插到最前面（每個 frame 最多檢查一次）
   let icAtBottom = false, icScrollRaf = 0;
   window.addEventListener('scroll', () => {

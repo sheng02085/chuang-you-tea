@@ -501,7 +501,7 @@ body > header, body > main { animation: pageIn .8s ease 2.6s both; }
   #mnav .mnav-it, #mnav.show .mnav-it { transform: none; transition: opacity .2s ease; transition-delay: 0s; }
 }
 /* 茶款頁 360° 茶罐：6×6 序列圖，用 canvas 只畫目前那一格（相鄰兩格交叉淡化），畫面只是一塊小畫布 */
-.tin360 { position: relative; width: 140px; height: 300px; margin: 1.25rem auto 0; overflow: hidden; touch-action: pan-y; cursor: grab; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent; outline: none; contain: layout paint; }
+.tin360 { position: relative; width: 140px; height: 308px; margin: 1.25rem auto 0; overflow: hidden; touch-action: pan-y; cursor: grab; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent; outline: none; contain: layout paint; }
 .tin360.grabbing { cursor: grabbing; }
 .tin360 canvas { position: absolute; left: 0; top: 0; width: 100%; height: 100%; pointer-events: none; opacity: 0; transition: opacity .5s ease; }
 .tin360.ready canvas { opacity: 1; }
@@ -512,7 +512,7 @@ body > header, body > main { animation: pageIn .8s ease 2.6s both; }
 .tin360.ready .t360-poster { visibility: hidden; }
 .tin360:focus-visible { box-shadow: 0 0 0 2px rgba(255,255,255,.35); border-radius: 12px; }
 .t360-hint { display: flex; align-items: center; justify-content: center; gap: .35rem; margin-top: .35rem; font-size: 11px; color: rgba(255,255,255,.45); letter-spacing: .06em; }
-@media (min-width: 1024px) { .tin360 { width: 168px; height: 360px; } }
+@media (min-width: 1024px) { .tin360 { width: 168px; height: 370px; } } /* 高度＝寬 × 924 ÷ 420，與正面圖、序列圖單格比例一致，不拉伸 */
 .tin360:not(.ready) { cursor: default; }
 /* 茶罐剪影（靜態）：預覽圖、序列圖都還沒出來，或載入失敗且沒有預覽圖時，茶罐位置不會空白 */
 .tin360 .t360-ph { position: absolute; inset: 0; pointer-events: none; transition: opacity .5s ease; }
@@ -536,8 +536,8 @@ body > header, body > main { animation: pageIn .8s ease 2.6s both; }
 .beta-tag { display: inline-block; vertical-align: middle; position: relative; top: -.35em; margin-left: .55em; padding: .28em .55em .28em .75em; border: 1px solid rgba(212,175,55,.6); border-radius: 999px; color: #D4AF37; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 10px; font-weight: 700; letter-spacing: .2em; line-height: 1; }
 
 /* ===== 茶款頁茶罐舞台（BETA）：茶款色底＋大字描邊茶名＋360° 茶罐，進場時橫條錯位拼回 ===== */
-.tstage { --tw: 140px; --th: 300px; position: relative; margin: 1.5rem -1.5rem -1.5rem; padding: .5rem 0 1.4rem; overflow: hidden; border-radius: 0 0 2rem 2rem; border-top: 1px solid rgba(255,255,255,.08); border-top: 1px solid color-mix(in srgb, var(--c) 30%, transparent); }
-@media (min-width: 1024px) { .tstage { --tw: 168px; --th: 360px; margin: 1.75rem -2rem -2rem; } }
+.tstage { --tw: 140px; --th: 308px; position: relative; margin: 1.5rem -1.5rem -1.5rem; padding: .5rem 0 1.4rem; overflow: hidden; border-radius: 0 0 2rem 2rem; border-top: 1px solid rgba(255,255,255,.08); border-top: 1px solid color-mix(in srgb, var(--c) 30%, transparent); }
+@media (min-width: 1024px) { .tstage { --tw: 168px; --th: 370px; margin: 1.75rem -2rem -2rem; } }
 .tstage-bg { position: absolute; inset: 0; }
 .tstage-word { position: absolute; left: 0; right: 0; top: calc(.5rem + 1.25rem + var(--th) / 2); height: 0; display: flex; align-items: center; justify-content: center; pointer-events: none; }
 .tstage-word span { font-size: clamp(130px, 40vw, 240px); font-weight: 700; line-height: 1; letter-spacing: .04em; padding-left: .04em; white-space: nowrap; color: transparent; -webkit-text-stroke: 1.5px var(--c); opacity: 0; transform: scale(1.1); transition: opacity .5s ease, transform 1s cubic-bezier(.2,.8,.2,1); }
@@ -1207,7 +1207,10 @@ function imgFallback(el, onFail) {
   const alt = !el.dataset.alt && imgAltSrc(el.getAttribute('src'));
   if (alt) { el.dataset.alt = '1'; el.src = alt; } else if (onFail) onFail(el);
 }
-const tin360Src = (id) => `${IMG_BASE}tin-${id}-72.webp`;
+// 茶罐圖版本號：正面圖與序列圖一定要同一版，換圖時兩者一起更新並改這個號碼（避免瀏覽器快取到不同版本）
+const TIN_V = '?v=20261001';
+const tin360Src = (id) => `${IMG_BASE}tin-${id}-72.webp${TIN_V}`;
+const tin360FrontSrc = (id) => `${IMG_BASE}tin-${id}-front.webp${TIN_V}`;
 const TIN360_CACHE = {};  // src → Image（序列圖）
 const TIN360_DL = {};     // src → 下載工作 { p, loaded, total, done, subs }
 const TIN360_POSTER = {}; // 已開始下載的正面預覽圖
@@ -1216,7 +1219,7 @@ const TIN360_EST = 850 * 1024; // 伺服器沒回報檔案大小時，用來估�
 let tin360SkipIntro = false;
 // 正面預覽圖（每張約 17 KB）先抓進快取，進茶款頁時幾乎立刻有畫面
 function tin360Poster(id) {
-  const src = `${IMG_BASE}tin-${id}-front.webp`;
+  const src = tin360FrontSrc(id);
   if (TIN360_POSTER[src]) return;
   const img = TIN360_POSTER[src] = new Image();
   try { img.fetchPriority = 'high'; } catch (e) {}
@@ -1294,7 +1297,7 @@ function tin360HTML(tea) {
   return `<div class="t360-wrap">
     <div class="tin360" tabindex="0" role="img" aria-label="${tea.name} 茶罐，可左右拖曳旋轉" data-src="${tin360Src(tea.id)}" data-id="${tea.id}">
       <div class="t360-ph" aria-hidden="true" style="--c1:${tea.color}1f; --c2:${tea.color}59"><div class="ph-lid"></div><div class="ph-body"></div><svg viewBox="0 0 160 160"><use href="#yw-cha"/></svg></div>
-      <img class="t360-poster" src="${IMG_BASE}tin-${tea.id}-front.webp" alt="" aria-hidden="true" decoding="async" fetchpriority="high" onload="if(!this.parentNode.classList.contains('ready'))this.parentNode.classList.add('poster')" onerror="imgFallback(this, e => e.remove())">
+      <img class="t360-poster" src="${tin360FrontSrc(tea.id)}" alt="" aria-hidden="true" decoding="async" fetchpriority="high" onload="if(!this.parentNode.classList.contains('ready'))this.parentNode.classList.add('poster')" onerror="imgFallback(this, e => e.remove())">
       <canvas aria-hidden="true"></canvas>
     </div>
     <div class="t360-load" aria-hidden="true" style="color:${tea.color}"><i></i></div>
@@ -1310,7 +1313,7 @@ function tinStageHTML(tea) {
   const N = 7, short = tea.name.split('・').pop();
   const strips = Array.from({ length: N }, (_, i) => {
     const d = (i % 2 ? -1 : 1) * (16 + (i * 7) % 12);
-    return `<div class="tsg-s" style="--i:${i};--d:${d}%"><img src="${IMG_BASE}tin-${tea.id}-front.webp" alt="" decoding="async" onerror="imgFallback(this)"></div>`;
+    return `<div class="tsg-s" style="--i:${i};--d:${d}%"><img src="${tin360FrontSrc(tea.id)}" alt="" decoding="async" onerror="imgFallback(this)"></div>`;
   }).join('');
   return `<div class="tstage" style="--c:${tea.color}">
     <div class="tstage-bg" aria-hidden="true" style="background:radial-gradient(60% 48% at 50% 44%, ${tea.color}50, transparent 72%), ${tea.bg}"></div>
